@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>泸州任氏宗亲网 - 四川泸州任氏宗亲文化服务平台</title>
+<meta name="description" content="泸州任氏宗亲网：字辈排行查询、宗亲通讯录、宗亲企业、支系地图导航、数据统计">
+<style>
+:root{
+  --red:#8C1F28; --red-d:#6B151C; --red-l:#A83A42;
+  --gold:#C9A063; --gold-l:#E8D5B0; --gold-d:#A07E43;
+  --bg:#F7F3EC; --card:#FFFFFF; --ink:#2B2420; --ink2:#6E6258;
+  --line:#E5DCCB; --green:#2E7D5B; --blue:#2D5F8A;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14px}
+
+/* ========== 顶部 ========== */
+.top-banner{background:linear-gradient(135deg,#5A1018 0%,var(--red) 45%,#A0522D 100%);color:#fff;padding:26px 20px 18px;position:relative;overflow:hidden}
+.top-banner::before{content:"任";position:absolute;right:4%;top:50%;transform:translateY(-50%);font-size:150px;font-family:"STKaiti","KaiTi",serif;opacity:.10;line-height:1}
+.top-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.site-title{font-size:30px;font-weight:800;letter-spacing:6px;font-family:"STKaiti","KaiTi","Microsoft YaHei",serif}
+.site-sub{margin-top:6px;font-size:13px;letter-spacing:3px;color:var(--gold-l)}
+.top-seal{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border:2px solid var(--gold);border-radius:8px;font-family:"STKaiti","KaiTi",serif;font-size:30px;color:var(--gold-l);margin-right:16px;vertical-align:middle;background:rgba(255,255,255,.06)}
+
+/* ========== 导航 ========== */
+.nav{background:var(--red-d);position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(60,10,10,.25)}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap}
+.nav-item{padding:13px 22px;color:#F3E2D0;font-size:15px;letter-spacing:2px;cursor:pointer;border-bottom:3px solid transparent;transition:.18s;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.12);color:#fff;border-bottom-color:var(--gold);font-weight:700}
+
+/* ========== 布局 ========== */
+.page{max-width:1200px;margin:22px auto 60px;padding:0 16px;display:none}
+.page.show{display:block;animation:fadein .3s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 4px rgba(90,60,30,.06)}
+.sec-title{font-size:20px;font-weight:800;color:var(--red);border-left:5px solid var(--gold);padding-left:12px;margin-bottom:16px;letter-spacing:2px}
+.sec-title small{font-size:12px;color:var(--ink2);font-weight:400;margin-left:10px;letter-spacing:0}
+
+/* ========== 首页 ========== */
+.hero{background:linear-gradient(120deg,rgba(140,31,40,.92),rgba(90,16,24,.88)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M0 0h60v60H0z' fill='none'/%3E%3Cpath d='M30 8l4 12h12l-10 7 4 12-10-7-10 7 4-12-10-7h12z' fill='%23ffffff' fill-opacity='.05'/%3E%3C/svg%3E");color:#fff;border-radius:12px;padding:34px 30px;margin-bottom:20px}
+.hero h2{font-size:26px;font-family:"STKaiti","KaiTi",serif;letter-spacing:4px;margin-bottom:10px}
+.hero p{font-size:14px;line-height:1.9;color:#F3E2D0;max-width:820px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:18px 0}
+.stat-box{background:linear-gradient(160deg,#fff,#FBF6EE);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:10px;padding:18px 14px;text-align:center}
+.stat-num{font-size:30px;font-weight:800;color:var(--red)}
+.stat-lab{font-size:13px;color:var(--ink2);margin-top:6px;letter-spacing:1px}
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.quick-item{border:1px solid var(--line);border-radius:10px;padding:18px;cursor:pointer;transition:.18s;background:#fff}
+.quick-item:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 6px 16px rgba(140,31,40,.12)}
+.quick-item h4{color:var(--red);font-size:16px;margin-bottom:6px}
+.quick-item p{font-size:12px;color:var(--ink2);line-height:1.6}
+
+/* ========== 表格 ========== */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min-width:600px}
+.tbl th{background:var(--red);color:#fff;padding:10px 12px;font-weight:600;letter-spacing:1px;text-align:left;white-space:nowrap}
+.tbl td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:middle}
+.tbl tr:nth-child(even) td{background:#FBF8F2}
+.tbl tr:hover td{background:#F5EBDD}
+.tbl .ops button{margin-right:6px}
+
+/* 字辈矩阵 */
+.zb-matrix{overflow:auto;border:1px solid var(--line);border-radius:8px;max-height:70vh;background:#fff}
+.zb-matrix table{border-collapse:separate;border-spacing:0;font-size:14px}
+.zb-matrix th,.zb-matrix td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px 8px;text-align:center;min-width:44px}
+.zb-matrix thead th{background:var(--red);color:#fff;position:sticky;top:0;z-index:5;font-size:12px;max-width:120px;white-space:normal;line-height:1.35;padding:8px 6px}
+.zb-matrix tbody th{background:#F5EBDD;color:var(--red);position:sticky;left:0;z-index:4;font-weight:700;min-width:110px;max-width:150px;font-size:12px;text-align:left;white-space:normal}
+.zb-matrix td.zc{font-family:"STKaiti","KaiTi",serif;font-size:16px;color:var(--ink)}
+.zb-matrix td.zc.hit{background:var(--gold)!important;color:#fff;font-weight:700;border-radius:4px}
+.zb-matrix td.empty{color:#D8CDB9}
+
+/* ========== 按钮 / 表单 ========== */
+.btn{display:inline-block;padding:8px 18px;border-radius:6px;border:1px solid var(--red);background:var(--red);color:#fff;font-size:13px;letter-spacing:1px;transition:.15s}
+.btn:hover{background:var(--red-d)}
+.btn.gold{background:var(--gold-d);border-color:var(--gold-d)}
+.btn.gold:hover{background:#8A6A35}
+.btn.ghost{background:#fff;color:var(--red)}
+.btn.ghost:hover{background:#F5EBDD}
+.btn.gray{background:#8A8078;border-color:#8A8078}
+.btn.small{padding:4px 10px;font-size:12px}
+.btn.green{background:var(--green);border-color:var(--green)}
+.btn.blue{background:var(--blue);border-color:var(--blue)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.toolbar input[type=text],.toolbar select{padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;min-width:160px}
+.toolbar input[type=text]:focus,.toolbar select:focus{outline:none;border-color:var(--gold)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;color:var(--ink2);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
+
+/* ========== 徽章/标签 ========== */
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;background:#F5EBDD;color:var(--red-d);margin:2px;border:1px solid var(--gold-l)}
+.tag.blue{background:#E8F0F8;color:var(--blue);border-color:#C5D8EA}
+.tag.green{background:#E5F2EB;color:var(--green);border-color:#BFDFCF}
+
+/* ========== 模态框 ========== */
+.modal-mask{display:none;position:fixed;inset:0;background:rgba(40,20,15,.45);z-index:500;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px}
+.modal-mask.show{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:620px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:fadein .2s}
+.modal h3{color:var(--red);font-size:18px;margin-bottom:16px;border-bottom:2px solid var(--gold-l);padding-bottom:10px}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+/* ========== 地图 ========== */
+#map-box{width:100%;height:560px;border-radius:10px;border:1px solid var(--line)}
+.map-side{display:grid;grid-template-columns:280px 1fr;gap:16px}
+.region-list{max-height:560px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+.region-item{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s}
+.region-item:hover{background:#FBF6EE}
+.region-item.active{background:var(--red);color:#fff}
+.region-item h5{font-size:14px}
+.region-item p{font-size:12px;opacity:.75;margin-top:3px}
+.map-info{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:14px}
+
+/* ========== 统计图表 ========== */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.bar-chart .bar-line{display:flex;align-items:center;margin-bottom:9px;font-size:13px}
+.bar-chart .bar-label{width:88px;flex-shrink:0;text-align:right;padding-right:10px;color:var(--ink2)}
+.bar-chart .bar-track{flex:1;background:#F1EAE0;border-radius:4px;height:22px;overflow:hidden}
+.bar-chart .bar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--red-l));border-radius:4px;min-width:2px}
+.bar-chart .bar-fill.gold{background:linear-gradient(90deg,var(--gold-d),var(--gold))}
+.bar-chart .bar-val{width:64px;padding-left:8px;flex-shrink:0;font-weight:700;color:var(--red)}
+.rank-no{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--gold-l);color:var(--red-d);align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-right:6px}
+.rank-no.top{background:var(--red);color:#fff}
+
+/* ========== 日志 ========== */
+.log-line{font-size:12px;color:var(--ink2);padding:6px 10px;border-bottom:1px dashed var(--line);font-family:Consolas,monospace}
+.log-line b{color:var(--red)}
+
+/* ========== 页脚 ========== */
+.footer{background:var(--red-d);color:#D8C0A8;text-align:center;padding:24px 16px;font-size:12px;letter-spacing:1px;line-height:2}
+.footer b{color:var(--gold-l)}
+
+/* ========== 提示 ========== */
+#toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:rgba(43,36,32,.92);color:#fff;padding:10px 26px;border-radius:30px;font-size:13px;z-index:999;display:none;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+
+@media (max-width:860px){
+  .chart-row,.map-side{grid-template-columns:1fr}
+  .site-title{font-size:22px;letter-spacing:3px}
+  .nav-item{padding:11px 14px;font-size:14px}
+  .region-list{max-height:220px}
+  #map-box{height:420px}
+}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<div class="top-banner">
+  <div class="top-inner">
+    <span class="top-seal">任</span><span class="site-title" style="vertical-align:middle">泸州任氏宗亲网</span>
+    <div class="site-sub">四川 · 泸州任氏宗亲文化服务平台 &nbsp;|&nbsp; 弘扬祖德 · 敦亲睦族 · 薪火相传</div>
+  </div>
+</div>
+
+<div class="nav"><div class="nav-inner" id="nav">
+  <div class="nav-item active" data-tab="home">宗族首页</div>
+  <div class="nav-item" data-tab="zibei">字辈排行</div>
+  <div class="nav-item" data-tab="contacts">宗亲通讯录</div>
+  <div class="nav-item" data-tab="biz">宗亲产业</div>
+  <div class="nav-item" data-tab="map">宗亲地图</div>
+  <div class="nav-item" data-tab="stat">数据统计</div>
+  <div class="nav-item" data-tab="admin">管理后台</div>
+</div></div>
+
+<div class="page show" id="page-home">
+  <div class="hero">
+    <h2>同根同源 · 一脉相承</h2>
+    <p>泸州任氏宗亲网汇聚泸州及周边各区县任氏支系，完整收录三十六大支系字辈排行、宗亲通讯录、宗亲产业与技能资源。平台支持字辈溯源查询、支系地图导航、宗亲资源对接，旨在传承家族文化、联络宗亲情谊、共谋发展新篇。</p>
+  </div>
+  <div class="stat-grid" id="home-stats"></div>
+  <div class="card">
+    <div class="sec-title">快速入口</div>
+    <div class="quick-grid">
+      <div class="quick-item" onclick="switchTab('zibei')"><h4>字辈排行总表</h4><p>查阅38支系字辈排行，支持单字溯源，查询“我是哪一支、第几代”</p></div>
+      <div class="quick-item" onclick="switchTab('contacts')"><h4>宗亲通讯录</h4><p>按地区、字辈检索宗亲联系方式，支持管理员增删改查</p></div>
+      <div class="quick-item" onclick="switchTab('biz')"><h4>宗亲产业</h4><p>宗亲企业、个体经营与技能资源展示，助力宗亲资源对接</p></div>
+      <div class="quick-item" onclick="switchTab('map')"><h4>支系地图</h4><p>高德地图框选呈现各支系区域，标记凸显并支持一键导航</p></div>
+      <div class="quick-item" onclick="switchTab('stat')"><h4>数据统计</h4><p>字辈查询频次统计、区域人口与产业分布统计</p></div>
+      <div class="quick-item" onclick="switchTab('admin')"><h4>管理后台</h4><p>数据增删查改、导入导出、存档备份、权限管理</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-title">最新公告</div>
+    <div id="home-news"></div>
+  </div>
+  <div class="card">
+    <div class="sec-title">各支系字辈一览（节选）</div>
+    <div id="home-branches"></div>
+  </div>
+</div>
+
+<div class="page" id="page-zibei">
+  <div class="card">
+    <div class="sec-title">泸州任氏各支系字辈排行表 <small>数据来源：《泸州任氏宗亲字辈2022》· rendiste整理</small></div>
+    <div class="toolbar">
+      <input type="text" id="zb-search" placeholder="输入字辈单字溯源，如：昌、德、文…" oninput="zbSearch()">
+      <button class="btn gold" onclick="zbSearch(true)">查询并计入统计</button>
+      <button class="btn ghost" onclick="zbClear()">清除高亮</button>
+      <span class="tag" id="zb-hit-info"></span>
+      <span style="flex:1"></span>
+      <button class="btn ghost" onclick="exportCSV('branches')">导出CSV</button>
+      <button class="btn ghost" onclick="window.print()">打印</button>
+      <button class="btn" onclick="openBranchEditor()">＋新增支系</button>
+    </div>
+    <div style="font-size:12px;color:var(--ink2);margin-bottom:10px">表格横向滚动查看各支系；竖列为世代序号，行为支系。点击列头可管理该支系。</div>
+    <div class="zb-matrix" id="zb-matrix"></div>
+  </div>
+  <div class="card">
+    <div class="sec-title">字辈查询频次榜 <small>统计访客查询最多的字辈字</small></div>
+    <div id="zb-freq" class="bar-chart"></div>
+  </div>
+</div>
+
+<div class="page" id="page-contacts">
+  <div class="card">
+    <div class="sec-title">泸州任氏宗亲通讯录 <small>数据来源：《泸州任氏宗亲电话2026》</small></div>
+    <div class="toolbar">
+      <input type="text" id="ct-search" placeholder="搜索姓名 / 电话 / 地区…" oninput="renderContacts()">
+      <select id="ct-region" onchange="renderContacts()"><option value="">全部地区</option></select>
+      <button class="btn" onclick="openContactEditor()">＋新增宗亲</button>
+      <button class="btn ghost" onclick="exportCSV('contacts')">导出CSV</button>
+      <span class="tag" id="ct-count"></span>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>姓名</th><th>字辈</th><th>地区</th><th>电话</th><th>备注</th><th class="ops">操作</th></tr></thead>
+      <tbody id="ct-body"></tbody>
+    </table></div>
+    <div class="toolbar" style="margin-top:14px;justify-content:center" id="ct-pager"></div>
+  </div>
+</div>
+
+<div class="page" id="page-biz">
+  <div class="card">
+    <div class="sec-title">宗亲企业与经营主体 <small>数据来源：《泸州任氏宗亲企业经营信息统计表》</small></div>
+    <div class="toolbar">
+      <input type="text" id="bz-search" placeholder="搜索企业 / 法人 / 行业…" oninput="renderBiz()">
+      <select id="bz-type" onchange="renderBiz()">
+        <option value="">全部类型</option><option>公司</option><option>个体工商户</option><option>个人</option>
+      </select>
+      <button class="btn" onclick="openBizEditor()">＋新增主体</button>
+      <button class="btn ghost" onclick="exportCSV('companies')">导出CSV</button>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>类型</th><th>名称</th><th>法人/负责人</th><th>所属行业</th><th>注册地</th><th>注册资本</th><th>成立时间</th><th>状态</th><th class="ops">操作</th></tr></thead>
+      <tbody id="bz-body"></tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="sec-title">技能与招工信息 <small>宗亲技术技能登记 · 招聘求职对接</small></div>
+    <div class="toolbar">
+      <button class="btn" onclick="openSkillEditor()">＋新增登记</button>
+      <button class="btn ghost" onclick="exportCSV('skills')">导出CSV</button>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>姓名</th><th>支系</th><th>字辈</th><th>技术/技能/企业</th><th>常住地</th><th>备注(求职/招聘)</th><th class="ops">操作</th></tr></thead>
+      <tbody id="sk-body"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<div class="page" id="page-map">
+  <div class="card">
+    <div class="sec-title">泸州任氏支系分布地图 <small>高德地图 · 区域框选凸显 · 标记导航</small></div>
+    <div class="toolbar">
+      <button class="btn gold" onclick="fitMap()">显示全部支系</button>
+      <span class="tag blue">点击左侧支系 → 地图高亮定位并弹出详情；点击下方区域按钮框选凸显该区域</span>
+    </div>
+    <div class="toolbar" id="region-btns"></div>
+    <div class="map-side">
+      <div class="region-list" id="branch-list"></div>
+      <div><div id="map-box"></div></div>
+    </div>
+    <div class="map-info" id="map-info" style="display:none"></div>
+  </div>
+</div>
+
+<div class="page" id="page-stat">
+  <div class="card">
+    <div class="sec-title">数据总览</div>
+    <div class="stat-grid" id="stat-overview"></div>
+  </div>
+  <div class="chart-row">
+    <div class="card">
+      <div class="sec-title">字辈查询频次 TOP15</div>
+      <div id="stat-freq" class="bar-chart"></div>
+    </div>
+    <div class="card">
+      <div class="sec-title">各区域宗亲人数分布（按通讯录）</div>
+      <div id="stat-region" class="bar-chart"></div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="card">
+      <div class="sec-title">宗亲企业行业分布</div>
+      <div id="stat-industry" class="bar-chart"></div>
+    </div>
+    <div class="card">
+      <div class="sec-title">各支系字辈代数</div>
+      <div id="stat-gens" class="bar-chart"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-title">区域统计明细 <small>各区域联系人 / 产业 / 职业 / 户数 / 宗亲人数（管理员可维护扩展字段）</small></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>区域</th><th>支系数</th><th>宗亲人数(通讯录)</th><th>经营主体数</th><th>区域联系人</th><th>户数(登记)</th><th>备注</th><th class="ops">操作</th></tr></thead>
+      <tbody id="rg-body"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<div class="page" id="page-admin">
+  <div class="card">
+    <div class="sec-title">管理员登录</div>
+    <div id="admin-login">
+      <div class="toolbar">
+        <input type="password" id="admin-pwd" placeholder="请输入管理员密码（默认 admin888）" style="padding:9px 12px;border:1px solid var(--line);border-radius:6px;width:280px">
+        <button class="btn" onclick="adminLogin()">登录</button>
+        <span class="tag">默认密码 admin888，登录后可在“系统设置”中修改</span>
+      </div>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <div class="toolbar">
+        <span class="tag green">已登录 · 管理员</span>
+        <button class="btn ghost small" onclick="adminLogout()">退出登录</button>
+      </div>
+      <div class="sec-title" style="margin-top:10px">数据管理（增删查改）</div>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:10px">请在对应功能页使用“新增”按钮及每行“编辑/删除”按钮，对字辈支系、通讯录、企业、技能、区域统计进行管理。所有修改即时保存到本机浏览器。</p>
+      <div class="sec-title">数据导入 / 导出 / 存档</div>
+      <div class="toolbar">
+        <button class="btn gold" onclick="exportJSON()">导出全站数据(JSON)</button>
+        <button class="btn ghost" onclick="document.getElementById('import-file').click()">导入数据(JSON)</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(this)">
+        <button class="btn blue" onclick="makeArchive()">创建存档快照</button>
+        <button class="btn gray" onclick="resetData()">恢复出厂数据</button>
+      </div>
+      <div class="sec-title">存档记录 <small>可将任意存档恢复或导出</small></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>存档时间</th><th>说明</th><th class="ops">操作</th></tr></thead>
+        <tbody id="arc-body"></tbody>
+      </table></div>
+      <div class="sec-title" style="margin-top:18px">系统设置</div>
+      <div class="field" style="max-width:420px">
+        <label>修改管理员密码</label>
+        <div class="toolbar" style="margin:0">
+          <input type="password" id="new-pwd" placeholder="新密码" style="padding:8px 12px;border:1px solid var(--line);border-radius:6px">
+          <button class="btn small" onclick="changePwd()">保存密码</button>
+        </div>
+      </div>
+      <div class="sec-title" style="margin-top:18px">操作日志</div>
+      <div id="admin-logs" style="max-height:280px;overflow:auto"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal">
+  <div class="modal">
+    <h3 id="modal-title"></h3>
+    <div id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">取消</button>
+      <button class="btn" id="modal-ok">确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <b>泸州任氏宗亲网</b> · 弘扬祖德 敦亲睦族 薪火相传<br>
+  数据来源：泸州任氏宗亲字辈2022 / 泸州任氏宗亲电话2026 / 泸州任氏宗亲企业经营信息统计表 · 地图服务：高德地图<br>
+  平台数据仅用于宗亲联谊与家族文化传承 · 更新时间 2026-08-21
+</div>
+
+<script>
+
+/* ================= 数据层 ================= */
+const BUILTIN_DATA = {"meta": {"title": "泸州任氏宗亲网", "subtitle": "四川·泸州任氏宗亲文化服务平台", "updated": "2026-08-21", "amap_key": "7cf8dcc0a6d9547f616dbfc90e9463b5"}, "branches": [{"name": "合江参宝风岩任氏祠", "gens": ["子", "上", "朝", "文", "一", "桂", "昌", "正", "在", "良", "任", "登", "章", "明世", "理", "治", "邦", "定", "泰", "安", "从家", "善国", "兴", "光", "宗", "成", "大", "仕", "丕", "绪", "裕", "远", "模树", "耕", "读", "立", "为", "本", "瑞", "泽", "照", "银", "川山", "鹏", "达", "青", "云", "路", "圣", "朝", "作", "显", "宦", "步", "觐", "儒", "林", "院", "举", "国", "颂", "贤", "郞"], "name_disp": "合江参宝风岩任氏祠", "region": "合江县·参宝镇", "lng": 105.726, "lat": 28.918}, {"name": "合江参宝风岩任氏会金祠", "gens": ["子", "上", "朝", "金", "文", "一", "贵", "藩", "玉", "国", "仕", "维", "先", "天", "光德", "赐", "义", "礼", "忠", "孝", "作", "家", "传", "勤", "修", "方", "有", "益", "永", "振", "启", "英", "贤", "超", "卓", "符", "阳", "郡", "声", "名", "万", "代", "宣", "九", "儒", "瑗", "继", "惠", "群", "策", "展", "宏", "程", "清", "明", "厚", "全", "庆", "俊", "业", "统", "盛", "兴"], "name_disp": "合江参宝风岩任氏会金祠", "region": "合江县·参宝镇", "lng": 105.73, "lat": 28.914}, {"name": "泸县太伏白云任湾", "gens": ["", "", "", "", "", "自", "应", "国", "世", "联", "草茹", "文", "朝", "学", "先", "崇", "儒", "维", "圣", "道", "体", "德", "大", "宗", "传", "永", "庆", "邦", "之", "彦", "钦", "心", "敬", "尔耳", "天", "汝", "承", "基", "丕", "振", "多", "历厉", "万", "斯", "年"], "name_disp": "泸县太伏白云任湾", "region": "泸县·太伏镇", "lng": 105.551, "lat": 29.017}, {"name": "合江尧坝土地湾 任坪：进举公", "gens": ["", "起", "d", "子", "礼", "学", "进", "辅", "文", "伟", "攀", "志", "儒", "永", "良", "定", "启", "龙", "庭", "士", "登", "朝", "振", "玉", "堂"], "name_disp": "合江尧坝土地湾 任坪：进举公", "region": "合江县·尧坝镇", "lng": 105.673, "lat": 28.735}, {"name": "茜草张坝", "gens": ["", "", "", "", "", "", "", "", "", "", "", "国", "世天", "良啟", "才", "清", "登", "名", "玉", "第", "福", "志", "显", "荣", "昌"], "name_disp": "茜草张坝", "region": "江阳区·茜草街道", "lng": 105.482, "lat": 28.88}, {"name": "合江尧坝任坪：进德公", "gens": ["", "", "", "", "", "", "", "", "", "", "", "其", "尚", "大", "光", "克", "修", "家", "泽", "广", "开", "作", "自", "贻", "芳", "天", "锡", "鸿", "基", "远", "明", "星", "治", "国", "邦", "金", "华", "昭", "相", "印", "富", "贵", "运", "康", "庄", "祯", "祥", "辉", "先", "祖", "全", "才", "朝", "廷", "涌", "兴", "宇", "永", "久", "振", "福", "禄", "达", "杰", "俊"], "name_disp": "合江尧坝任坪：进德公", "region": "合江县·尧坝镇", "lng": 105.676, "lat": 28.738}, {"name": "合江尧坝张湾", "gens": ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "世", "有", "绍继", "宗", "祖", "思", "维", "必", "显", "昌"], "name_disp": "合江尧坝张湾", "region": "合江县·尧坝镇", "lng": 105.67, "lat": 28.732}, {"name": "合江尧坝任坪尹坪湾：登文公", "gens": ["", "", "", "", "", "学", "登", "洪", "万", "玉", "汝", "钟", "绍", "联", "长"], "name_disp": "合江尧坝任坪尹坪湾：登文公", "region": "合江县·尧坝镇", "lng": 105.668, "lat": 28.74}, {"name": "尧坝 嗣微、洪道守道、大桥灯盏湾宣道公", "gens": ["", "", "", "", "", "维微", "玄", "道", "世", "湘", "汝", "朝曰", "怀之", "大焕", "思章", "端", "贞征", "通", "发", "庆", "易", "立", "美", "存", "祥"], "name_disp": "尧坝 嗣微、洪道守道、大桥灯盏湾宣道公", "region": "合江县·尧坝镇/大桥镇", "lng": 105.68, "lat": 28.745}, {"name": "合江尧坝学伊公", "gens": ["", "", "", "", "", "学", "昭", "辅", "翼", "羏", "学", "名", "元重", "以", "先", "世道文", "胜盛朝", "德得继", "先升正", "云荣", "子", "在", "文", "锋风", "宇丕", "春", "禾和", "万", "福", "兴"], "name_disp": "合江尧坝学伊公", "region": "合江县·尧坝镇", "lng": 105.674, "lat": 28.731}, {"name": "尧坝迁纳溪", "gens": ["", "", "", "", "", "", "", "", "", "", "", "朝", "国", "正", "启", "君", "德", "子", "金", "玉", "世"], "name_disp": "尧坝迁纳溪", "region": "纳溪区", "lng": 105.372, "lat": 28.773}, {"name": "泸县百和 朱沱", "gens": ["", "", "", "", "", "登", "字", "天", "良", "文", "启", "光", "正", "朝", "廷", "永", "世", "家", "富", "庆", "名", "扬", "仲", "学", "臣", "本", "立", "会", "道", "生", "全", "才", "定", "国", "英", "每", "昭", "先", "祖", "德", "汝", "地", "白", "玉", "清"], "name_disp": "泸县百和 朱沱", "region": "泸县·百和镇", "lng": 105.63, "lat": 29.1}, {"name": "泸县奇峰阳高", "gens": ["", "", "", "", "", "朝", "宗", "之", "登", "思", "印", "志", "万", "有", "应", "世", "天", "福", "元", "绍", "启", "云", "芳", "永", "大", "德", "文", "光", "华", "玉", "宪", "良", "田"], "name_disp": "泸县奇峰阳高", "region": "泸县·奇峰镇", "lng": 105.5, "lat": 29.2}, {"name": "泸县石桥", "gens": ["", "", "", "", "", "岁瑞", "可", "享祥", "登", "国", "奇", "仕", "应", "朝", "天", "开", "泽", "洪", "恩", "运", "家金", "廷庭", "耀要", "祖", "先", "光", "前", "裕", "后", "啟", "富", "贵", "荣", "华", "兴", "丰", "条", "雨", "顺", "好", "勤", "劳", "把", "家", "村"], "name_disp": "泸县石桥", "region": "泸县·石桥", "lng": 105.43, "lat": 29.2}, {"name": "泸县牛滩天兴任岩", "gens": ["", "", "", "", "", "维", "凤", "朝", "宏", "仲", "国", "正", "天", "心", "顺", "和", "光", "永", "太", "清", "贤", "才", "宗", "圣", "学", "成", "子", "绍", "文", "明", "守", "义", "怀", "元", "仕", "成", "仁", "有", "世", "音", "才", "中", "开", "德", "胜", "瑞", "凤", "运", "祥", "贞"], "name_disp": "泸县牛滩天兴任岩", "region": "泸县·牛滩镇", "lng": 105.35, "lat": 29.2}, {"name": "泸县牛滩天兴任岩", "gens": ["", "", "", "", "", "维", "凤", "朝", "宏", "仲", "国", "正", "天", "心", "顺", "有", "志", "文", "光", "启", "帮", "安", "世", "则", "定"], "name_disp": "泸县牛滩天兴任岩", "region": "泸县·牛滩镇", "lng": 105.362, "lat": 29.208}, {"name": "泸县潮河", "gens": ["", "", "", "", "", "尚", "仕", "支", "金", "应", "有", "正", "绍", "玉", "元", "华", "国", "文", "章", "府", "太", "极", "辅", "照", "春", "安", "邦", "成", "也", "德", "幼", "朝", "万", "代", "兴", "如", "山", "雨", "海", "玖", "贵", "远", "定", "永", "洪"], "name_disp": "泸县潮河", "region": "泸县·潮河镇", "lng": 105.443, "lat": 29.257}, {"name": "江阳通滩", "gens": ["", "", "", "", "", "文", "以", "应", "大", "世", "国", "麟", "正", "朝", "邦", "礼", "义", "安", "天", "玉", "忠", "信", "普", "明", "光", "云", "从", "龙", "思", "耀", "清", "和", "运", "太", "昌", "德", "成", "家", "毓", "秀", "廷", "鸿", "学", "济", "扬"], "name_disp": "江阳通滩", "region": "江阳区·通滩镇", "lng": 105.306, "lat": 28.945}, {"name": "江阳华阳王嘴", "gens": ["", "", "", "", "", "", "", "", "", "", "", "美", "先", "在", "万", "元", "林", "国", "正", "熙", "光", "丕", "焕", "佳", "开", "泰", "占", "亚", "思", "远", "志"], "name_disp": "江阳华阳王嘴", "region": "江阳区·华阳街道", "lng": 105.4, "lat": 28.85}, {"name": "泸州市", "gens": ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "德", "开", "章", "玄", "孝", "贤"], "name_disp": "泸州市", "region": "泸州市区", "lng": 105.442, "lat": 28.872}, {"name": "纳溪任兴旺", "gens": ["", "", "", "显", "云光", "兴", "字", "朝", "大", "子", "文", "敏", "联", "元", "仕", "国", "学", "廷", "天", "运", "启", "中", "荣", "华", "春"], "name_disp": "纳溪任兴旺", "region": "纳溪区", "lng": 105.375, "lat": 28.776}, {"name": "纳溪任文尧", "gens": ["", "", "", "", "", "文", "茂", "长", "啟", "德", "任", "元", "尓", "鸿", "大", "器", "维", "廷", "选", "嘉", "猷", "本", "训", "良", "宣", "昭", "开", "令", "绪", "作", "述", "绍", "谦", "光", "守", "典", "勳", "华", "茂", "承", "恩", "世", "泽", "芳", "彦", "贤", "清", "代", "毓", "笃", "庆", "锡", "书", "香"], "name_disp": "纳溪任文尧", "region": "纳溪区", "lng": 105.37, "lat": 28.77}, {"name": "古蔺护家", "gens": ["", "", "", "", "", "孝", "大", "明", "春", "泰", "简", "仕善", "中泽", "汝在", "天思", "开登", "文", "运", "振", "儒", "冠", "嗣", "续", "相", "传", "绍", "乐", "安", "长", "发", "其", "祥", "承", "先", "绪", "光", "前", "裕", "后", "啟", "大", "观", "克", "纯", "祖", "武", "能", "继", "志", "世", "代", "家", "声", "庆", "昌", "荣", "德", "泽", "永", "远", "联", "科", "第", "信", "义", "龙", "章", "福", "寿", "贤"], "name_disp": "古蔺护家", "region": "古蔺县·护家镇", "lng": 105.85, "lat": 28.1}, {"name": "古蔺石宝", "gens": ["", "", "", "", "", "登", "洪", "清", "子", "天", "文", "正", "国", "太", "民", "安", "启", "绍", "荣", "顺", "利", "昌", "隆", "昭", "大", "德", "朝", "廷", "开", "科", "世", "泽", "林", "中", "华", "永", "胜", "纲", "平", "海", "发", "勇", "乾", "坤", "富", "贵", "圆"], "name_disp": "古蔺石宝", "region": "古蔺县·石宝镇", "lng": 105.9, "lat": 28.05}, {"name": "古蔺石屏 大方", "gens": ["", "", "", "", "", "中", "天", "之", "阴", "洪", "原", "永", "利", "应", "明", "德", "启", "云", "昌", "文", "施", "开", "史"], "name_disp": "古蔺石屏 大方", "region": "古蔺县·石屏镇", "lng": 105.85, "lat": 27.95}, {"name": "古蔺石屏 大方", "gens": ["", "", "", "", "", "宗", "天", "芝", "琳", "洪", "元", "永", "立", "应", "明", "德", "啓", "荣", "昌", "文", "斯", "开", "世", "泽", "金", "玉", "唤", "春", "芳", "田", "连", "怀", "曾", "训", "克", "绍", "体", "祖", "光"], "name_disp": "古蔺石屏 大方", "region": "古蔺县·石屏镇", "lng": 105.862, "lat": 27.942}, {"name": "古蔺永乐 金沙", "gens": ["", "", "", "", "", "守", "学", "进", "登", "文", "聪", "章", "国", "宗", "兴", "永", "定", "平", "安", "富", "仕", "相", "本", "源", "成", "远", "耀", "朝", "天", "子", "光", "辉", "继", "龙", "廷"], "name_disp": "古蔺永乐 金沙", "region": "古蔺县·永乐街道", "lng": 105.95, "lat": 28.1}, {"name": "古蔺双沙", "gens": ["", "", "", "", "", "守", "太", "玉", "周", "泽", "安", "木", "天", "顺", "朝", "洪", "世", "金", "元", "永", "中", "国", "仕", "民", "新"], "name_disp": "古蔺双沙", "region": "古蔺县·双沙镇", "lng": 105.75, "lat": 27.95}, {"name": "古蔺观文", "gens": ["", "", "", "", "", "启", "朝", "秀", "昌", "维", "应", "正", "光", "德", "国", "希", "荣", "廷", "怀", "尚", "章", "新", "华", "继", "代", "万", "世", "同", "纲", "金", "兰", "显", "茂", "玉", "桂", "呈", "祥", "文", "科", "昭", "德", "武", "举", "贤", "良", "承", "宗", "泰", "远", "永", "耀", "家", "邦"], "name_disp": "古蔺观文", "region": "古蔺县·观文镇", "lng": 105.7, "lat": 27.9}, {"name": "古蔺鱼化龙山", "gens": ["", "", "", "", "", "永", "玉尉", "忠宗", "仕", "远", "世", "代", "祖", "业", "长", "唐", "朝", "纪", "聖", "鼎", "千", "古", "大", "文", "章", "金", "伦", "玉", "锤", "鼓"], "name_disp": "古蔺鱼化龙山", "region": "古蔺县·鱼化镇", "lng": 105.8, "lat": 28.0}, {"name": "叙永摩尼", "gens": ["", "", "", "", "", "西", "红", "正", "运", "昌", "登", "朝", "思", "良", "相", "富", "贵", "永", "兴", "隆"], "name_disp": "叙永摩尼", "region": "叙永县·摩尼镇", "lng": 105.35, "lat": 28.25}, {"name": "叙永黄坭", "gens": ["", "", "", "", "", "文", "进", "朝", "廷", "登", "思", "正", "天", "延", "万", "国", "应", "寿", "忠", "荣", "华", "富", "贵", "光", "明", "远", "连", "科", "及", "第", "永", "兴", "隆"], "name_disp": "叙永黄坭", "region": "叙永县·黄坭镇", "lng": 105.4, "lat": 28.1}, {"name": "叙永 水尾", "gens": ["", "", "", "", "", "仲", "其", "国", "绍", "应", "登", "中", "洪", "子", "其仕", "国朝", "绍万", "应世", "朝隆", "廷", "万", "世", "承", "先", "德", "光", "辉", "永", "远", "明"], "name_disp": "叙永 水尾", "region": "叙永县·水尾镇", "lng": 105.5, "lat": 28.2}, {"name": "叙永震东", "gens": ["", "", "", "", "", "山", "国", "明", "芝", "文", "大", "登", "思", "在", "添", "延", "永", "汝", "礼", "志", "邵", "法", "啟", "祯", "龙"], "name_disp": "叙永震东", "region": "叙永县·震东", "lng": 105.45, "lat": 28.15}, {"name": "叙永石河大塘", "gens": ["", "", "", "", "", "大", "应", "天", "朝", "永", "启", "星", "忠", "玄", "维", "士", "体", "文", "学", "兴", "邦", "明", "德", "思", "先", "代", "嘉", "谟", "兆", "瑞", "昌", "书", "能", "全", "远", "业", "贺", "克", "美", "经", "常", "复", "道", "逢", "岁", "尚", "国", "行", "必", "寿", "长", "荣", "华", "承", "世", "守", "富", "贵", "自", "安", "康", "秉", "正", "乾", "元", "泰", "怀", "由", "地", "制", "良", "风", "云", "从", "景", "像", "蔺", "桂", "庆", "联", "芳"], "name_disp": "叙永石河大塘", "region": "叙永县·石河", "lng": 105.4, "lat": 28.2}, {"name": "叙永 兴文海纳、九庆字辈", "gens": ["", "", "", "", "", "大", "明", "奉", "诏", "代", "守", "龙", "章", "文", "武", "宗", "孝", "毓", "香", "一", "堂", "英", "才", "蔚", "起", "丕", "振", "家", "邦", "熙", "朝", "永", "固", "虽", "定", "万", "方"], "name_disp": "叙永 兴文海纳、九庆字辈", "region": "叙永县/兴文", "lng": 105.44, "lat": 28.16}, {"name": "合江尧坝 遵义沙溪高坪", "gens": ["", "", "", "", "", "周", "彦", "登", "朝", "倩", "昌", "文", "国", "在", "思荊", "远仕", "长", "开", "世", "泽", "祥", "荣", "华", "后", "继", "远"], "name_disp": "合江尧坝 遵义沙溪高坪", "region": "遵义·沙溪", "lng": 106.93, "lat": 27.7}, {"name": "合江南滩 习水良村镇半坎", "gens": ["", "", "", "", "", "文", "仕", "奇", "昌", "定", "宗", "功", "祖", "德", "芳", "落", "安", "光", "世", "泽", "继", "绪", "启", "贤", "良"], "name_disp": "合江南滩 习水良村镇半坎", "region": "习水·良村镇", "lng": 106.6, "lat": 28.3}], "contacts": [{"name": "任文贵", "zibei": "", "addr": "潮河", "tel": "18349985088", "note": "", "src": "主要联系人"}, {"name": "任文涛", "zibei": "", "addr": "潮河", "tel": "18683354333", "note": "", "src": "主要联系人"}, {"name": "任强", "zibei": "", "addr": "大桥", "tel": "15808300277", "note": "", "src": "主要联系人"}, {"name": "任通明", "zibei": "", "addr": "大桥", "tel": "18982416667", "note": "", "src": "主要联系人"}, {"name": "任青明", "zibei": "", "addr": "大桥旭照", "tel": "13087848886", "note": "", "src": "主要联系人"}, {"name": "任志平", "zibei": "", "addr": "大桥旭照", "tel": "13982481259", "note": "", "src": "主要联系人"}, {"name": "任军学", "zibei": "安", "addr": "风岩", "tel": "18180309010", "note": "", "src": "主要联系人"}, {"name": "任定强", "zibei": "定", "addr": "风岩", "tel": "15808302841", "note": "", "src": "主要联系人"}, {"name": "任定有", "zibei": "定", "addr": "风岩", "tel": "18380978742", "note": "", "src": "主要联系人"}, {"name": "任太文", "zibei": "太", "addr": "风岩", "tel": "13320745268", "note": "", "src": "主要联系人"}, {"name": "任望江", "zibei": "定", "addr": "风岩", "tel": "13909082026", "note": "", "src": "主要联系人"}, {"name": "任植明", "zibei": "治", "addr": "风岩", "tel": "18048696772", "note": "", "src": "主要联系人"}, {"name": "任治清", "zibei": "治", "addr": "风岩", "tel": "13118445870", "note": "", "src": "主要联系人"}, {"name": "任飞", "zibei": "", "addr": "古蔺", "tel": "17738056331", "note": "", "src": "主要联系人"}, {"name": "任廷源", "zibei": "廷", "addr": "古蔺", "tel": "15283002689", "note": "", "src": "主要联系人"}, {"name": "任元", "zibei": "", "addr": "古蔺", "tel": "15183050793", "note": "", "src": "主要联系人"}, {"name": "任运恒", "zibei": "", "addr": "古蔺", "tel": "13882758218", "note": "会长", "src": "主要联系人"}, {"name": "任运银", "zibei": "", "addr": "古蔺", "tel": "13547364980", "note": "", "src": "主要联系人"}, {"name": "任征猛", "zibei": "", "addr": "古蔺", "tel": "13408209998", "note": "", "src": "主要联系人"}, {"name": "任正潮", "zibei": "振", "addr": "古蔺", "tel": "18980722168", "note": "", "src": "主要联系人"}, {"name": "任  勇", "zibei": "义", "addr": "会金祠", "tel": "15984000333", "note": "", "src": "主要联系人"}, {"name": "任恩惠", "zibei": "礼", "addr": "会金祠", "tel": "18982720077", "note": "", "src": "主要联系人"}, {"name": "任劲松", "zibei": "礼", "addr": "会金祠", "tel": "18982482983", "note": "", "src": "主要联系人"}, {"name": "任礼凡", "zibei": "礼", "addr": "会金祠", "tel": "15283068189", "note": "", "src": "主要联系人"}, {"name": "任礼桥", "zibei": "礼", "addr": "会金祠", "tel": "18987767387", "note": "", "src": "主要联系人"}, {"name": "任学如", "zibei": "忠", "addr": "会金祠", "tel": "15883015050", "note": "秘书长", "src": "主要联系人"}, {"name": "任义江", "zibei": "义", "addr": "会金祠", "tel": "13158622212", "note": "", "src": "主要联系人"}, {"name": "任义银", "zibei": "义", "addr": "会金祠", "tel": "13882799569", "note": "会长", "src": "主要联系人"}, {"name": "任治洪", "zibei": "", "addr": "江安", "tel": "13698231878", "note": "", "src": "主要联系人"}, {"name": "任呈明", "zibei": "", "addr": "泸县任岩", "tel": "13551667177", "note": "", "src": "主要联系人"}, {"name": "任海和", "zibei": "", "addr": "泸县任岩", "tel": "15228273163", "note": "", "src": "主要联系人"}, {"name": "任立和", "zibei": "", "addr": "泸县任岩", "tel": "18383022691", "note": "", "src": "主要联系人"}, {"name": "任应和", "zibei": "", "addr": "泸县任岩", "tel": "18383095673", "note": "", "src": "主要联系人"}, {"name": "任玉和", "zibei": "", "addr": "泸县任岩", "tel": "15181400698", "note": "", "src": "主要联系人"}, {"name": "任志海", "zibei": "", "addr": "泸县任岩", "tel": "15884185675", "note": "", "src": "主要联系人"}, {"name": "任邦体", "zibei": "", "addr": "纳溪", "tel": "18980258759", "note": "", "src": "主要联系人"}, {"name": "任贵", "zibei": "", "addr": "纳溪", "tel": "13541592583", "note": "", "src": "主要联系人"}, {"name": "任君明", "zibei": "", "addr": "纳溪", "tel": "13551729962", "note": "", "src": "主要联系人"}, {"name": "任天富", "zibei": "", "addr": "纳溪", "tel": "15228258909", "note": "", "src": "主要联系人"}, {"name": "任天高", "zibei": "天", "addr": "纳溪", "tel": "13778440728", "note": "", "src": "主要联系人"}, {"name": "任天贵", "zibei": "", "addr": "纳溪", "tel": "18011030388", "note": "", "src": "主要联系人"}, {"name": "任廷刚", "zibei": "廷", "addr": "纳溪", "tel": "13982419359", "note": "", "src": "主要联系人"}, {"name": "任选林", "zibei": "", "addr": "纳溪", "tel": "13982702412", "note": "", "src": "主要联系人"}, {"name": "任小平", "zibei": "", "addr": "纳溪合面", "tel": "17760625709", "note": "", "src": "主要联系人"}, {"name": "任建华", "zibei": "", "addr": "牛滩", "tel": "13808286808", "note": "", "src": "主要联系人"}, {"name": "任志先", "zibei": "", "addr": "牛滩", "tel": "13982353888", "note": "", "src": "主要联系人"}, {"name": "任洪林", "zibei": "圣", "addr": "任湾", "tel": "15283077684", "note": "", "src": "主要联系人"}, {"name": "任建平", "zibei": "维", "addr": "任湾", "tel": "13909086286", "note": "", "src": "主要联系人"}, {"name": "任建文", "zibei": "圣", "addr": "任湾", "tel": "15348209888", "note": "", "src": "主要联系人"}, {"name": "任建文", "zibei": "圣", "addr": "任湾", "tel": "15348209888", "note": "", "src": "主要联系人"}, {"name": "任圣军", "zibei": "圣", "addr": "任湾", "tel": "18090167668", "note": "", "src": "主要联系人"}, {"name": "任胜林", "zibei": "圣", "addr": "任湾", "tel": "15348225884", "note": "", "src": "主要联系人"}, {"name": "任树彬", "zibei": "圣", "addr": "任湾", "tel": "15283088133", "note": "", "src": "主要联系人"}, {"name": "任小平", "zibei": "维", "addr": "任湾", "tel": "18011010902", "note": "秘书长", "src": "主要联系人"}, {"name": "任玉兰", "zibei": "圣", "addr": "任湾", "tel": "15983034690", "note": "", "src": "主要联系人"}, {"name": "任安平", "zibei": "", "addr": "通滩", "tel": "13568328585", "note": "", "src": "主要联系人"}, {"name": "任小梅", "zibei": "义", "addr": "通滩", "tel": "18982423700", "note": "", "src": "主要联系人"}, {"name": "任义炳", "zibei": "", "addr": "通滩", "tel": "15883132358", "note": "", "src": "主要联系人"}, {"name": "任友和", "zibei": "", "addr": "通滩", "tel": "13619042087", "note": "", "src": "主要联系人"}, {"name": "任友良", "zibei": "义", "addr": "通滩", "tel": "18383033595", "note": "", "src": "主要联系人"}, {"name": "任光才", "zibei": "", "addr": "王嘴", "tel": "13920969783", "note": "", "src": "主要联系人"}, {"name": "任光辉", "zibei": "", "addr": "王嘴", "tel": "13551733613", "note": "", "src": "主要联系人"}, {"name": "任光明", "zibei": "光", "addr": "王嘴", "tel": "15348207991", "note": "", "src": "主要联系人"}, {"name": "任光胜", "zibei": "光", "addr": "王嘴", "tel": "13551667733", "note": "", "src": "主要联系人"}, {"name": "任贵友", "zibei": "", "addr": "王嘴", "tel": "15298295999", "note": "", "src": "主要联系人"}, {"name": "任科", "zibei": "", "addr": "王嘴", "tel": "18683070336", "note": "", "src": "主要联系人"}, {"name": "任德明", "zibei": "", "addr": "叙永", "tel": "15386598652", "note": "", "src": "主要联系人"}, {"name": "任楷", "zibei": "", "addr": "叙永", "tel": "13551661878", "note": "", "src": "主要联系人"}, {"name": "任礼刚", "zibei": "", "addr": "叙永", "tel": "15884163888", "note": "", "src": "主要联系人"}, {"name": "任礼宏", "zibei": "礼", "addr": "叙永", "tel": "18982766388", "note": "", "src": "主要联系人"}, {"name": "任满贵", "zibei": "", "addr": "叙永", "tel": "15183085980", "note": "", "src": "主要联系人"}, {"name": "任满堂", "zibei": "", "addr": "叙永", "tel": "18180292532", "note": "", "src": "主要联系人"}, {"name": "任明富", "zibei": "", "addr": "叙永", "tel": "18281118223", "note": "", "src": "主要联系人"}, {"name": "任明贵", "zibei": "", "addr": "叙永", "tel": "13541488464", "note": "", "src": "主要联系人"}, {"name": "任明元", "zibei": "", "addr": "叙永", "tel": "18715775560", "note": "", "src": "主要联系人"}, {"name": "任鹏", "zibei": "", "addr": "叙永", "tel": "13398285448", "note": "", "src": "主要联系人"}, {"name": "任荣强", "zibei": "", "addr": "叙永", "tel": "15883082502", "note": "", "src": "主要联系人"}, {"name": "任汝超", "zibei": "汝", "addr": "叙永", "tel": "17684001748", "note": "", "src": "主要联系人"}, {"name": "任申贵", "zibei": "", "addr": "叙永", "tel": "18148475243", "note": "", "src": "主要联系人"}, {"name": "任思林", "zibei": "", "addr": "叙永", "tel": "17380933653", "note": "", "src": "主要联系人"}, {"name": "任小兵", "zibei": "", "addr": "叙永", "tel": "13440054108", "note": "", "src": "主要联系人"}, {"name": "任应华", "zibei": "应", "addr": "叙永", "tel": "13518512633", "note": "", "src": "主要联系人"}, {"name": "任志鸿", "zibei": "志", "addr": "叙永", "tel": "13696113768", "note": "", "src": "主要联系人"}, {"name": "任德科", "zibei": "", "addr": "叙永白腊乡", "tel": "15228207388", "note": "", "src": "主要联系人"}, {"name": "任德中", "zibei": "", "addr": "叙永青龙山", "tel": "13458711226", "note": "", "src": "主要联系人"}, {"name": "任万刚", "zibei": "", "addr": "叙永水尾", "tel": "13540989559", "note": "", "src": "主要联系人"}, {"name": "任福怀", "zibei": "", "addr": "阳高山", "tel": "15884183656", "note": "", "src": "主要联系人"}, {"name": "任福淮", "zibei": "福", "addr": "阳高山", "tel": "15884183656", "note": "", "src": "主要联系人"}, {"name": "任福礼", "zibei": "", "addr": "阳高山", "tel": "13568136499", "note": "", "src": "主要联系人"}, {"name": "任福生", "zibei": "福", "addr": "阳高山", "tel": "15183053713", "note": "", "src": "主要联系人"}, {"name": "任强", "zibei": "", "addr": "阳高山", "tel": "18982444266", "note": "会长", "src": "主要联系人"}, {"name": "任少彬", "zibei": "绍", "addr": "阳高山", "tel": "18383059585", "note": "", "src": "主要联系人"}, {"name": "任绍君", "zibei": "绍", "addr": "阳高山", "tel": "13608287959", "note": "", "src": "主要联系人"}, {"name": "任绍清", "zibei": "绍", "addr": "阳高山", "tel": "13982787868", "note": "", "src": "主要联系人"}, {"name": "任钦", "zibei": "荣", "addr": "尧坝", "tel": "15181999555", "note": "", "src": "主要联系人"}, {"name": "任泽银", "zibei": "", "addr": "尧坝", "tel": "15892923678", "note": "", "src": "主要联系人"}, {"name": "任宗奎", "zibei": "", "addr": "尧坝", "tel": "13458732003", "note": "", "src": "主要联系人"}, {"name": "任招均", "zibei": "", "addr": "", "tel": "15908464444", "note": "2017", "src": "Sheet1"}, {"name": "任中华", "zibei": "忠", "addr": "", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任凤珍", "zibei": "富", "addr": "百和", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任家彬", "zibei": "家", "addr": "百和", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任家树", "zibei": "家", "addr": "百和", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任家友", "zibei": "家", "addr": "百和", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任江全", "zibei": "家", "addr": "百和", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任丽", "zibei": "家", "addr": "百和", "tel": "15858058822", "note": "2018", "src": "Sheet1"}, {"name": "任清明", "zibei": "世", "addr": "百和", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任世高", "zibei": "世", "addr": "百和", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任文基", "zibei": "家", "addr": "百和", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任文贵", "zibei": "", "addr": "潮河", "tel": "18349985088", "note": "2018", "src": "Sheet1"}, {"name": "任玉华", "zibei": "", "addr": "成都", "tel": "13882238555", "note": "2017", "src": "Sheet1"}, {"name": "任强", "zibei": "", "addr": "大桥", "tel": "15808300277", "note": "2019", "src": "Sheet1"}, {"name": "任通明", "zibei": "", "addr": "大桥", "tel": "18982416667", "note": "2019", "src": "Sheet1"}, {"name": "任通权", "zibei": "", "addr": "大桥", "tel": "13118432608", "note": "2019", "src": "Sheet1"}, {"name": "任文平", "zibei": "", "addr": "大桥", "tel": "13219332789", "note": "2019", "src": "Sheet1"}, {"name": "任晓彬", "zibei": "", "addr": "大桥", "tel": "13982781005", "note": "2019", "src": "Sheet1"}, {"name": "任益良", "zibei": "", "addr": "大桥", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任益良", "zibei": "", "addr": "大桥", "tel": "13398268888", "note": "2019", "src": "Sheet1"}, {"name": "任真萍", "zibei": "", "addr": "大桥", "tel": "18715786427", "note": "2019", "src": "Sheet1"}, {"name": "任真强", "zibei": "", "addr": "大桥", "tel": "13551738181", "note": "2019", "src": "Sheet1"}, {"name": "任天富", "zibei": "", "addr": "大洲驿", "tel": "15228258909", "note": "2019", "src": "Sheet1"}, {"name": "任文忠", "zibei": "", "addr": "德阳市", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任伟", "zibei": "", "addr": "都江堰", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任安成", "zibei": "安", "addr": "风岩", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任定强", "zibei": "定", "addr": "风岩", "tel": "15808302841", "note": "2018", "src": "Sheet1"}, {"name": "任定有", "zibei": "定", "addr": "风岩", "tel": "18380978742", "note": "2018", "src": "Sheet1"}, {"name": "任军学", "zibei": "", "addr": "风岩", "tel": "18180309010", "note": "2024", "src": "Sheet1"}, {"name": "任太华", "zibei": "太", "addr": "风岩", "tel": "15908460292", "note": "2019", "src": "Sheet1"}, {"name": "任太陆", "zibei": "", "addr": "风岩", "tel": "13568151661", "note": "2018", "src": "Sheet1"}, {"name": "任太明", "zibei": "太", "addr": "风岩", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任太荣", "zibei": "太", "addr": "风岩", "tel": "13982791472", "note": "2018", "src": "Sheet1"}, {"name": "任太文", "zibei": "太", "addr": "风岩", "tel": "13320745268", "note": "2018", "src": "Sheet1"}, {"name": "任望江", "zibei": "定", "addr": "风岩", "tel": "13909082026", "note": "2019", "src": "Sheet1"}, {"name": "任小兵", "zibei": "定", "addr": "风岩", "tel": "13551737339", "note": "2018", "src": "Sheet1"}, {"name": "任孝冰", "zibei": "", "addr": "风岩", "tel": "15328345248", "note": "2017", "src": "Sheet1"}, {"name": "任孝强", "zibei": "", "addr": "风岩", "tel": "15182516638", "note": "2017", "src": "Sheet1"}, {"name": "任兴元", "zibei": "太", "addr": "风岩", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任植明", "zibei": "治", "addr": "风岩", "tel": "18048696772", "note": "2018", "src": "Sheet1"}, {"name": "任智卿", "zibei": "治", "addr": "风岩", "tel": "13118445870", "note": "2019", "src": "Sheet1"}, {"name": "任维全", "zibei": "", "addr": "高坝", "tel": "18716111903", "note": "2019", "src": "Sheet1"}, {"name": "任胜才", "zibei": "", "addr": "高庙", "tel": "13882750818", "note": "2019", "src": "Sheet1"}, {"name": "任飞", "zibei": "", "addr": "古蔺", "tel": "17738056331", "note": "2019", "src": "Sheet1"}, {"name": "任化培", "zibei": "", "addr": "古蔺", "tel": "15284085558", "note": "2018", "src": "Sheet1"}, {"name": "任济民", "zibei": "", "addr": "古蔺", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任强", "zibei": "", "addr": "古蔺", "tel": "13419187119", "note": "2018", "src": "Sheet1"}, {"name": "任然", "zibei": "", "addr": "古蔺", "tel": "18048362439", "note": "2018", "src": "Sheet1"}, {"name": "任廷源", "zibei": "廷", "addr": "古蔺", "tel": "15283002689", "note": "2018", "src": "Sheet1"}, {"name": "任文敏", "zibei": "", "addr": "古蔺", "tel": "13568158750", "note": "2019", "src": "Sheet1"}, {"name": "任希瑜", "zibei": "", "addr": "古蔺", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任元", "zibei": "", "addr": "古蔺", "tel": "15183050793", "note": "2024", "src": "Sheet1"}, {"name": "任云川", "zibei": "荣", "addr": "古蔺", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任运刚", "zibei": "", "addr": "古蔺", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任运恒", "zibei": "运", "addr": "古蔺", "tel": "13882758218", "note": "2018", "src": "Sheet1"}, {"name": "任运银", "zibei": "", "addr": "古蔺", "tel": "13547364980", "note": "2024", "src": "Sheet1"}, {"name": "任正潮", "zibei": "", "addr": "古蔺", "tel": "18980722168", "note": "2017", "src": "Sheet1"}, {"name": "任光如", "zibei": "", "addr": "古蔺墨宝寺", "tel": "18383059905", "note": "2017", "src": "Sheet1"}, {"name": "任小平", "zibei": "维", "addr": "合江", "tel": "13909084726", "note": "2017", "src": "Sheet1"}, {"name": "任膑", "zibei": "", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任赐海", "zibei": "赐", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任赐清", "zibei": "赐", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任恩惠", "zibei": "礼", "addr": "会金祠", "tel": "18982720077", "note": "2018", "src": "Sheet1"}, {"name": "任劲松", "zibei": "礼", "addr": "会金祠", "tel": "18982482983", "note": "2018", "src": "Sheet1"}, {"name": "任礼兵", "zibei": "礼", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼成", "zibei": "礼", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼发", "zibei": "", "addr": "会金祠", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任礼凡", "zibei": "礼", "addr": "会金祠", "tel": "15283068189", "note": "2018", "src": "Sheet1"}, {"name": "任礼洪", "zibei": "礼", "addr": "会金祠", "tel": "15881977260", "note": "2018", "src": "Sheet1"}, {"name": "任礼桓", "zibei": "礼", "addr": "会金祠", "tel": "18090849786", "note": "2018", "src": "Sheet1"}, {"name": "任礼金", "zibei": "礼", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼奎", "zibei": "礼", "addr": "会金祠", "tel": "18275235911", "note": "2017", "src": "Sheet1"}, {"name": "任礼南", "zibei": "", "addr": "会金祠", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任礼平", "zibei": "礼", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼平", "zibei": "礼", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼强周守英", "zibei": "礼", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼桥", "zibei": "", "addr": "会金祠", "tel": "18987767387", "note": "2019", "src": "Sheet1"}, {"name": "任礼清", "zibei": "", "addr": "会金祠", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任礼宣", "zibei": "礼", "addr": "会金祠", "tel": "15348207080", "note": "2018", "src": "Sheet1"}, {"name": "任礼智", "zibei": "礼", "addr": "会金祠", "tel": "18181876344", "note": "2018", "src": "Sheet1"}, {"name": "任平", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任钱良", "zibei": "礼", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任伟", "zibei": "礼", "addr": "会金祠", "tel": "13541590607", "note": "2018", "src": "Sheet1"}, {"name": "任文成", "zibei": "", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任小波", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任小英", "zibei": "", "addr": "会金祠", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任孝兵", "zibei": "孝", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任孝义", "zibei": "孝", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任秀华", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任学如", "zibei": "忠", "addr": "会金祠", "tel": "15883015050", "note": "2024", "src": "Sheet1"}, {"name": "任雪连", "zibei": "礼", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义彬", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义飞", "zibei": "义", "addr": "会金祠", "tel": "18666383978", "note": "2018", "src": "Sheet1"}, {"name": "任义高", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义洪", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义华", "zibei": "义", "addr": "会金祠", "tel": "15082083838", "note": "2018", "src": "Sheet1"}, {"name": "任义江", "zibei": "义", "addr": "会金祠", "tel": "13158622212", "note": "2018", "src": "Sheet1"}, {"name": "任义力", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义连", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义林", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义明", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义培", "zibei": "", "addr": "会金祠", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任义清", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义容", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义述", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义顺", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义文", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义湘", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义祥", "zibei": "义", "addr": "会金祠", "tel": "13458710463", "note": "2018", "src": "Sheet1"}, {"name": "任义银", "zibei": "义", "addr": "会金祠", "tel": "13882799569", "note": "2018", "src": "Sheet1"}, {"name": "任义勇", "zibei": "义", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义章", "zibei": "义", "addr": "会金祠", "tel": "13923305738", "note": "2018", "src": "Sheet1"}, {"name": "任勇", "zibei": "义", "addr": "会金祠", "tel": "15984000333", "note": "2018", "src": "Sheet1"}, {"name": "任中华", "zibei": "", "addr": "会金祠", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任中华", "zibei": "", "addr": "会金祠", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任中强", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠彬", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠城", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠华", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠华", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠华", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠惠", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠莲", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠其", "zibei": "忠", "addr": "会金祠", "tel": "13984715378", "note": "2018", "src": "Sheet1"}, {"name": "任忠强", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠伟", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任忠秀", "zibei": "忠", "addr": "会金祠", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任治洪", "zibei": "", "addr": "江安", "tel": "13698231878", "note": "2019", "src": "Sheet1"}, {"name": "任定贵", "zibei": "", "addr": "奎丰", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任左彬", "zibei": "", "addr": "两里村", "tel": "18982790829", "note": "2019", "src": "Sheet1"}, {"name": "任礼彬", "zibei": "礼", "addr": "泸县", "tel": "13713908359", "note": "2017", "src": "Sheet1"}, {"name": "任呈明", "zibei": "", "addr": "泸县任岩", "tel": "13551667177", "note": "2019", "src": "Sheet1"}, {"name": "任贵和", "zibei": "", "addr": "泸县任岩", "tel": "1588304541", "note": "2019", "src": "Sheet1"}, {"name": "任海和", "zibei": "", "addr": "泸县任岩", "tel": "15228273163", "note": "2019", "src": "Sheet1"}, {"name": "任立和", "zibei": "", "addr": "泸县任岩", "tel": "18383022691", "note": "2019", "src": "Sheet1"}, {"name": "任应和", "zibei": "", "addr": "泸县任岩", "tel": "18383095673", "note": "2019", "src": "Sheet1"}, {"name": "任玉和", "zibei": "", "addr": "泸县任岩", "tel": "15181400698", "note": "2019", "src": "Sheet1"}, {"name": "任在和", "zibei": "", "addr": "泸县任岩", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任志海", "zibei": "", "addr": "泸县任岩", "tel": "15884185675", "note": "2019", "src": "Sheet1"}, {"name": "任定康", "zibei": "定", "addr": "泸县万定", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任建平", "zibei": "礼", "addr": "泸州旻阳电子", "tel": "18281114999", "note": "2017", "src": "Sheet1"}, {"name": "任邦体", "zibei": "", "addr": "纳溪", "tel": "18980258759", "note": "2018", "src": "Sheet1"}, {"name": "任贵", "zibei": "", "addr": "纳溪", "tel": "13541592583", "note": "2018", "src": "Sheet1"}, {"name": "任君明", "zibei": "", "addr": "纳溪", "tel": "13551729962", "note": "2019", "src": "Sheet1"}, {"name": "任天贵", "zibei": "", "addr": "纳溪", "tel": "18011030388", "note": "2018", "src": "Sheet1"}, {"name": "任廷发", "zibei": "", "addr": "纳溪", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任廷刚", "zibei": "廷", "addr": "纳溪", "tel": "13982419359", "note": "2018", "src": "Sheet1"}, {"name": "任廷旭", "zibei": "", "addr": "纳溪", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任庭发", "zibei": "", "addr": "纳溪", "tel": "15228283243", "note": "2019", "src": "Sheet1"}, {"name": "任选彬", "zibei": "", "addr": "纳溪", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任选林", "zibei": "", "addr": "纳溪", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任小平", "zibei": "", "addr": "纳溪合面太山", "tel": "17760625709", "note": "2019", "src": "Sheet1"}, {"name": "任天高", "zibei": "", "addr": "纳溪护国", "tel": "13778440728", "note": "2019", "src": "Sheet1"}, {"name": "任建华", "zibei": "", "addr": "牛滩", "tel": "13808286808", "note": "2018", "src": "Sheet1"}, {"name": "任志先", "zibei": "", "addr": "牛滩", "tel": "13982353888", "note": "2018", "src": "Sheet1"}, {"name": "任彬", "zibei": "圣", "addr": "任湾", "tel": "18780189989", "note": "2018", "src": "Sheet1"}, {"name": "任波如", "zibei": "", "addr": "任湾", "tel": "19982532683", "note": "2019", "src": "Sheet1"}, {"name": "任超军", "zibei": "维", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任道波", "zibei": "", "addr": "任湾", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任道辉", "zibei": "道", "addr": "任湾", "tel": "18783084786", "note": "2018", "src": "Sheet1"}, {"name": "任道平", "zibei": "道", "addr": "任湾", "tel": "13398271225", "note": "2018", "src": "Sheet1"}, {"name": "任道星", "zibei": "道", "addr": "任湾", "tel": "15808482573", "note": "2018", "src": "Sheet1"}, {"name": "任福儒", "zibei": "儒", "addr": "任湾", "tel": "13646012140", "note": "2018", "src": "Sheet1"}, {"name": "任富如", "zibei": "", "addr": "任湾", "tel": "13398277253", "note": "2018", "src": "Sheet1"}, {"name": "任光辉", "zibei": "圣", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任国清", "zibei": "", "addr": "任湾", "tel": "13679691945", "note": "2018", "src": "Sheet1"}, {"name": "任洪林", "zibei": "圣", "addr": "任湾", "tel": "15283077684", "note": "2018", "src": "Sheet1"}, {"name": "任会莲", "zibei": "", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任慧平", "zibei": "", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任建春", "zibei": "", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任建平", "zibei": "", "addr": "任湾", "tel": "13909086286", "note": "2019", "src": "Sheet1"}, {"name": "任建文", "zibei": "圣", "addr": "任湾", "tel": "15348209888", "note": "2018", "src": "Sheet1"}, {"name": "任江泉", "zibei": "维", "addr": "任湾", "tel": "15183031071", "note": "2018", "src": "Sheet1"}, {"name": "任军", "zibei": "", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任楷", "zibei": "道", "addr": "任湾", "tel": "15884169458", "note": "2018", "src": "Sheet1"}, {"name": "任连芳", "zibei": "", "addr": "任湾", "tel": "13398268000", "note": "2018", "src": "Sheet1"}, {"name": "任连珍", "zibei": "", "addr": "任湾", "tel": "13388286040", "note": "2018", "src": "Sheet1"}, {"name": "任明秀", "zibei": "", "addr": "任湾", "tel": "13882734668", "note": "2018", "src": "Sheet1"}, {"name": "任千儒", "zibei": "儒", "addr": "任湾", "tel": "18008226782", "note": "2018", "src": "Sheet1"}, {"name": "任圣芳", "zibei": "", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任圣江", "zibei": "圣", "addr": "任湾", "tel": "13433694799", "note": "2018", "src": "Sheet1"}, {"name": "任圣军", "zibei": "圣", "addr": "任湾", "tel": "18090167668", "note": "2018", "src": "Sheet1"}, {"name": "任圣莲", "zibei": "圣", "addr": "任湾", "tel": "15181416587", "note": "2018", "src": "Sheet1"}, {"name": "任圣莲", "zibei": "圣", "addr": "任湾", "tel": "13551736336", "note": "2018", "src": "Sheet1"}, {"name": "任圣清", "zibei": "圣", "addr": "任湾", "tel": "17781022709", "note": "2018", "src": "Sheet1"}, {"name": "任圣群", "zibei": "圣", "addr": "任湾", "tel": "18084952406", "note": "2018", "src": "Sheet1"}, {"name": "任胜国", "zibei": "圣", "addr": "任湾", "tel": "18708334328", "note": "2018", "src": "Sheet1"}, {"name": "任胜惠", "zibei": "", "addr": "任湾", "tel": "18380941838", "note": "2019", "src": "Sheet1"}, {"name": "任胜琼", "zibei": "圣", "addr": "任湾", "tel": "13378260588", "note": "2018", "src": "Sheet1"}, {"name": "任树彬", "zibei": "圣", "addr": "任湾", "tel": "15283088133", "note": "2019", "src": "Sheet1"}, {"name": "任树荣", "zibei": "儒", "addr": "任湾", "tel": "13982481820", "note": "2018", "src": "Sheet1"}, {"name": "任为礼", "zibei": "维", "addr": "任湾", "tel": "13688208547", "note": "2018", "src": "Sheet1"}, {"name": "任维超", "zibei": "维", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任维东", "zibei": "维", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任维芳", "zibei": "维", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任维海", "zibei": "维", "addr": "任湾", "tel": "13508035010", "note": "2019", "src": "Sheet1"}, {"name": "任维华", "zibei": "维", "addr": "任湾", "tel": "15183070337", "note": "2018", "src": "Sheet1"}, {"name": "任维君", "zibei": "维", "addr": "任湾", "tel": "18383060492", "note": "2018", "src": "Sheet1"}, {"name": "任维丽", "zibei": "维", "addr": "任湾", "tel": "15228238766", "note": "2018", "src": "Sheet1"}, {"name": "任维莲", "zibei": "维", "addr": "任湾", "tel": "13608579361", "note": "2018", "src": "Sheet1"}, {"name": "任维良", "zibei": "维", "addr": "任湾", "tel": "18208323655", "note": "2018", "src": "Sheet1"}, {"name": "任维明", "zibei": "维", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任维平", "zibei": "", "addr": "任湾", "tel": "13550882610", "note": "2017", "src": "Sheet1"}, {"name": "任维萍", "zibei": "维", "addr": "任湾", "tel": "18982751819", "note": "2018", "src": "Sheet1"}, {"name": "任维树", "zibei": "维", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任维兴", "zibei": "维", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任维秀", "zibei": "维", "addr": "任湾", "tel": "15284846688", "note": "2018", "src": "Sheet1"}, {"name": "任锡如", "zibei": "儒", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任小华", "zibei": "维", "addr": "任湾", "tel": "13539586720", "note": "2018", "src": "Sheet1"}, {"name": "任小林", "zibei": "", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任小平", "zibei": "维", "addr": "任湾", "tel": "18011010902", "note": "2018", "src": "Sheet1"}, {"name": "任雪梅", "zibei": "", "addr": "任湾", "tel": "15082082760", "note": "2018", "src": "Sheet1"}, {"name": "任勇", "zibei": "", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任玉兰", "zibei": "圣", "addr": "任湾", "tel": "15983034690", "note": "2018", "src": "Sheet1"}, {"name": "任玉霞", "zibei": "", "addr": "任湾", "tel": "18121986695", "note": "2018", "src": "Sheet1"}, {"name": "任志良", "zibei": "圣", "addr": "任湾", "tel": "18683058682", "note": "2018", "src": "Sheet1"}, {"name": "任志群", "zibei": "", "addr": "任湾", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任立刚", "zibei": "", "addr": "山东", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任圣波", "zibei": "", "addr": "石洞", "tel": "13982700469", "note": "2019", "src": "Sheet1"}, {"name": "任胜林", "zibei": "", "addr": "太伏", "tel": "15348225884", "note": "2019", "src": "Sheet1"}, {"name": "任维莲", "zibei": "维", "addr": "天立学校", "tel": "18982757611", "note": "2017", "src": "Sheet1"}, {"name": "任安平", "zibei": "", "addr": "通滩", "tel": "13568328585", "note": "2018", "src": "Sheet1"}, {"name": "任礼富", "zibei": "礼", "addr": "通滩", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任小梅", "zibei": "义", "addr": "通滩", "tel": "18982423700", "note": "2018", "src": "Sheet1"}, {"name": "任义炳", "zibei": "", "addr": "通滩", "tel": "15883132358", "note": "2019", "src": "Sheet1"}, {"name": "任友和", "zibei": "", "addr": "通滩", "tel": "13619042087", "note": "2018", "src": "Sheet1"}, {"name": "任友良", "zibei": "义", "addr": "通滩", "tel": "18383033595", "note": "2018", "src": "Sheet1"}, {"name": "任元均", "zibei": "", "addr": "瓦房屋基", "tel": "17781042136", "note": "2019", "src": "Sheet1"}, {"name": "任碧波", "zibei": "", "addr": "外地", "tel": "18011600337", "note": "2018", "src": "Sheet1"}, {"name": "任德成", "zibei": "德", "addr": "外地", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任刚", "zibei": "", "addr": "外地", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任家元", "zibei": "家", "addr": "外地", "tel": "18283141950", "note": "2018", "src": "Sheet1"}, {"name": "任乐斌", "zibei": "", "addr": "外地", "tel": "13982592269", "note": "2018", "src": "Sheet1"}, {"name": "任乐刚", "zibei": "", "addr": "外地", "tel": "13700993397", "note": "2018", "src": "Sheet1"}, {"name": "任能坤", "zibei": "", "addr": "外地", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任强", "zibei": "", "addr": "外地", "tel": "13688302229", "note": "2018", "src": "Sheet1"}, {"name": "任汝北", "zibei": "世", "addr": "外地", "tel": "18224215237", "note": "2018", "src": "Sheet1"}, {"name": "任思言", "zibei": "思", "addr": "外地", "tel": "13558968286", "note": "2018", "src": "Sheet1"}, {"name": "任文彬", "zibei": "", "addr": "外地", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任文书", "zibei": "", "addr": "外地", "tel": "13890982492", "note": "2018", "src": "Sheet1"}, {"name": "任亚理", "zibei": "", "addr": "外地", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任永昌", "zibei": "永", "addr": "外地", "tel": "13518457339", "note": "2018", "src": "Sheet1"}, {"name": "任玉锋", "zibei": "", "addr": "外地", "tel": "18983760618", "note": "2018", "src": "Sheet1"}, {"name": "任丽", "zibei": "", "addr": "王坪", "tel": "15283033366", "note": "2019", "src": "Sheet1"}, {"name": "任胜霞", "zibei": "", "addr": "王坪", "tel": "13219367778", "note": "2019", "src": "Sheet1"}, {"name": "任波", "zibei": "丕", "addr": "王嘴", "tel": "18090173152", "note": "2019", "src": "Sheet1"}, {"name": "任陈诚", "zibei": "", "addr": "王嘴", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任川军", "zibei": "", "addr": "王嘴", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任光才", "zibei": "", "addr": "王嘴", "tel": "13920969783", "note": "2018", "src": "Sheet1"}, {"name": "任光华", "zibei": "光", "addr": "王嘴", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任光辉", "zibei": "", "addr": "王嘴", "tel": "13551733613", "note": "2018", "src": "Sheet1"}, {"name": "任光林", "zibei": "", "addr": "王嘴", "tel": "13982799181", "note": "2018", "src": "Sheet1"}, {"name": "任光明", "zibei": "光", "addr": "王嘴", "tel": "15348207991", "note": "2018", "src": "Sheet1"}, {"name": "任光平", "zibei": "", "addr": "王嘴", "tel": "15883064788", "note": "2018", "src": "Sheet1"}, {"name": "任光萍", "zibei": "光", "addr": "王嘴", "tel": "13540984771", "note": "2018", "src": "Sheet1"}, {"name": "任光胜", "zibei": "光", "addr": "王嘴", "tel": "13551667733", "note": "2018", "src": "Sheet1"}, {"name": "任贵友", "zibei": "", "addr": "王嘴", "tel": "15298295999", "note": "2017", "src": "Sheet1"}, {"name": "任昊", "zibei": "", "addr": "王嘴", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任科", "zibei": "", "addr": "王嘴", "tel": "18683070336", "note": "2018", "src": "Sheet1"}, {"name": "任丕芬", "zibei": "", "addr": "王嘴", "tel": "18982409728", "note": "2018", "src": "Sheet1"}, {"name": "任丕福", "zibei": "", "addr": "王嘴", "tel": "13079101078", "note": "2018", "src": "Sheet1"}, {"name": "任丕富", "zibei": "", "addr": "王嘴", "tel": "15328331511", "note": "2019", "src": "Sheet1"}, {"name": "任丕秀", "zibei": "", "addr": "王嘴", "tel": "18121976090", "note": "2018", "src": "Sheet1"}, {"name": "任丕营", "zibei": "", "addr": "王嘴", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任丕元", "zibei": "", "addr": "王嘴", "tel": "13882761116", "note": "2018", "src": "Sheet1"}, {"name": "任婷婷", "zibei": "", "addr": "王嘴", "tel": "18181179657", "note": "2019", "src": "Sheet1"}, {"name": "任晓琴", "zibei": "", "addr": "王嘴", "tel": "15283096265", "note": "2018", "src": "Sheet1"}, {"name": "任志强", "zibei": "", "addr": "王嘴", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任智", "zibei": "", "addr": "王嘴", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任智强", "zibei": "", "addr": "王嘴", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任彬蓉", "zibei": "", "addr": "新都", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任青明", "zibei": "", "addr": "旭照", "tel": "13087848886", "note": "2019", "src": "Sheet1"}, {"name": "任志平", "zibei": "", "addr": "旭照", "tel": "13982481259", "note": "2019", "src": "Sheet1"}, {"name": "任德明", "zibei": "", "addr": "叙永", "tel": "15386598652", "note": "2019", "src": "Sheet1"}, {"name": "任凯", "zibei": "", "addr": "叙永", "tel": "13551661878", "note": "2019", "src": "Sheet1"}, {"name": "任老五", "zibei": "", "addr": "叙永", "tel": "14780853228", "note": "2018", "src": "Sheet1"}, {"name": "任礼刚", "zibei": "礼", "addr": "叙永", "tel": "15884163888", "note": "2018", "src": "Sheet1"}, {"name": "任礼宏", "zibei": "礼", "addr": "叙永", "tel": "18982766388", "note": "2017", "src": "Sheet1"}, {"name": "任礼华", "zibei": "礼", "addr": "叙永", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼江", "zibei": "礼", "addr": "叙永", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼平", "zibei": "礼", "addr": "叙永", "tel": "18982719177", "note": "2017", "src": "Sheet1"}, {"name": "任礼苹", "zibei": "礼", "addr": "叙永", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼湘", "zibei": "礼", "addr": "叙永", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任礼中", "zibei": "礼", "addr": "叙永", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任利", "zibei": "", "addr": "叙永", "tel": "18208322679", "note": "2019", "src": "Sheet1"}, {"name": "任满贵", "zibei": "", "addr": "叙永", "tel": "15183085980", "note": "2018", "src": "Sheet1"}, {"name": "任满堂", "zibei": "", "addr": "叙永", "tel": "18180292532", "note": "2018", "src": "Sheet1"}, {"name": "任明富", "zibei": "", "addr": "叙永", "tel": "18281118223", "note": "2018", "src": "Sheet1"}, {"name": "任明贵", "zibei": "", "addr": "叙永", "tel": "13541488464", "note": "2018", "src": "Sheet1"}, {"name": "任明元", "zibei": "", "addr": "叙永", "tel": "18715775560", "note": "2018", "src": "Sheet1"}, {"name": "任鹏", "zibei": "", "addr": "叙永", "tel": "13398285448", "note": "2018", "src": "Sheet1"}, {"name": "任荣强", "zibei": "", "addr": "叙永", "tel": "15883082502", "note": "2018", "src": "Sheet1"}, {"name": "任汝超", "zibei": "汝", "addr": "叙永", "tel": "17684001748", "note": "2018", "src": "Sheet1"}, {"name": "任汝洪", "zibei": "汝", "addr": "叙永", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任汝开", "zibei": "汝", "addr": "叙永", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任申贵", "zibei": "", "addr": "叙永", "tel": "15228161733", "note": "2018", "src": "Sheet1"}, {"name": "任申贵", "zibei": "", "addr": "叙永", "tel": "18148475243", "note": "2019", "src": "Sheet1"}, {"name": "任思林", "zibei": "", "addr": "叙永", "tel": "17380933653", "note": "2018", "src": "Sheet1"}, {"name": "任应华", "zibei": "应", "addr": "叙永", "tel": "13518512633", "note": "2018", "src": "Sheet1"}, {"name": "任志鸿", "zibei": "志", "addr": "叙永", "tel": "13696113768", "note": "2018", "src": "Sheet1"}, {"name": "任德科", "zibei": "", "addr": "叙永白腊乡", "tel": "15228207388", "note": "2019", "src": "Sheet1"}, {"name": "任德洪", "zibei": "", "addr": "叙永青龙山", "tel": "18084957418", "note": "2019", "src": "Sheet1"}, {"name": "任德中", "zibei": "", "addr": "叙永青龙山", "tel": "13458711226", "note": "2019", "src": "Sheet1"}, {"name": "任廷智", "zibei": "", "addr": "叙永水尾", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "任万刚", "zibei": "", "addr": "叙永水尾", "tel": "", "note": "2024", "src": "Sheet1"}, {"name": "林代元", "zibei": "", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任福发", "zibei": "", "addr": "阳高山", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任福海", "zibei": "福", "addr": "阳高山", "tel": "17781042116", "note": "2018", "src": "Sheet1"}, {"name": "任福怀", "zibei": "福", "addr": "阳高山", "tel": "15884183656", "note": "2018", "src": "Sheet1"}, {"name": "任福军", "zibei": "福", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任福礼", "zibei": "福", "addr": "阳高山", "tel": "13568136499", "note": "2019", "src": "Sheet1"}, {"name": "任福良", "zibei": "福", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任福明", "zibei": "福", "addr": "阳高山", "tel": "18111179533", "note": "2018", "src": "Sheet1"}, {"name": "任福能", "zibei": "", "addr": "阳高山", "tel": "17760434297", "note": "2024", "src": "Sheet1"}, {"name": "任福全", "zibei": "福", "addr": "阳高山", "tel": "13982751554", "note": "2018", "src": "Sheet1"}, {"name": "任福荣", "zibei": "", "addr": "阳高山", "tel": "18716122115", "note": "2024", "src": "Sheet1"}, {"name": "任福生", "zibei": "福", "addr": "阳高山", "tel": "15183053713", "note": "2018", "src": "Sheet1"}, {"name": "任福银", "zibei": "福", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任虹宇", "zibei": "绍", "addr": "阳高山", "tel": "18982444266", "note": "2018", "src": "Sheet1"}, {"name": "任华兵", "zibei": "绍", "addr": "阳高山", "tel": "18715887732", "note": "2018", "src": "Sheet1"}, {"name": "任华福", "zibei": "绍", "addr": "阳高山", "tel": "17738599637", "note": "2018", "src": "Sheet1"}, {"name": "任华金", "zibei": "绍", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任华珍", "zibei": "绍", "addr": "阳高山", "tel": "13547360117", "note": "2018", "src": "Sheet1"}, {"name": "任俊康", "zibei": "", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任明成", "zibei": "", "addr": "阳高山", "tel": "18989131385", "note": "2018", "src": "Sheet1"}, {"name": "任强", "zibei": "", "addr": "阳高山", "tel": "18982444266", "note": "2018", "src": "Sheet1"}, {"name": "任少华", "zibei": "绍", "addr": "阳高山", "tel": "13711777917", "note": "2018", "src": "Sheet1"}, {"name": "任少清", "zibei": "", "addr": "阳高山", "tel": "13982787868", "note": "2019", "src": "Sheet1"}, {"name": "任少云", "zibei": "绍", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任绍兵", "zibei": "绍", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任绍华", "zibei": "绍", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任绍江", "zibei": "绍", "addr": "阳高山", "tel": "13550892888", "note": "2018", "src": "Sheet1"}, {"name": "任绍君", "zibei": "绍", "addr": "阳高山", "tel": "13608287959", "note": "2018", "src": "Sheet1"}, {"name": "任绍清", "zibei": "绍", "addr": "阳高山", "tel": "13982787868", "note": "2018", "src": "Sheet1"}, {"name": "任天富", "zibei": "天", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任天明", "zibei": "天", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任向东", "zibei": "", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任鑫", "zibei": "", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任学伍", "zibei": "", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任义", "zibei": "元", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任元锋", "zibei": "元", "addr": "阳高山", "tel": "13982499928", "note": "2018", "src": "Sheet1"}, {"name": "任元莲", "zibei": "元", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任元平", "zibei": "", "addr": "阳高山", "tel": "13958310703", "note": "2019", "src": "Sheet1"}, {"name": "任元启", "zibei": "", "addr": "阳高山", "tel": "13398271332", "note": "2019", "src": "Sheet1"}, {"name": "任元清", "zibei": "元", "addr": "阳高山", "tel": "13548045498", "note": "2018", "src": "Sheet1"}, {"name": "任元友", "zibei": "", "addr": "阳高山", "tel": "1738292082", "note": "2019", "src": "Sheet1"}, {"name": "任云钦", "zibei": "", "addr": "阳高山", "tel": "15983088619", "note": "2018", "src": "Sheet1"}, {"name": "易其成", "zibei": "", "addr": "阳高山", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "易其江", "zibei": "福", "addr": "阳高山", "tel": "13708288227", "note": "2018", "src": "Sheet1"}, {"name": "任元立", "zibei": "", "addr": "阳高山三社", "tel": "13725420634", "note": "2019", "src": "Sheet1"}, {"name": "任少彬", "zibei": "", "addr": "阳高寺元嘴", "tel": "18383059585", "note": "2024", "src": "Sheet1"}, {"name": "任少华", "zibei": "", "addr": "阳高寺元嘴", "tel": "13982765086", "note": "2024", "src": "Sheet1"}, {"name": "任元芳", "zibei": "", "addr": "阳高寺元嘴", "tel": "19114387453", "note": "2024", "src": "Sheet1"}, {"name": "任元海", "zibei": "", "addr": "阳高寺元嘴", "tel": "18780041420", "note": "2024", "src": "Sheet1"}, {"name": "任元升", "zibei": "", "addr": "阳高寺元嘴", "tel": "17760434264", "note": "2024", "src": "Sheet1"}, {"name": "任元树", "zibei": "", "addr": "阳高寺元嘴", "tel": "18228965327", "note": "2024", "src": "Sheet1"}, {"name": "任元相", "zibei": "", "addr": "阳高寺元嘴", "tel": "18851029548", "note": "2024", "src": "Sheet1"}, {"name": "任红", "zibei": "泽", "addr": "尧坝", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任继兵", "zibei": "继", "addr": "尧坝", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任领", "zibei": "", "addr": "尧坝", "tel": "18384015142", "note": "2019", "src": "Sheet1"}, {"name": "任龙", "zibei": "龙", "addr": "尧坝", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任钦", "zibei": "", "addr": "尧坝", "tel": "15181999555", "note": "2024", "src": "Sheet1"}, {"name": "任伟", "zibei": "", "addr": "尧坝", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任小兵", "zibei": "", "addr": "尧坝", "tel": "13440054108", "note": "2019", "src": "Sheet1"}, {"name": "任泽银", "zibei": "", "addr": "尧坝", "tel": "15892923678", "note": "2019", "src": "Sheet1"}, {"name": "任宗奎", "zibei": "", "addr": "尧坝", "tel": "13458732003", "note": "2019", "src": "Sheet1"}, {"name": "任安彬", "zibei": "安", "addr": "风岩", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任胜芬", "zibei": "", "addr": "任湾", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任德兴", "zibei": "", "addr": "", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任定甫", "zibei": "", "addr": "", "tel": "13540974543", "note": "2019", "src": "Sheet1"}, {"name": "任洪熙", "zibei": "", "addr": "", "tel": "18715721557", "note": "2018", "src": "Sheet1"}, {"name": "任连清", "zibei": "", "addr": "", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任萍", "zibei": "", "addr": "", "tel": "18384364018", "note": "2017", "src": "Sheet1"}, {"name": "任强", "zibei": "", "addr": "", "tel": "15082082799", "note": "2018", "src": "Sheet1"}, {"name": "任圣林", "zibei": "圣", "addr": "任湾", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任胜才\n程絮", "zibei": "", "addr": "", "tel": "15228208781", "note": "2019", "src": "Sheet1"}, {"name": "任胜兴", "zibei": "", "addr": "", "tel": "18015753388", "note": "2019", "src": "Sheet1"}, {"name": "任太平", "zibei": "", "addr": "", "tel": "18683099657", "note": "2019", "src": "Sheet1"}, {"name": "任文涛", "zibei": "", "addr": "", "tel": "18683354333", "note": "2018", "src": "Sheet1"}, {"name": "任我行", "zibei": "", "addr": "", "tel": "", "note": "2017", "src": "Sheet1"}, {"name": "任小波", "zibei": "", "addr": "", "tel": "18602822569", "note": "2018", "src": "Sheet1"}, {"name": "任小菊", "zibei": "", "addr": "", "tel": "", "note": "2018", "src": "Sheet1"}, {"name": "任小荣", "zibei": "", "addr": "", "tel": "15328301875", "note": "2018", "src": "Sheet1"}, {"name": "任兴孝", "zibei": "", "addr": "", "tel": "18680760590", "note": "2018", "src": "Sheet1"}, {"name": "任秀海", "zibei": "", "addr": "", "tel": "15892921191", "note": "2018", "src": "Sheet1"}, {"name": "任元兴", "zibei": "", "addr": "", "tel": "", "note": "2019", "src": "Sheet1"}, {"name": "任征猛", "zibei": "", "addr": "", "tel": "13408209998", "note": "2017", "src": "Sheet1"}, {"name": "任正伟", "zibei": "", "addr": "", "tel": "13350817087", "note": "2017", "src": "Sheet1"}], "companies": [{"序号": "1.0", "属性": "公司", "法定代表人": "任天庆", "企业名称": "四川泸安智慧科技有限公司", "注册资本": "800 万", "成立时间": "2014-06-23", "注册地址": "泸州市龙马潭区洪达路 20 号楼 3 层 3 单元 3 号", "所属行业": "安防监控、科技服务业", "经营状态": "开业", "企业联系电话": "", "信息来源": "爱企查"}, {"序号": "2.0", "属性": "公司", "法定代表人": "任天庆", "企业名称": "四川瑞晨消防工程有限公司", "注册资本": "600 万", "成立时间": "2017-03-29", "注册地址": "泸州市江阳区康城路一段 15 号", "所属行业": "建筑消防工程施工", "经营状态": "开业", "企业联系电话": "", "信息来源": "启信宝"}, {"序号": "3.0", "属性": "公司", "法定代表人": "任天庆", "企业名称": "泸州市庆华科技有限公司", "注册资本": "200 万", "成立时间": "2012-12-06", "注册地址": "龙马潭区蜀泸大道 27 号", "所属行业": "仪器设备销售、科技服务", "经营状态": "开业", "企业联系电话": "", "信息来源": "企查查"}, {"序号": "4.0", "属性": "公司", "法定代表人": "任天庆", "企业名称": "泸州市瑞盛建材有限公司", "注册资本": "50 万", "成立时间": "2015-04-01", "注册地址": "龙马潭区大通路", "所属行业": "建材批发零售", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "5.0", "属性": "公司", "法定代表人": "任天庆", "企业名称": "泸州锐安消防技术有限公司", "注册资本": "10 万", "成立时间": "2025-09-24", "注册地址": "江阳区酒城大道三段", "所属行业": "消防技术检测服务", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "6.0", "属性": "公司", "法定代表人": "任志新", "企业名称": "泸州酒业玻璃有限公司", "注册资本": "500 万", "成立时间": "1998-03-19", "注册地址": "泸县福集镇花园路", "所属行业": "非金属矿物制品（玻璃包装）", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "7.0", "属性": "公司", "法定代表人": "任威", "企业名称": "泸州市兰馨物业服务有限公司", "注册资本": "300 万", "成立时间": "2011-11-30", "注册地址": "古蔺县彰德街道迎宾大道永兴煤矿培训大楼 10 层", "所属行业": "物业管理、房地产业", "经营状态": "存续", "企业联系电话": "", "信息来源": ""}, {"序号": "8.0", "属性": "公司", "法定代表人": "任利", "企业名称": "泸州任利贸易有限公司", "注册资本": "100 万", "成立时间": "2016-11-02", "注册地址": "江阳区建安路 1 号 1 号楼 3 层 2 单元 303 号", "所属行业": "批发零售业", "经营状态": "存续", "企业联系电话": "", "信息来源": ""}, {"序号": "9.0", "属性": "公司", "法定代表人": "任圣连", "企业名称": "泸州明朗商贸有限公司", "注册资本": "10 万", "成立时间": "2023-09-15", "注册地址": "泸县玉蟾街道玉龙路", "所属行业": "日用百货商贸", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "10.0", "属性": "公司", "法定代表人": "任彬", "企业名称": "泸州市龙马潭区任彬酒厂", "注册资本": "5 万（个体）", "成立时间": "2018-07-16", "注册地址": "龙马潭区金龙镇官渡社区育新街 113 号", "所属行业": "白酒生产制造", "经营状态": "另册管理（异常）", "企业联系电话": "", "信息来源": ""}, {"序号": "11.0", "属性": "公司", "法定代表人": "任谊", "企业名称": "合江县任谊百货店", "注册资本": "2 万（个体）", "成立时间": "2020-12-21", "注册地址": "合江县凤鸣镇禹王街 8 号", "所属行业": "日用百货零售业", "经营状态": "存续", "企业联系电话": "", "信息来源": ""}, {"序号": "12.0", "属性": "公司", "法定代表人": "任河", "企业名称": "四川金蔺耀地产有限公司", "注册资本": "2000 万", "成立时间": "2024-04-22", "注册地址": "古蔺县彰德街道金兰大道", "所属行业": "房地产开发经营", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "13.0", "属性": "公司", "法定代表人": "任河", "企业名称": "泸州市瑞田房地产开发有限公司", "注册资本": "2000 万", "成立时间": "2024-11-19", "注册地址": "江阳区华阳街道", "所属行业": "房地产开发经营", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "14.0", "属性": "公司", "法定代表人": "任河", "企业名称": "泸州城玮房地产开发有限公司", "注册资本": "1000 万", "成立时间": "2023-12-12", "注册地址": "泸县玉蟾街道", "所属行业": "房地产开发经营", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "15.0", "属性": "公司", "法定代表人": "任河", "企业名称": "四川恒蔺兰置业有限公司", "注册资本": "2000 万", "成立时间": "2022-05-16", "注册地址": "古蔺县彰德街道", "所属行业": "房地产开发经营", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "16.0", "属性": "公司", "法定代表人": "任河", "企业名称": "泸州市盛途地产有限公司", "注册资本": "1000 万", "成立时间": "2023-11-16", "注册地址": "龙马潭区红星街道", "所属行业": "房地产开发经营", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "17.0", "属性": "公司", "法定代表人": "任云川", "企业名称": "泸州一亩三分地商贸有限公司", "注册资本": "1000 万", "成立时间": "2016-07-05", "注册地址": "龙马潭区蜀泸大道", "所属行业": "农副产品、建材商贸", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "18.0", "属性": "公司", "法定代表人": "任云川", "企业名称": "泸州屹帆商贸有限公司", "注册资本": "150 万", "成立时间": "2020-03-16", "注册地址": "龙马潭区鱼塘街道", "所属行业": "五金建材销售", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "19.0", "属性": "公司", "法定代表人": "任启华", "企业名称": "泸州启华建筑工程有限公司", "注册资本": "500 万", "成立时间": "2021-02-25", "注册地址": "龙马潭区安宁街道", "所属行业": "建筑工程施工", "经营状态": "注销", "企业联系电话": "", "信息来源": ""}, {"序号": "20.0", "属性": "公司", "法定代表人": "任中华", "企业名称": "泸州市晋源振兴建材有限公司", "注册资本": "100 万", "成立时间": "2017-06-07", "注册地址": "龙马潭区双加镇", "所属行业": "砂石建材销售", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "21.0", "属性": "公司", "法定代表人": "任中华", "企业名称": "泸州市纳溪区纳实建材有限公司", "注册资本": "100 万", "成立时间": "2020-03-30", "注册地址": "纳溪区大渡口镇", "所属行业": "建材贸易", "经营状态": "注销", "企业联系电话": "", "信息来源": ""}, {"序号": "22.0", "属性": "公司", "法定代表人": "任平", "企业名称": "泸州市福奈特洗涤服务有限公司", "注册资本": "50 万", "成立时间": "2017-11-06", "注册地址": "江阳区蓝田街道", "所属行业": "洗涤服务", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "23.0", "属性": "公司", "法定代表人": "任权", "企业名称": "合江县华诚竹木有限责任公司", "注册资本": "100 万", "成立时间": "2016-12-15", "注册地址": "合江县先市镇", "所属行业": "竹木加工销售", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "24.0", "属性": "公司", "法定代表人": "任通珍", "企业名称": "合江县任记万鑫餐饮管理有限公司", "注册资本": "50 万", "成立时间": "2025-04-14", "注册地址": "合江县符阳街道", "所属行业": "餐饮管理服务", "经营状态": "存续", "企业联系电话": "", "信息来源": ""}, {"序号": "25.0", "属性": "公司", "法定代表人": "任丕秀", "企业名称": "泸州中科房地产开发有限责任公司", "注册资本": "800 万", "成立时间": "2003-08-13", "注册地址": "江阳区大山坪街道", "所属行业": "房地产开发", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "26.0", "属性": "公司", "法定代表人": "任科", "企业名称": "泸州纳溪丰桢生态农业有限公司", "注册资本": "200 万", "成立时间": "2021-04-08", "注册地址": "纳溪区白节镇", "所属行业": "生态农业种植养殖", "经营状态": "开业", "企业联系电话": "", "信息来源": ""}, {"序号": "27.0", "属性": "公司", "法定代表人": "任科", "企业名称": "泸州友辉科技有限公司", "注册资本": "2112 万", "成立时间": "2018-04-19", "注册地址": "江阳区张坝街道", "所属行业": "计算机软硬件科技开发", "经营状态": "注销", "企业联系电话": "", "信息来源": ""}, {"序号": "", "属性": "", "法定代表人": "", "企业名称": "帮我列出泸州范围内，所有“任”氏宗亲承办的公司及个体工商户。分开罗列，列名序号，附上信息来源。", "注册资本": "", "成立时间": "", "注册地址": "", "所属行业": "", "经营状态": "", "企业联系电话": "", "信息来源": ""}], "skills": [{"name": "任太阳", "branch": "泸州-合江-风岩", "zibei": "太", "skill": "泥水匠", "addr": "泸州-合江-参宝", "age": "", "years": "", "note": "求职"}, {"name": "任云川", "branch": "", "zibei": "", "skill": "泸州一亩三分地商贸有限公司", "addr": "", "age": "", "years": "2016-07-05", "note": "招聘-技术工"}, {"name": "任云川", "branch": "", "zibei": "", "skill": "泸州屹帆商贸有限公司", "addr": "", "age": "", "years": "2020-03-16", "note": "招聘-普工"}, {"name": "任天庆", "branch": "", "zibei": "", "skill": "四川瑞晨消防工程有限公司", "addr": "", "age": "", "years": "2017-03-29", "note": "招聘-运营"}, {"name": "任天庆", "branch": "", "zibei": "", "skill": "泸州市庆华科技有限公司", "addr": "", "age": "", "years": "2012-12-06", "note": "招聘-程序员"}, {"name": "任天庆", "branch": "", "zibei": "", "skill": "泸州市瑞盛建材有限公司", "addr": "", "age": "", "years": "2015-04-01", "note": "招聘-自媒体运营"}, {"name": "任天庆", "branch": "", "zibei": "", "skill": "泸州锐安消防技术有限公司", "addr": "", "age": "", "years": "2025-09-24", "note": "招聘-主播"}, {"name": "任中华", "branch": "", "zibei": "", "skill": "泸州市晋源振兴建材有限公司", "addr": "", "age": "", "years": "2017-06-07", "note": "招聘-财务"}, {"name": "任中华", "branch": "", "zibei": "", "skill": "泸州市纳溪区纳栖任家餐饮店", "addr": "", "age": "", "years": "2020-03-30", "note": "招聘-助理"}, {"name": "任河", "branch": "", "zibei": "", "skill": "", "addr": "", "age": "", "years": "", "note": ""}, {"name": "任健宏", "branch": "", "zibei": "德", "skill": "泸州市纳溪区纳栖任家餐饮店", "addr": "", "age": "", "years": "", "note": ""}, {"name": "任颖", "branch": "四川-泸州-古蔺-石宝/石鹅", "zibei": "正", "skill": "古蔺面馆", "addr": "面条\\米块\\米线\\卤肉饭", "age": "餐饮", "years": "泸州市-江阳区-酒城大道一段", "note": "餐饮堂食\\外卖"}, {"name": "任军学", "branch": "四川-泸州-合江-参宝/风岩", "zibei": "安", "skill": "大专/电子商务与计算机", "addr": "四川-泸州-江阳区-酒城大道一段-酒城首峻-18-1-2303", "age": "平安保险代理人", "years": "18180309010", "note": "兴趣创业中"}], "shops": [{"序号": "1", "法人名称": "任健宏", "联系电话": "", "店铺名称": "泸州市纳溪区纳栖任家餐饮店", "店铺地址": "四川省泸州市纳溪区永宁街道朱坪村13社紫霞路77号", "场地面积": "", "员工人数": "", "注册日期": "42255", "营业范围": "经营范围许可项目：餐饮服务：烟草制品零售；水产养殖；活禽销售；家禽饲养；食品销售。(依法须经批准的项目，经相关部门批准后方可开展经营活动，具体经营项目以相关部门批准文件或许可证件为准)一般项目：花卉种植；树木种植经营；棋牌室服务：食用农产品零售：休闲观光活动；食品互联网销售(仅销售预包装食品);农业园艺服务。(除依法须经批准的项目外，凭营业执照依法自主开展经营活动)", "营业执照": "", "卫生许可证": "", "健康证": "", "招牌照片": "", "环境照片": "", "特色": "农家乐、休闲、网红打卡\n可以承接30桌宴席", "地理位置": "纳溪区主城区，从街上走到我这里10分钟", "核心需求备注": "推广"}]};
+
+const STORE_KEY = 'lzren_db_v1';
+let DB = null;
+
+function initDB(){
+  let saved = null;
+  try{ saved = JSON.parse(localStorage.getItem(STORE_KEY)); }catch(e){}
+  if(saved && saved.branches){ DB = saved; }
+  else{
+    DB = JSON.parse(JSON.stringify(BUILTIN_DATA));
+    DB.searchStats = {}; DB.archives = []; DB.logs = []; DB.regionExtra = {}; DB.news = defaultNews();
+    saveDB();
+  }
+  if(!DB.news) DB.news = defaultNews();
+  if(!DB.regionExtra) DB.regionExtra = {};
+  if(!DB.searchStats) DB.searchStats = {};
+}
+function saveDB(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }catch(e){ toast('保存失败：浏览器存储空间不足'); } }
+function defaultNews(){
+  return [
+    {t:'泸州任氏宗亲会年会圆满举行', d:'各区县宗亲代表欢聚一堂，共商家族事务，增进宗亲情谊。'},
+    {t:'字辈排行数字化工程完成', d:'38大支系、1200余字辈完成数字化整理，可在本站查询溯源。'},
+    {t:'宗亲企业经营信息登记持续进行中', d:'欢迎宗亲登记企业与技能信息，促进资源对接与合作发展。'}
+  ];
+}
+function addLog(msg){
+  DB.logs = DB.logs || [];
+  DB.logs.unshift({time:new Date().toLocaleString(), msg});
+  if(DB.logs.length>200) DB.logs.length = 200;
+  saveDB();
+}
+
+/* ================= 通用工具 ================= */
+function $(id){ return document.getElementById(id); }
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.style.display='block';
+  clearTimeout(t._tm); t._tm = setTimeout(()=>t.style.display='none', 2200);
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function openModal(title, bodyHtml, onOk){
+  $('modal-title').textContent = title;
+  $('modal-body').innerHTML = bodyHtml;
+  $('modal').classList.add('show');
+  $('modal-ok').onclick = ()=>{ if(onOk && onOk()===false) return; closeModal(); };
+}
+function closeModal(){ $('modal').classList.remove('show'); }
+
+/* ================= 导航 ================= */
+const TABS = ['home','zibei','contacts','biz','map','stat','admin'];
+function switchTab(tab){
+  TABS.forEach(t=>{
+    $('page-'+t).classList.toggle('show', t===tab);
+  });
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.tab===tab));
+  window.scrollTo({top:0});
+  if(tab==='map') setTimeout(initMap, 150);
+  if(tab==='stat') renderStat();
+  if(tab==='admin') renderAdmin();
+  if(tab==='zibei') renderZbFreq();
+}
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click', ()=>switchTab(n.dataset.tab)));
+
+/* ================= 首页 ================= */
+function renderHome(){
+  const totalGens = DB.branches.reduce((s,b)=>s+b.gens.filter(g=>g).length,0);
+  const stats = [
+    {n:DB.branches.length, l:'支系数'},
+    {n:totalGens, l:'字辈总字数'},
+    {n:DB.contacts.length, l:'宗亲通讯录'},
+    {n:DB.companies.length, l:'经营主体'},
+    {n:DB.skills.length, l:'技能/招工登记'},
+  ];
+  $('home-stats').innerHTML = stats.map(s=>'<div class="stat-box"><div class="stat-num">'+s.n+'</div><div class="stat-lab">'+s.l+'</div></div>').join('');
+  $('home-news').innerHTML = DB.news.map((n,i)=>
+    '<div style="padding:12px 0;border-bottom:1px dashed var(--line)"><b style="color:var(--red)">'+(i+1)+'. '+esc(n.t)+'</b><p style="font-size:13px;color:var(--ink2);margin-top:4px">'+esc(n.d)+'</p></div>').join('');
+  $('home-branches').innerHTML = DB.branches.slice(0,8).map(b=>
+    '<div style="padding:10px 0;border-bottom:1px dashed var(--line)"><b style="color:var(--red-d)">'+esc(b.name_disp)+'</b>'+
+    '<span class="tag">'+esc(b.region)+'</span>'+
+    '<p style="font-size:13px;color:var(--ink2);margin-top:4px;font-family:STKaiti,KaiTi,serif;letter-spacing:2px">'+esc(b.gens.filter(g=>g).slice(0,30).join(''))+(b.gens.filter(g=>g).length>30?'…':'')+'</p></div>').join('');
+}
+
+/* ================= 字辈模块 ================= */
+function maxGens(){ return Math.max(...DB.branches.map(b=>b.gens.length)); }
+function renderZbMatrix(hits){
+  const n = maxGens();
+  let html = '<table><thead><tr><th style="position:sticky;left:0;z-index:6;background:var(--red-d)">支系 \\ 世代</th>';
+  for(let i=1;i<=n;i++) html += '<th>'+i+'</th>';
+  html += '</tr><tr><th style="position:sticky;left:0;background:var(--red-d);z-index:6;text-align:left">支系名称</th>';
+  DB.branches.forEach((b,bi)=>{ html += '<th style="cursor:pointer" title="点击管理该支系" onclick="openBranchEditor('+bi+')">'+esc(b.name_disp)+'</th>'; });
+  html += '</tr></thead><tbody>';
+  for(let g=0; g<n; g++){
+    html += '<tr><th>第'+(g+1)+'世</th>';
+    DB.branches.forEach((b,bi)=>{
+      const ch = b.gens[g] || '';
+      const isHit = hits && ch && hits.has(bi+'_'+g);
+      html += '<td class="zc'+(ch?(isHit?' hit':''):' empty')+'" data-b="'+bi+'" data-g="'+g+'">'+(ch?esc(ch):'·')+'</td>';
+    });
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  $('zb-matrix').innerHTML = html;
+}
+function zbSearch(count){
+  const q = $('zb-search').value.trim();
+  if(!q){ toast('请输入要查询的字辈字'); return; }
+  const hits = new Set(); let branchCount = 0;
+  DB.branches.forEach((b,bi)=>{
+    let inBranch = false;
+    b.gens.forEach((g,gi)=>{ if(g===q){ hits.add(bi+'_'+gi); inBranch=true; } });
+    if(inBranch) branchCount++;
+  });
+  renderZbMatrix(hits);
+  $('zb-hit-info').innerHTML = hits.size? ('“'+esc(q)+'” 在 '+branchCount+' 个支系中出现 '+hits.size+' 次') : ('未找到“'+esc(q)+'”');
+  if(count){
+    DB.searchStats[q] = (DB.searchStats[q]||0)+1;
+    saveDB(); addLog('字辈查询：['+q+'] 命中'+hits.size+'处');
+    renderZbFreq();
+    toast('已记录查询频次');
+  }
+  if(hits.size){
+    const first = $('zb-matrix').querySelector('td.hit');
+    if(first) first.scrollIntoView({block:'center', inline:'center'});
+  }
+}
+function zbClear(){ $('zb-search').value=''; $('zb-hit-info').textContent=''; renderZbMatrix(null); }
+function renderZbFreq(){
+  const arr = Object.entries(DB.searchStats||{}).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  if(!arr.length){ $('zb-freq').innerHTML = '<p style="color:var(--ink2);font-size:13px">暂无查询记录。输入字辈字并点击"查询并计入统计"后，此处将展示查询频次排行。</p>'; return; }
+  const max = arr[0][1];
+  $('zb-freq').innerHTML = arr.map((a,i)=>
+    '<div class="bar-line"><span class="bar-label"><span class="rank-no'+(i<3?' top':'')+'">'+(i+1)+'</span>'+esc(a[0])+'</span>'+
+    '<div class="bar-track"><div class="bar-fill'+(i<3?'':' gold')+'" style="width:'+(a[1]/max*100)+'%"></div></div>'+
+    '<span class="bar-val">'+a[1]+'次</span></div>').join('');
+}
+function openBranchEditor(idx){
+  const isEdit = idx!==undefined;
+  const b = isEdit? DB.branches[idx] : {name_disp:'', region:'', gens:[]};
+  openModal(isEdit?'编辑支系：'+b.name_disp:'新增支系',
+    '<div class="field"><label>支系名称</label><input id="f-bname" value="'+esc(b.name_disp)+'"></div>'+
+    '<div class="field"><label>所属区域（如：合江县·尧坝镇）</label><input id="f-bregion" value="'+esc(b.region||'')+'"></div>'+
+    '<div class="field"><label>字辈序列（按世代顺序连续输入，如：子上朝文一桂昌…）</label><textarea id="f-bgens" rows="4">'+esc(b.gens.filter(g=>g).join(''))+'</textarea></div>',
+    ()=>{
+      const name = $('f-bname').value.trim();
+      if(!name){ toast('请填写支系名称'); return false; }
+      const gens = $('f-bgens').value.trim().split('');
+      const region = $('f-bregion').value.trim() || '泸州';
+      if(isEdit){ DB.branches[idx].name_disp = name; DB.branches[idx].name = name; DB.branches[idx].gens = gens; DB.branches[idx].region = region; addLog('编辑支系：'+name); }
+      else{ DB.branches.push({name, name_disp:name, region, lng:105.442, lat:28.872, gens}); addLog('新增支系：'+name); }
+      saveDB(); renderZbMatrix(null); renderHome(); toast('已保存');
+    });
+  if(isEdit){
+    const del = document.createElement('button');
+    del.className='btn gray small'; del.textContent='删除此支系'; del.style.marginRight='auto';
+    del.onclick = ()=>{ if(confirm('确定删除支系「'+b.name_disp+'」？此操作不可撤销')){ DB.branches.splice(idx,1); saveDB(); closeModal(); renderZbMatrix(null); renderHome(); addLog('删除支系：'+b.name_disp); toast('已删除'); } };
+    document.querySelector('.modal-foot').prepend(del);
+  }
+}
+
+/* ================= 通讯录模块 ================= */
+const CT_PAGE = 20; let ctPage = 1;
+function contactRegions(){
+  const set = new Set(); DB.contacts.forEach(c=>{ if(c.addr) set.add(c.addr); });
+  return [...set].sort((a,b)=>a.localeCompare(b,'zh'));
+}
+function renderRegionSelect(){
+  const sel = $('ct-region'); const cur = sel.value;
+  sel.innerHTML = '<option value="">全部地区</option>' + contactRegions().map(r=>'<option>'+esc(r)+'</option>').join('');
+  if(cur) sel.value = cur;
+}
+function renderContacts(){
+  renderRegionSelect();
+  const q = $('ct-search').value.trim().toLowerCase();
+  const rg = $('ct-region').value;
+  let list = DB.contacts.filter(c=>{
+    if(rg && c.addr!==rg) return false;
+    if(q){ const s = (c.name+c.tel+c.addr+c.zibei+c.note).toLowerCase(); if(!s.includes(q)) return false; }
+    return true;
+  });
+  $('ct-count').textContent = '共 '+list.length+' 位宗亲';
+  const pages = Math.max(1, Math.ceil(list.length/CT_PAGE));
+  if(ctPage>pages) ctPage = 1;
+  const part = list.slice((ctPage-1)*CT_PAGE, ctPage*CT_PAGE);
+  $('ct-body').innerHTML = part.length? part.map(c=>{
+    const idx = DB.contacts.indexOf(c);
+    return '<tr><td><b>'+esc(c.name)+'</b></td><td>'+(c.zibei?'<span class="tag">'+esc(c.zibei)+'</span>':'—')+'</td><td>'+esc(c.addr||'—')+'</td><td>'+esc(c.tel||'—')+'</td><td>'+esc(c.note||'')+'</td>'+
+    '<td class="ops"><button class="btn small ghost" onclick="openContactEditor('+idx+')">编辑</button><button class="btn small gray" onclick="delContact('+idx+')">删除</button></td></tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--ink2)">暂无数据</td></tr>';
+  let pg = '<button class="btn small ghost" onclick="ctPage=1;renderContacts()">首页</button>'+
+    '<button class="btn small ghost" onclick="if(ctPage>1){ctPage--;renderContacts()}">上一页</button>'+
+    '<span class="tag">第 '+ctPage+' / '+pages+' 页</span>'+
+    '<button class="btn small ghost" onclick="if(ctPage<'+pages+'){ctPage++;renderContacts()}">下一页</button>'+
+    '<button class="btn small ghost" onclick="ctPage='+pages+';renderContacts()">末页</button>';
+  $('ct-pager').innerHTML = pg;
+}
+function openContactEditor(idx){
+  const isEdit = idx!==undefined;
+  const c = isEdit? DB.contacts[idx] : {name:'',zibei:'',addr:'',tel:'',note:''};
+  openModal(isEdit?'编辑宗亲：'+c.name:'新增宗亲',
+    '<div class="field"><label>姓名 *</label><input id="f-cn" value="'+esc(c.name)+'"></div>'+
+    '<div class="field"><label>字辈</label><input id="f-cz" value="'+esc(c.zibei)+'" placeholder="如：文"></div>'+
+    '<div class="field"><label>地区</label><input id="f-ca" value="'+esc(c.addr)+'" placeholder="如：潮河"></div>'+
+    '<div class="field"><label>电话</label><input id="f-ct" value="'+esc(c.tel)+'"></div>'+
+    '<div class="field"><label>备注</label><input id="f-cm" value="'+esc(c.note)+'"></div>',
+    ()=>{
+      const name = $('f-cn').value.trim();
+      if(!name){ toast('请填写姓名'); return false; }
+      const rec = {name, zibei:$('f-cz').value.trim(), addr:$('f-ca').value.trim(), tel:$('f-ct').value.trim(), note:$('f-cm').value.trim(), src:'管理员录入'};
+      if(isEdit){ Object.assign(DB.contacts[idx], rec); addLog('编辑宗亲：'+name); }
+      else{ DB.contacts.unshift(rec); addLog('新增宗亲：'+name); }
+      saveDB(); renderContacts(); renderHome(); toast('已保存');
+    });
+}
+function delContact(idx){
+  const c = DB.contacts[idx];
+  if(confirm('确定删除宗亲「'+c.name+'」？')){ DB.contacts.splice(idx,1); saveDB(); renderContacts(); renderHome(); addLog('删除宗亲：'+c.name); toast('已删除'); }
+}
+
+/* ================= 产业模块 ================= */
+function bizTypeOf(c){
+  const t = (c['属性']||'').toString();
+  if(t.includes('公司')) return '公司';
+  if(t.includes('个体')) return '个体工商户';
+  if(t.includes('个人')) return '个人';
+  return t || '公司';
+}
+function renderBiz(){
+  const q = $('bz-search').value.trim().toLowerCase();
+  const tp = $('bz-type').value;
+  let list = DB.companies.filter(c=>{
+    if(tp && bizTypeOf(c)!==tp) return false;
+    if(q){ const s = JSON.stringify(c).toLowerCase(); if(!s.includes(q)) return false; }
+    return true;
+  });
+  $('bz-body').innerHTML = list.length? list.map(c=>{
+    const idx = DB.companies.indexOf(c);
+    return '<tr><td><span class="tag blue">'+esc(bizTypeOf(c))+'</span></td><td><b>'+esc(c['企业名称']||'—')+'</b></td><td>'+esc(c['法定代表人']||'—')+'</td><td>'+esc(c['所属行业']||'—')+'</td><td style="max-width:220px">'+esc(c['注册地址']||'—')+'</td><td>'+esc(c['注册资本']||'—')+'</td><td>'+esc(c['成立时间']||'—')+'</td><td>'+esc(c['经营状态']||'—')+'</td>'+
+    '<td class="ops"><button class="btn small ghost" onclick="openBizEditor('+idx+')">编辑</button><button class="btn small gray" onclick="delBiz('+idx+')">删除</button></td></tr>';
+  }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--ink2)">暂无数据</td></tr>';
+  renderSkills();
+}
+function openBizEditor(idx){
+  const isEdit = idx!==undefined;
+  const c = isEdit? DB.companies[idx] : {};
+  const F = [['属性','类型(公司/个体工商户/个人)'],['企业名称','企业名称 *'],['法定代表人','法定代表人/负责人'],['所属行业','所属行业'],['注册地址','注册地址'],['注册资本','注册资本'],['成立时间','成立时间'],['经营状态','经营状态'],['企业联系电话','联系电话']];
+  openModal(isEdit?'编辑经营主体':'新增经营主体',
+    F.map(f=>'<div class="field"><label>'+f[1]+'</label><input id="f-bz-'+f[0]+'" value="'+esc(c[f[0]]||'')+'"></div>').join(''),
+    ()=>{
+      const name = $('f-bz-企业名称').value.trim();
+      if(!name){ toast('请填写企业名称'); return false; }
+      const rec = {}; F.forEach(f=>rec[f[0]] = $('f-bz-'+f[0]).value.trim());
+      if(!rec['序号']) rec['序号'] = String(DB.companies.length+1);
+      if(isEdit){ Object.assign(DB.companies[idx], rec); addLog('编辑企业：'+name); }
+      else{ DB.companies.push(rec); addLog('新增企业：'+name); }
+      saveDB(); renderBiz(); renderHome(); toast('已保存');
+    });
+}
+function delBiz(idx){
+  const c = DB.companies[idx];
+  if(confirm('确定删除「'+(c['企业名称']||'')+'」？')){ DB.companies.splice(idx,1); saveDB(); renderBiz(); renderHome(); addLog('删除企业：'+(c['企业名称']||'')); toast('已删除'); }
+}
+function renderSkills(){
+  $('sk-body').innerHTML = DB.skills.length? DB.skills.map((s,i)=>
+    '<tr><td><b>'+esc(s.name)+'</b></td><td>'+esc(s.branch||'—')+'</td><td>'+(s.zibei?'<span class="tag">'+esc(s.zibei)+'</span>':'—')+'</td><td>'+esc(s.skill||'—')+'</td><td>'+esc(s.addr||'—')+'</td><td>'+esc(s.note||'')+'</td>'+
+    '<td class="ops"><button class="btn small ghost" onclick="openSkillEditor('+i+')">编辑</button><button class="btn small gray" onclick="delSkill('+i+')">删除</button></td></tr>').join('')
+    : '<tr><td colspan="7" style="text-align:center;color:var(--ink2)">暂无数据</td></tr>';
+}
+function openSkillEditor(idx){
+  const isEdit = idx!==undefined;
+  const s = isEdit? DB.skills[idx] : {};
+  openModal(isEdit?'编辑登记':'新增技能/招工登记',
+    '<div class="field"><label>姓名 *</label><input id="f-sk-n" value="'+esc(s.name||'')+'"></div>'+
+    '<div class="field"><label>支系</label><input id="f-sk-b" value="'+esc(s.branch||'')+'"></div>'+
+    '<div class="field"><label>字辈</label><input id="f-sk-z" value="'+esc(s.zibei||'')+'"></div>'+
+    '<div class="field"><label>技术/技能/企业名称</label><input id="f-sk-s" value="'+esc(s.skill||'')+'"></div>'+
+    '<div class="field"><label>常住地/公司地址</label><input id="f-sk-a" value="'+esc(s.addr||'')+'"></div>'+
+    '<div class="field"><label>备注（求职/招聘岗位）</label><input id="f-sk-m" value="'+esc(s.note||'')+'"></div>',
+    ()=>{
+      const name = $('f-sk-n').value.trim();
+      if(!name){ toast('请填写姓名'); return false; }
+      const rec = {name, branch:$('f-sk-b').value.trim(), zibei:$('f-sk-z').value.trim(), skill:$('f-sk-s').value.trim(), addr:$('f-sk-a').value.trim(), note:$('f-sk-m').value.trim()};
+      if(isEdit){ Object.assign(DB.skills[idx], rec); addLog('编辑技能登记：'+name); }
+      else{ DB.skills.push(rec); addLog('新增技能登记：'+name); }
+      saveDB(); renderSkills(); renderHome(); toast('已保存');
+    });
+}
+function delSkill(idx){
+  const s = DB.skills[idx];
+  if(confirm('确定删除「'+s.name+'」的登记？')){ DB.skills.splice(idx,1); saveDB(); renderSkills(); renderHome(); addLog('删除技能登记：'+s.name); toast('已删除'); }
+}
+
+/* ================= 地图模块（高德地图） ================= */
+let map = null, markers = [], districtPolygons = [], infoWin = null, amapLoaded = false;
+const REGION_CENTER = {
+  '合江县':[105.831,28.811], '泸县':[105.382,29.151], '江阳区':[105.445,28.871],
+  '纳溪区':[105.372,28.773], '古蔺县':[105.812,28.039], '叙永县':[105.444,28.157], '遵义/习水':[106.65,28.0]
+};
+function loadAmap(cb){
+  if(window.AMap){ amapLoaded = true; cb(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://webapi.amap.com/maps?v=2.0&key='+BUILTIN_DATA.meta.amap_key+'&plugin=AMap.DistrictSearch,AMap.Geocoder,AMap.Scale';
+  s.onload = ()=>{ amapLoaded = true; cb(); };
+  s.onerror = ()=>{ $('map-box').innerHTML = '<div style="padding:60px 30px;text-align:center;color:var(--ink2)">高德地图加载失败（可能因网络或 Key 配额限制）。<br>支系数据与导航链接仍可在下方列表中使用。</div>'; };
+  document.head.appendChild(s);
+}
+function initMap(){
+  // 渲染支系列表（不依赖地图）
+  $('branch-list').innerHTML = DB.branches.map((b,i)=>
+    '<div class="region-item" data-i="'+i+'" onclick="focusBranch('+i+')"><h5>'+esc(b.name_disp)+'</h5><p>'+esc(b.region)+' · '+b.gens.filter(g=>g).length+'代</p></div>').join('');
+  $('region-btns').innerHTML = Object.keys(REGION_CENTER).map(r=>
+    '<button class="btn small ghost" onclick="highlightRegion(\''+r+'\')">'+r+'</button>').join('') +
+    '<button class="btn small gray" onclick="clearHighlight()">清除框选</button>';
+  loadAmap(()=>{
+    if(map) { return; }
+    map = new AMap.Map('map-box', {zoom:9, center:[105.55,28.7], mapStyle:'amap://styles/whitesmoke'});
+    map.addControl(new AMap.Scale());
+    infoWin = new AMap.InfoWindow({offset:new AMap.Pixel(0,-30)});
+    addBranchMarkers();
+  });
+}
+function addBranchMarkers(){
+  markers.forEach(m=>map.remove(m)); markers = [];
+  DB.branches.forEach((b,i)=>{
+    if(!b.lng) return;
+    const mk = new AMap.Marker({
+      position:[b.lng,b.lat],
+      title:b.name_disp,
+      label:{content:'<div style="font-size:11px;padding:1px 6px">'+esc(b.name_disp.length>8?b.name_disp.slice(0,8)+'…':b.name_disp)+'</div>', direction:'top'},
+      icon: new AMap.Icon({size:new AMap.Size(25,34), image:'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png', imageSize:new AMap.Size(25,34)})
+    });
+    mk.on('click', ()=>focusBranch(i));
+    map.add(mk); markers.push(mk);
+  });
+}
+function focusBranch(i){
+  const b = DB.branches[i];
+  document.querySelectorAll('.region-item').forEach(e=>e.classList.toggle('active', +e.dataset.i===i));
+  // 区域统计
+  const rgKey = b.region.split('·')[0];
+  const ctCount = DB.contacts.filter(c=>c.addr && (c.addr.includes(rgKey.replace(/县|区/g,''))||rgKey.includes(c.addr))).length;
+  const bizCount = DB.companies.filter(c=>(c['注册地址']||'').includes(rgKey.replace(/县|区/g,''))).length;
+  $('map-info').style.display = 'block';
+  $('map-info').innerHTML = '<div class="sec-title" style="font-size:16px">'+esc(b.name_disp)+'</div>'+
+    '<p style="font-size:13px;margin-bottom:8px"><span class="tag">'+esc(b.region)+'</span><span class="tag green">字辈 '+b.gens.filter(g=>g).length+' 代</span><span class="tag blue">区域通讯录 '+ctCount+' 人 · 经营主体 '+bizCount+' 个</span></p>'+
+    '<p style="font-family:STKaiti,KaiTi,serif;font-size:15px;letter-spacing:3px;color:var(--red-d);line-height:1.8">'+esc(b.gens.filter(g=>g).join(''))+'</p>'+
+    '<div style="margin-top:12px"><a class="btn gold small" target="_blank" href="https://uri.amap.com/marker?position='+b.lng+','+b.lat+'&name='+encodeURIComponent(b.name_disp)+'&src=lzren">在高德地图中查看</a> '+
+    '<a class="btn green small" target="_blank" href="https://uri.amap.com/navigation?to='+b.lng+','+b.lat+','+encodeURIComponent(b.name_disp)+'&mode=car&src=lzren&coordinate=gaode">一键导航前往</a></div>';
+  if(amapLoaded && map && b.lng){
+    map.setZoomAndCenter(12, [b.lng,b.lat]);
+    infoWin.setContent('<div style="padding:6px 10px;font-size:13px"><b>'+esc(b.name_disp)+'</b><br>'+esc(b.region)+'</div>');
+    infoWin.open(map, [b.lng,b.lat]);
+  }
+}
+function highlightRegion(rg){
+  if(!amapLoaded || !map) { toast('地图尚未加载完成'); return; }
+  clearHighlight();
+  const ds = new AMap.DistrictSearch({level:'district', extensions:'all', subdistrict:0});
+  ds.search(rg, (status, result)=>{
+    if(status==='complete' && result.districtList && result.districtList.length){
+      const bounds = result.districtList[0].districtList ? result.districtList[0].districtList : result.districtList;
+      const d = result.districtList[0];
+      (d.districtList || [d]).forEach(dd=>{
+        (dd.boundaries||[]).forEach(path=>{
+          const poly = new AMap.Polygon({path, strokeColor:'#8C1F28', strokeWeight:2, fillColor:'#C9A063', fillOpacity:.25});
+          map.add(poly); districtPolygons.push(poly);
+        });
+      });
+      map.setFitView(districtPolygons);
+      toast('已框选凸显：'+rg);
+    } else {
+      // 降级：用预设中心画圆凸显
+      const c = REGION_CENTER[rg];
+      if(c){
+        const circle = new AMap.Circle({center:c, radius:18000, strokeColor:'#8C1F28', strokeWeight:2, fillColor:'#C9A063', fillOpacity:.25});
+        map.add(circle); districtPolygons.push(circle);
+        map.setZoomAndCenter(10, c);
+        toast('已凸显区域：'+rg);
+      }
+    }
+  });
+  // 同时高亮该区域的支系标记
+  DB.branches.forEach((b,i)=>{
+    if(b.region && b.region.startsWith(rg.replace(/县|区/g,'').slice(0,2))){
+      const item = document.querySelector('.region-item[data-i="'+i+'"]');
+      if(item) item.style.background = '#F5EBDD';
+    }
+  });
+}
+function clearHighlight(){
+  districtPolygons.forEach(p=>map&&map.remove(p)); districtPolygons = [];
+  document.querySelectorAll('.region-item').forEach(e=>e.style.background='');
+}
+function fitMap(){ if(amapLoaded&&map){ map.setZoomAndCenter(9,[105.55,28.7]); clearHighlight(); } }
+
+/* ================= 统计模块 ================= */
+function regionOfContact(c){ return c.addr || '未登记'; }
+function renderStat(){
+  const totalGens = DB.branches.reduce((s,b)=>s+b.gens.filter(g=>g).length,0);
+  $('stat-overview').innerHTML = [
+    {n:DB.branches.length,l:'支系数'},{n:totalGens,l:'字辈总字数'},
+    {n:DB.contacts.length,l:'通讯录人数'},{n:DB.companies.length,l:'经营主体'},
+    {n:DB.skills.length,l:'技能/招工'},{n:Object.values(DB.searchStats||{}).reduce((a,b)=>a+b,0),l:'字辈查询总次数'}
+  ].map(s=>'<div class="stat-box"><div class="stat-num">'+s.n+'</div><div class="stat-lab">'+s.l+'</div></div>').join('');
+
+  // 查询频次
+  const freq = Object.entries(DB.searchStats||{}).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  $('stat-freq').innerHTML = freq.length? barChart(freq.map(f=>[f[0],f[1]+'次',f[1]])) :
+    '<p style="color:var(--ink2);font-size:13px">暂无查询记录，请到"字辈排行"页进行查询。</p>';
+
+  // 区域人数
+  const rc = {};
+  DB.contacts.forEach(c=>{ const r = regionOfContact(c); rc[r]=(rc[r]||0)+1; });
+  const rArr = Object.entries(rc).sort((a,b)=>b[1]-a[1]).slice(0,14);
+  $('stat-region').innerHTML = barChart(rArr.map(r=>[r[0],r[1]+'人',r[1]]), 'gold');
+
+  // 行业分布
+  const ind = {};
+  DB.companies.forEach(c=>{ const k = (c['所属行业']||'未登记').split(/[、,，/]/)[0].slice(0,10); ind[k]=(ind[k]||0)+1; });
+  $('stat-industry').innerHTML = barChart(Object.entries(ind).sort((a,b)=>b[1]-a[1]).slice(0,12).map(r=>[r[0],r[1]+'家',r[1]]));
+
+  // 支系代数
+  const gs = DB.branches.map(b=>[b.name_disp.slice(0,12), b.gens.filter(g=>g).length+'代', b.gens.filter(g=>g).length]).sort((a,b)=>b[2]-a[2]).slice(0,14);
+  $('stat-gens').innerHTML = barChart(gs, 'gold');
+
+  renderRegionTable();
+}
+function barChart(arr, color){
+  const max = Math.max(...arr.map(a=>a[2]));
+  return arr.map(a=>'<div class="bar-line"><span class="bar-label" title="'+esc(a[0])+'">'+esc(a[0].slice(0,8))+'</span>'+
+    '<div class="bar-track"><div class="bar-fill'+(color==='gold'?' gold':'')+'" style="width:'+(a[2]/max*100)+'%"></div></div>'+
+    '<span class="bar-val">'+a[1]+'</span></div>').join('');
+}
+function allRegions(){
+  const set = new Set();
+  DB.branches.forEach(b=>{ if(b.region) set.add(b.region.split('·')[0]); });
+  ['合江县','泸县','江阳区','纳溪区','古蔺县','叙永县'].forEach(r=>set.add(r));
+  return [...set];
+}
+function renderRegionTable(){
+  $('rg-body').innerHTML = allRegions().map(rg=>{
+    const short = rg.replace(/县|区/g,'');
+    const branches = DB.branches.filter(b=>b.region&&b.region.startsWith(short)).length;
+    const people = DB.contacts.filter(c=>c.addr&&rg.includes(c.addr)||c.addr&&c.addr.includes(short)).length;
+    const biz = DB.companies.filter(c=>(c['注册地址']||'').includes(short)).length;
+    const ex = DB.regionExtra[rg] || {};
+    return '<tr><td><b>'+esc(rg)+'</b></td><td>'+branches+'</td><td>'+people+'</td><td>'+biz+'</td>'+
+    '<td>'+esc(ex.contact||'—')+'</td><td>'+esc(ex.households||'—')+'</td><td>'+esc(ex.note||'—')+'</td>'+
+    '<td class="ops"><button class="btn small ghost" onclick="openRegionEditor(\''+rg+'\')">维护</button></td></tr>';
+  }).join('');
+}
+function openRegionEditor(rg){
+  const ex = DB.regionExtra[rg] || {};
+  openModal('维护区域信息：'+rg,
+    '<div class="field"><label>区域联系人（姓名+电话）</label><input id="f-rg-c" value="'+esc(ex.contact||'')+'" placeholder="如：任文贵 18349985088"></div>'+
+    '<div class="field"><label>户数（登记）</label><input id="f-rg-h" value="'+esc(ex.households||'')+'" placeholder="如：120"></div>'+
+    '<div class="field"><label>宗亲人数（补充登记）</label><input id="f-rg-p" value="'+esc(ex.people||'')+'"></div>'+
+    '<div class="field"><label>主要产业/职业特征</label><input id="f-rg-i" value="'+esc(ex.industry||'')+'" placeholder="如：农业、建筑、商贸"></div>'+
+    '<div class="field"><label>备注</label><textarea id="f-rg-n" rows="3">'+esc(ex.note||'')+'</textarea></div>',
+    ()=>{
+      DB.regionExtra[rg] = {contact:$('f-rg-c').value.trim(), households:$('f-rg-h').value.trim(), people:$('f-rg-p').value.trim(), industry:$('f-rg-i').value.trim(), note:$('f-rg-n').value.trim()};
+      saveDB(); renderRegionTable(); addLog('维护区域信息：'+rg); toast('已保存');
+    });
+}
+
+/* ================= 管理后台 ================= */
+let adminOk = false;
+function getPwd(){ return localStorage.getItem('lzren_pwd') || 'admin888'; }
+function adminLogin(){
+  if($('admin-pwd').value === getPwd()){
+    adminOk = true; renderAdmin(); addLog('管理员登录'); toast('登录成功');
+  } else toast('密码错误');
+}
+function adminLogout(){ adminOk = false; renderAdmin(); }
+function renderAdmin(){
+  $('admin-login').style.display = adminOk? 'none':'block';
+  $('admin-panel').style.display = adminOk? 'block':'none';
+  if(!adminOk) return;
+  $('arc-body').innerHTML = (DB.archives||[]).length? DB.archives.map((a,i)=>
+    '<tr><td>'+esc(a.time)+'</td><td>'+esc(a.note)+'</td>'+
+    '<td class="ops"><button class="btn small ghost" onclick="restoreArchive('+i+')">恢复</button>'+
+    '<button class="btn small blue" onclick="exportArchive('+i+')">导出</button>'+
+    '<button class="btn small gray" onclick="delArchive('+i+')">删除</button></td></tr>').join('')
+    : '<tr><td colspan="3" style="text-align:center;color:var(--ink2)">暂无存档，点击"创建存档快照"备份当前数据</td></tr>';
+  $('admin-logs').innerHTML = (DB.logs||[]).length? DB.logs.map(l=>
+    '<div class="log-line"><b>['+esc(l.time)+']</b> '+esc(l.msg)+'</div>').join('')
+    : '<p style="color:var(--ink2);font-size:13px">暂无操作日志</p>';
+}
+function changePwd(){
+  const p = $('new-pwd').value.trim();
+  if(p.length<6){ toast('密码至少6位'); return; }
+  localStorage.setItem('lzren_pwd', p); addLog('修改管理员密码'); toast('密码已更新'); $('new-pwd').value='';
+}
+function makeArchive(){
+  DB.archives = DB.archives || [];
+  const snap = {time:new Date().toLocaleString(), note:'手动存档（支系'+DB.branches.length+'/通讯录'+DB.contacts.length+'/企业'+DB.companies.length+'）', data: snapshotData()};
+  DB.archives.unshift(snap);
+  if(DB.archives.length>10) DB.archives.length = 10;
+  saveDB(); renderAdmin(); addLog('创建存档快照'); toast('存档成功');
+}
+function snapshotData(){
+  const {archives, logs, ...rest} = DB;
+  return JSON.parse(JSON.stringify(rest));
+}
+function restoreArchive(i){
+  const a = DB.archives[i];
+  if(!confirm('确定恢复到存档「'+a.time+'」的数据？当前未存档的修改将被覆盖。')) return;
+  const keepArch = DB.archives, keepLogs = DB.logs;
+  DB = JSON.parse(JSON.stringify(a.data));
+  DB.archives = keepArch; DB.logs = keepLogs;
+  saveDB(); renderAll(); addLog('恢复存档：'+a.time); toast('已恢复存档');
+}
+function delArchive(i){
+  if(confirm('删除该存档？')){ DB.archives.splice(i,1); saveDB(); renderAdmin(); toast('已删除'); }
+}
+function exportArchive(i){
+  downloadText(JSON.stringify(DB.archives[i].data, null, 1), '泸州任氏宗亲网_存档_'+DB.archives[i].time.replace(/[\\/:*?"<>|\s]/g,'')+'.json');
+}
+function resetData(){
+  if(!confirm('恢复出厂数据将清除所有修改与新增内容，确定继续？')) return;
+  const pwd = getPwd();
+  DB = JSON.parse(JSON.stringify(BUILTIN_DATA));
+  DB.searchStats={}; DB.archives=[]; DB.logs=[]; DB.regionExtra={}; DB.news=defaultNews();
+  saveDB(); renderAll(); addLog('恢复出厂数据'); toast('已恢复出厂数据');
+}
+
+/* ================= 导入导出 ================= */
+function downloadText(text, filename){
+  const blob = new Blob(['\ufeff'+text], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+}
+function exportJSON(){
+  downloadText(JSON.stringify(snapshotData(), null, 1), '泸州任氏宗亲网_全站数据_'+new Date().toISOString().slice(0,10)+'.json');
+  addLog('导出全站数据JSON'); toast('已导出');
+}
+function importJSON(input){
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const d = JSON.parse(e.target.result);
+      if(!d.branches || !Array.isArray(d.branches)){ toast('文件格式不正确：缺少支系数据'); return; }
+      makeArchive(); // 导入前自动存档
+      const keepArch = DB.archives, keepLogs = DB.logs;
+      DB = d; DB.archives = keepArch; DB.logs = keepLogs;
+      if(!DB.searchStats) DB.searchStats={}; if(!DB.regionExtra) DB.regionExtra={}; if(!DB.news) DB.news=defaultNews();
+      saveDB(); renderAll(); addLog('导入数据文件：'+file.name); toast('导入成功');
+    }catch(err){ toast('解析失败：'+err.message); }
+  };
+  reader.readAsText(file); input.value='';
+}
+function exportCSV(type){
+  const CSV_MAP = {
+    branches: {name:'各支系字辈排行', fn: ()=>{
+      const n = maxGens();
+      const rows = [['支系名称','所属区域','代数',...Array.from({length:n},(_,i)=>'第'+(i+1)+'世')]];
+      DB.branches.forEach(b=>rows.push([b.name_disp, b.region||'', b.gens.filter(g=>g).length, ...Array.from({length:n},(_,i)=>b.gens[i]||'')]));
+      return rows;
+    }},
+    contacts: {name:'宗亲通讯录', fn: ()=>[['姓名','字辈','地区','电话','备注'], ...DB.contacts.map(c=>[c.name,c.zibei,c.addr,c.tel,c.note])]},
+    companies: {name:'宗亲企业', fn: ()=>[['类型','企业名称','法定代表人','所属行业','注册地址','注册资本','成立时间','经营状态','联系电话'], ...DB.companies.map(c=>[bizTypeOf(c),c['企业名称']||'',c['法定代表人']||'',c['所属行业']||'',c['注册地址']||'',c['注册资本']||'',c['成立时间']||'',c['经营状态']||'',c['企业联系电话']||''])]},
+    skills: {name:'技能招工登记', fn: ()=>[['姓名','支系','字辈','技术技能企业','常住地','备注'], ...DB.skills.map(s=>[s.name,s.branch,s.zibei,s.skill,s.addr,s.note])]}
+  };
+  const cfg = CSV_MAP[type]; if(!cfg) return;
+  const csv = cfg.fn().map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  downloadText(csv, cfg.name+'_'+new Date().toISOString().slice(0,10)+'.csv');
+  addLog('导出CSV：'+cfg.name); toast('已导出CSV');
+}
+
+/* ================= 初始化 ================= */
+function renderAll(){
+  renderHome(); renderZbMatrix(null); renderZbFreq();
+  renderContacts(); renderBiz(); renderRegionTable();
+  if($('page-map').classList.contains('show')) initMap();
+}
+initDB();
+renderAll();
+
+</script>
+</body>
+</html>
