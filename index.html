@@ -56,6 +56,17 @@ input,select,textarea{font-family:inherit;font-size:14px}
 .quick-item h4{color:var(--red);font-size:16px;margin-bottom:6px}
 .quick-item p{font-size:12px;color:var(--ink2);line-height:1.6}
 
+/* ========== 组织架构 ========== */
+.org-tree{display:flex;flex-direction:column;gap:20px}
+.org-group{background:linear-gradient(180deg,#faf6ee 0%,#fff 100%);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:0 2px 8px rgba(140,31,40,.04)}
+.org-group-title{font-size:17px;font-weight:700;color:var(--red-d);border-left:4px solid var(--red);padding-left:10px;margin-bottom:14px;letter-spacing:1px}
+.org-members{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.org-card{display:flex;gap:12px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;transition:.18s}
+.org-card:hover{border-color:var(--gold);box-shadow:0 4px 12px rgba(140,31,40,.1);transform:translateY(-2px)}
+.org-avatar{width:42px;height:42px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.org-info{flex:1;min-width:0}
+.tag.red{background:var(--red);color:#fff;border-color:var(--red)}
+
 /* ========== 表格 ========== */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min-width:600px}
@@ -87,6 +98,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min
 .btn.green{background:var(--green);border-color:var(--green)}
 .btn.blue{background:var(--blue);border-color:var(--blue)}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.toolbar label{display:inline-flex;align-items:center;gap:4px}
+.toolbar input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--red)}
 .toolbar input[type=text],.toolbar select{padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;min-width:160px}
 .toolbar input[type=text]:focus,.toolbar select:focus{outline:none;border-color:var(--gold)}
 .field{margin-bottom:12px}
@@ -160,12 +173,15 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min
 
 <div class="nav"><div class="nav-inner" id="nav">
   <div class="nav-item active" data-tab="home">宗族首页</div>
+  <div class="nav-item" data-tab="news">家族资讯</div>
   <div class="nav-item" data-tab="zibei">字辈排行</div>
   <div class="nav-item" data-tab="contacts">宗亲通讯录</div>
   <div class="nav-item" data-tab="biz">宗亲产业</div>
   <div class="nav-item" data-tab="map">宗亲地图</div>
+  <div class="nav-item" data-tab="org">组织架构</div>
   <div class="nav-item" data-tab="stat">数据统计</div>
   <div class="nav-item" data-tab="admin">管理后台</div>
+  <div id="nav-login-tag" style="margin-left:auto;padding:13px 18px;color:var(--gold-l);font-size:12px;letter-spacing:1px"></div>
 </div></div>
 
 <div class="page show" id="page-home">
@@ -181,6 +197,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min
       <div class="quick-item" onclick="switchTab('contacts')"><h4>宗亲通讯录</h4><p>按地区、字辈检索宗亲联系方式，支持管理员增删改查</p></div>
       <div class="quick-item" onclick="switchTab('biz')"><h4>宗亲产业</h4><p>宗亲企业、个体经营与技能资源展示，助力宗亲资源对接</p></div>
       <div class="quick-item" onclick="switchTab('map')"><h4>支系地图</h4><p>高德地图框选呈现各支系区域，标记凸显并支持一键导航</p></div>
+      <div class="quick-item" onclick="switchTab('org')"><h4>组织架构</h4><p>家族理事会、各工作委员会、支系负责人、家族章程制度</p></div>
       <div class="quick-item" onclick="switchTab('stat')"><h4>数据统计</h4><p>字辈查询频次统计、区域人口与产业分布统计</p></div>
       <div class="quick-item" onclick="switchTab('admin')"><h4>管理后台</h4><p>数据增删查改、导入导出、存档备份、权限管理</p></div>
     </div>
@@ -192,6 +209,39 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min
   <div class="card">
     <div class="sec-title">各支系字辈一览（节选）</div>
     <div id="home-branches"></div>
+  </div>
+</div>
+
+<div class="page" id="page-news">
+  <div class="card">
+    <div class="sec-title">家族资讯 · 总通知 <small>家族最新5条公告 · 管理员可在管理后台发布</small></div>
+    <div class="toolbar">
+      <span class="tag blue" id="news-total-tag">总公告 0 条</span>
+      <span style="flex:1"></span>
+      <button class="btn small ghost" onclick="switchTab('admin')">前往管理后台发布</button>
+      <button class="btn small ghost" onclick="exportCSV('news')">导出资讯CSV</button>
+    </div>
+    <div id="news-list"></div>
+  </div>
+  <div class="card">
+    <div class="sec-title">各支系资讯板块 <small>点击支系卡片进入查看该支系发布的公告、活动、文章</small></div>
+    <div class="toolbar">
+      <input type="text" id="news-branch-search" placeholder="搜索支系名称…" oninput="renderNewsBranches()">
+      <span style="flex:1"></span>
+      <span class="tag" id="news-branch-count"></span>
+    </div>
+    <div id="news-branches-grid" class="quick-grid"></div>
+  </div>
+</div>
+
+<div class="page" id="page-branch-detail" style="display:none">
+  <div class="card">
+    <div class="toolbar">
+      <button class="btn small ghost" onclick="switchTab('news')">← 返回资讯列表</button>
+      <span class="tag blue" id="branch-detail-tag"></span>
+    </div>
+    <div class="sec-title" id="branch-detail-title">支系资讯</div>
+    <div id="branch-detail-content"></div>
   </div>
 </div>
 
@@ -243,6 +293,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min
       <select id="bz-type" onchange="renderBiz()">
         <option value="">全部类型</option><option>公司</option><option>个体工商户</option><option>个人</option>
       </select>
+      <span class="tag" id="bz-count"></span>
       <button class="btn" onclick="openBizEditor()">＋新增主体</button>
       <button class="btn ghost" onclick="exportCSV('companies')">导出CSV</button>
     </div>
@@ -266,10 +317,29 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min
 
 <div class="page" id="page-map">
   <div class="card">
-    <div class="sec-title">泸州任氏支系分布地图 <small>高德地图 · 区域框选凸显 · 标记导航</small></div>
+    <div class="sec-title">泸州任氏支系与产业地图 <small>高德地图 · 支系/企业/公司/个体工商户多类型呈现</small></div>
     <div class="toolbar">
-      <button class="btn gold" onclick="fitMap()">显示全部支系</button>
-      <span class="tag blue">点击左侧支系 → 地图高亮定位并弹出详情；点击下方区域按钮框选凸显该区域</span>
+      <span style="font-size:13px;color:var(--ink2)">类型筛选：</span>
+      <label style="font-size:13px;cursor:pointer"><input type="checkbox" id="mf-branch" checked onchange="filterMapMarkers()"> 支系</label>
+      <label style="font-size:13px;cursor:pointer;color:var(--blue)"><input type="checkbox" id="mf-company" onchange="filterMapMarkers()"> 公司</label>
+      <label style="font-size:13px;cursor:pointer;color:var(--green)"><input type="checkbox" id="mf-geti" onchange="filterMapMarkers()"> 个体工商户</label>
+      <label style="font-size:13px;cursor:pointer;color:var(--gold-d)"><input type="checkbox" id="mf-person" onchange="filterMapMarkers()"> 个人</label>
+      <span style="flex:1"></span>
+      <button class="btn gold" onclick="fitMap()">显示全部</button>
+      <button class="btn" onclick="locateMe()">📍 我的位置</button>
+    </div>
+    <div class="toolbar">
+      <span style="font-size:13px;color:var(--ink2)">范围筛选：</span>
+      <select id="map-range" onchange="filterMapByRange()" style="padding:8px 12px;border:1px solid var(--line);border-radius:6px">
+        <option value="0">不限</option>
+        <option value="1000">1 KM</option>
+        <option value="5000">5 KM</option>
+        <option value="20000">20 KM</option>
+        <option value="100000">100 KM</option>
+      </select>
+      <span class="tag blue" id="my-pos-tag" style="display:none"></span>
+      <span style="flex:1"></span>
+      <button class="btn small ghost" onclick="clearHighlight()">清除框选</button>
     </div>
     <div class="toolbar" id="region-btns"></div>
     <div class="map-side">
@@ -277,6 +347,38 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min
       <div><div id="map-box"></div></div>
     </div>
     <div class="map-info" id="map-info" style="display:none"></div>
+    <div class="card" id="map-nearby-card" style="display:none;margin-top:14px">
+      <div class="sec-title">附近目标（按距离由近到远排序） <small id="map-nearby-tip"></small></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>排名</th><th>类型</th><th>名称</th><th>地址/区域</th><th>距离</th><th class="ops">操作</th></tr></thead>
+        <tbody id="map-nearby-body"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-org">
+  <div class="card">
+    <div class="sec-title">泸州任氏宗亲会组织架构 <small>家族理事会 · 各工作委员会 · 各支系负责人</small></div>
+    <div class="toolbar">
+      <input type="text" id="org-search" placeholder="搜索姓名/职务/支系…" oninput="renderOrg()">
+      <span style="flex:1"></span>
+      <span class="tag blue" id="org-count"></span>
+      <button class="btn small ghost" onclick="exportCSV('org')">导出CSV</button>
+      <button class="btn small" id="org-add-btn" style="display:none" onclick="openOrgEditor()">＋ 新增成员</button>
+    </div>
+    <div id="org-chart"></div>
+  </div>
+  <div class="card">
+    <div class="sec-title">各支系负责人 <small>各支系联络人及理事会代表</small></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>支系</th><th>区域</th><th>负责人</th><th>职务</th><th>联系电话</th><th>任期</th><th class="ops">操作</th></tr></thead>
+      <tbody id="org-branch-body"></tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="sec-title">家族章程与制度 <small>理事会章程、管理办法、活动制度</small></div>
+    <div id="org-docs"></div>
   </div>
 </div>
 
@@ -320,17 +422,53 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min
     <div id="admin-login">
       <div class="toolbar">
         <input type="password" id="admin-pwd" placeholder="请输入管理员密码（默认 admin888）" style="padding:9px 12px;border:1px solid var(--line);border-radius:6px;width:280px">
-        <button class="btn" onclick="adminLogin()">登录</button>
-        <span class="tag">默认密码 admin888，登录后可在“系统设置”中修改</span>
+        <button class="btn" onclick="adminLogin()">总管理员登录</button>
+        <span style="width:1px;background:var(--line);height:30px;margin:0 6px"></span>
+        <input type="text" id="bm-user" placeholder="支系管理员账号" style="padding:9px 12px;border:1px solid var(--line);border-radius:6px;width:180px">
+        <input type="password" id="bm-pwd" placeholder="密码" style="padding:9px 12px;border:1px solid var(--line);border-radius:6px;width:160px">
+        <button class="btn gold" onclick="branchAdminLogin()">支系管理员登录</button>
+      </div>
+      <div class="toolbar" style="margin-top:10px">
+        <span class="tag">总管理员默认密码 admin888，登录后拥有全部管理权限</span>
+        <span class="tag blue">支系管理员账号需由总管理员在下方"支系管理员管理"中创建</span>
       </div>
     </div>
     <div id="admin-panel" style="display:none">
       <div class="toolbar">
-        <span class="tag green">已登录 · 管理员</span>
+        <span class="tag green" id="admin-role-tag">已登录 · 管理员</span>
+        <span class="tag blue" id="admin-scope-tag" style="display:none"></span>
         <button class="btn ghost small" onclick="adminLogout()">退出登录</button>
       </div>
-      <div class="sec-title" style="margin-top:10px">数据管理（增删查改）</div>
-      <p style="font-size:13px;color:var(--ink2);margin-bottom:10px">请在对应功能页使用“新增”按钮及每行“编辑/删除”按钮，对字辈支系、通讯录、企业、技能、区域统计进行管理。所有修改即时保存到本机浏览器。</p>
+
+      <div class="sec-title" style="margin-top:10px">公告与资讯管理 <small>发布图文文章、活动通知、家族公告</small></div>
+      <div class="toolbar">
+        <select id="admin-news-type" onchange="filterAdminNews()">
+          <option value="total">总通知（家族公告）</option>
+          <option value="branch">支系资讯</option>
+        </select>
+        <select id="admin-news-branch" onchange="filterAdminNews()" style="display:none"></select>
+        <button class="btn" onclick="openNewsEditor()">＋发布文章</button>
+        <button class="btn ghost" onclick="exportCSV('news')">导出CSV</button>
+        <span class="tag" id="admin-news-count"></span>
+      </div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>类型</th><th>标题</th><th>所属</th><th>发布时间</th><th>摘要</th><th class="ops">操作</th></tr></thead>
+        <tbody id="admin-news-body"></tbody>
+      </table></div>
+
+      <div class="sec-title" style="margin-top:18px">支系管理员管理 <small>为各支系设置管理员账号，对应支系可自行编辑本支系内容</small></div>
+      <div class="toolbar">
+        <button class="btn" onclick="openBranchAdminEditor()">＋新增支系管理员</button>
+        <button class="btn ghost" onclick="exportCSV('branchAdmins')">导出CSV</button>
+        <span class="tag" id="admin-bm-count"></span>
+      </div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>账号</th><th>姓名</th><th>所属支系</th><th>联系电话</th><th>创建时间</th><th>状态</th><th class="ops">操作</th></tr></thead>
+        <tbody id="admin-bm-body"></tbody>
+      </table></div>
+
+      <div class="sec-title" style="margin-top:18px">数据管理（增删查改）</div>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:10px">请在对应功能页使用"新增"按钮及每行"编辑/删除"按钮，对字辈支系、通讯录、企业、技能、区域统计进行管理。所有修改即时保存到本机浏览器。</p>
       <div class="sec-title">数据导入 / 导出 / 存档</div>
       <div class="toolbar">
         <button class="btn gold" onclick="exportJSON()">导出全站数据(JSON)</button>
@@ -390,18 +528,91 @@ function initDB(){
   else{
     DB = JSON.parse(JSON.stringify(BUILTIN_DATA));
     DB.searchStats = {}; DB.archives = []; DB.logs = []; DB.regionExtra = {}; DB.news = defaultNews();
+    DB.branchAdmins = []; DB.branchNews = defaultBranchNews();
+    DB.orgMembers = defaultOrgMembers(); DB.orgDocs = defaultOrgDocs();
+    DB.version = 3;
     saveDB();
   }
   if(!DB.news) DB.news = defaultNews();
   if(!DB.regionExtra) DB.regionExtra = {};
   if(!DB.searchStats) DB.searchStats = {};
+  if(!DB.branchAdmins) DB.branchAdmins = [];
+  if(!DB.branchNews) DB.branchNews = defaultBranchNews();
+  if(!DB.orgMembers) DB.orgMembers = defaultOrgMembers();
+  if(!DB.orgDocs) DB.orgDocs = defaultOrgDocs();
+  // 版本升级：v1 数据没有 time 字段和 branchNews，需重新初始化
+  if(!DB.version || DB.version < 3){
+    // v1 -> v2：news 增加 time 字段，branchNews 重新生成
+    if(DB.news && DB.news.length && !DB.news[0].time){ DB.news = defaultNews(); }
+    if(!DB.branchNews || !DB.branchNews.length || !DB.branchNews[0].items){ DB.branchNews = defaultBranchNews(); }
+    // v2 -> v3：新增组织架构数据
+    if(!DB.orgMembers || !DB.orgMembers.length){ DB.orgMembers = defaultOrgMembers(); }
+    if(!DB.orgDocs || !DB.orgDocs.length){ DB.orgDocs = defaultOrgDocs(); }
+    DB.version = 3;
+    saveDB();
+  }
+}
+function defaultBranchNews(){
+  // 为每个支系生成默认的支系资讯数组（示例数据）
+  const arr = [];
+  const data = DB || JSON.parse(JSON.stringify(BUILTIN_DATA));
+  data.branches.forEach((b,i)=>{
+    arr.push({ branchIdx:i, branchName:b.name_disp, items:[
+      {title:b.name_disp+'支系公告', content:'欢迎本支系宗亲在此查阅支系资讯。支系管理员可登录后发布活动通知、家族事迹、字辈溯源等文章。', time:new Date().toLocaleString(), author:'系统'}
+    ]});
+  });
+  return arr;
+}
+function defaultBranchAdmins(){
+  return [
+    {user:'hejiang', name:'合江片区管理员', branchIdx:0, tel:'18180309010', pwd:'hejiang123', time:new Date().toLocaleString(), status:'正常'}
+  ];
+}
+// 组织架构默认数据
+function defaultOrgMembers(){
+  return [
+    // 家族理事会
+    {group:'家族理事会', level:'总会长', name:'任文贵', branch:'全家族', tel:'18180309010', term:'2024-2028', duty:'统筹家族事务，对外代表家族', time:'2024-01-15'},
+    {group:'家族理事会', level:'副总会长', name:'任登祥', branch:'合江片区', tel:'18******85', term:'2024-2028', duty:'协助总会长，主管合江片区事务', time:'2024-01-15'},
+    {group:'家族理事会', level:'副总会长', name:'任明远', branch:'泸县片区', tel:'13******42', term:'2024-2028', duty:'协助总会长，主管泸县片区事务', time:'2024-01-15'},
+    {group:'家族理事会', level:'秘书长', name:'任章华', branch:'江阳片区', tel:'18******21', term:'2024-2028', duty:'负责会议组织、文件起草、档案管理', time:'2024-01-15'},
+    {group:'家族理事会', level:'副秘书长', name:'任丽萍', branch:'江阳片区', tel:'18******37', term:'2024-2028', duty:'协助秘书长日常工作', time:'2024-01-15'},
+    {group:'家族理事会', level:'财务长', name:'任治国', branch:'纳溪片区', tel:'13******68', term:'2024-2028', duty:'负责家族基金管理、财务公开', time:'2024-01-15'},
+    // 字辈文化研究委员会
+    {group:'字辈文化研究委员会', level:'主任', name:'任文光', branch:'合江片区', tel:'18******19', term:'2024-2028', duty:'字辈整理、族谱修订、文化研究', time:'2024-01-15'},
+    {group:'字辈文化研究委员会', level:'副主任', name:'任昌明', branch:'泸县片区', tel:'18******55', term:'2024-2028', duty:'协助字辈整理、资料收集', time:'2024-01-15'},
+    // 联谊活动委员会
+    {group:'联谊活动委员会', level:'主任', name:'任登云', branch:'江阳片区', tel:'18******66', term:'2024-2028', duty:'组织宗亲联谊、年会、祭祖活动', time:'2024-01-15'},
+    {group:'联谊活动委员会', level:'副主任', name:'任小军', branch:'纳溪片区', tel:'18******88', term:'2024-2028', duty:'协助活动策划与执行', time:'2024-01-15'},
+    // 产业合作委员会
+    {group:'产业合作委员会', level:'主任', name:'任定邦', branch:'全家族', tel:'13******77', term:'2024-2028', duty:'宗亲企业资源对接、产业合作', time:'2024-01-15'},
+    // 青年委员会
+    {group:'青年委员会', level:'主任', name:'任安琪', branch:'江阳片区', tel:'18******33', term:'2024-2028', duty:'青年宗亲联络、培养下一代家族意识', time:'2024-01-15'}
+  ];
+}
+// 家族章程与制度默认数据
+function defaultOrgDocs(){
+  return [
+    {title:'泸州任氏宗亲会章程', type:'章程', time:'2024-01-15', author:'家族理事会',
+     content:'第一章 总则\n第一条 本会名称为"泸州任氏宗亲会"，是由泸州任氏宗亲自愿组成的非营利性家族联谊组织。\n第二条 本会宗旨：弘扬任氏家族优秀传统文化，增进宗亲情谊，促进宗亲互助，传承字辈文化，推动家族和谐发展。\n第三条 本会住所：四川省泸州市。\n\n第二章 业务范围\n第四条 本会主要业务：\n（一）组织宗亲联谊活动；\n（二）整理、研究、传承字辈文化；\n（三）编修族谱；\n（四）开展家族教育、助学活动；\n（五）促进宗亲产业合作。\n\n第三章 会员\n第五条 凡泸州任氏宗亲，承认本会章程，均可成为本会会员。\n第六条 会员权利：参与本会活动、享有选举权和被选举权、对本会工作提出建议和监督。\n第七条 会员义务：遵守章程、关心家族事务、按时交纳会费（自愿）。'},
+    {title:'家族理事会管理办法', type:'制度', time:'2024-01-20', author:'家族理事会',
+     content:'一、理事会由总会长1人、副总会长若干人、秘书长1人、财务长1人、各工作委员会主任组成。\n二、理事会任期4年，可连选连任。\n三、理事会每年至少召开2次会议，审议家族重大事务。\n四、理事会决议须经半数以上理事同意方为有效。\n五、理事会成员应带头遵守家族章程，热心家族公益。'},
+    {title:'家族基金管理办法', type:'制度', time:'2024-02-01', author:'家族理事会',
+     content:'一、家族基金来源：会员会费、宗亲捐赠、利息收入。\n二、基金用途：助学、敬老、扶贫、祭祖、联谊活动、家族文化建设。\n三、基金由财务长专户管理，每年底向理事会报告收支情况。\n四、单笔支出5000元以上须经理事会讨论同意。'},
+    {title:'字辈文化传承制度', type:'制度', time:'2024-03-10', author:'字辈文化研究委员会',
+     content:'一、字辈是家族文化的重要载体，所有宗亲应严格遵守字辈取名规范。\n二、新生儿取名应参照本支系字辈排行，由字辈文化研究委员会协助确认。\n三、字辈文化研究委员会负责字辈整理、释义、修订工作。\n四、各支系字辈变更须经本支系宗亲代表会议讨论，报字辈文化研究委员会备案。'},
+    {title:'宗亲联谊活动制度', type:'制度', time:'2024-04-15', author:'联谊活动委员会',
+     content:'一、每年举办一次家族年会（通常在春节前后）。\n二、每三年举办一次全族祭祖大典。\n三、各支系每年至少举办一次支系联谊活动。\n四、活动应节俭务实，重在宗亲情谊交流。'}
+  ];
 }
 function saveDB(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }catch(e){ toast('保存失败：浏览器存储空间不足'); } }
 function defaultNews(){
   return [
-    {t:'泸州任氏宗亲会年会圆满举行', d:'各区县宗亲代表欢聚一堂，共商家族事务，增进宗亲情谊。'},
-    {t:'字辈排行数字化工程完成', d:'38大支系、1200余字辈完成数字化整理，可在本站查询溯源。'},
-    {t:'宗亲企业经营信息登记持续进行中', d:'欢迎宗亲登记企业与技能信息，促进资源对接与合作发展。'}
+    {t:'泸州任氏宗亲会年会圆满举行', d:'各区县宗亲代表欢聚一堂，共商家族事务，增进宗亲情谊。', time:'2026-08-15'},
+    {t:'字辈排行数字化工程完成', d:'38大支系、1200余字辈完成数字化整理，可在本站查询溯源。', time:'2026-07-20'},
+    {t:'宗亲企业经营信息登记持续进行中', d:'欢迎宗亲登记企业与技能信息，促进资源对接与合作发展。', time:'2026-08-01'},
+    {t:'家族资讯模块正式上线', d:'各支系管理员可登录后台发布本支系公告、活动通知、家族事迹等图文文章。', time:'2026-08-21'},
+    {t:'支系管理员账号体系上线', d:'总管理员可在后台为各支系设置管理员账号，支系管理员可独立维护本支系内容。', time:'2026-08-21'}
   ];
 }
 function addLog(msg){
@@ -418,6 +629,45 @@ function toast(msg){
   clearTimeout(t._tm); t._tm = setTimeout(()=>t.style.display='none', 2200);
 }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+// 渲染富文本：支持 [img]base64[/img] 标签
+function renderRichContent(text){
+  if(!text) return '';
+  const escaped = esc(text);
+  // 转换 [img]...[/img] 为 <img>
+  return escaped.replace(/\[img\]([^\[]+)\[\/img\]/g, (m, url)=>{
+    return '<img src="'+url+'" style="max-width:100%;border-radius:6px;margin:8px 0;display:block" loading="lazy">';
+  });
+}
+// 将文件输入中的图片转base64并插入到 textarea
+function insertImgToTextarea(input, textareaId){
+  const ta = $(textareaId);
+  if(!ta || !input.files || !input.files.length) return;
+  const files = Array.from(input.files);
+  let processed = 0;
+  files.forEach(file=>{
+    if(!file.type.startsWith('image/')){ processed++; return; }
+    // 限制单张大小
+    if(file.size > 2*1024*1024){
+      toast('图片「'+file.name+'」超过2MB，已跳过'); processed++;
+      if(processed>=files.length) input.value='';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const tag = '\n[img]'+e.target.result+'[/img]\n';
+      // 插入光标位置
+      const start = ta.selectionStart || ta.value.length;
+      const end = ta.selectionEnd || ta.value.length;
+      ta.value = ta.value.slice(0,start) + tag + ta.value.slice(end);
+      ta.focus();
+      const newPos = start + tag.length;
+      ta.setSelectionRange(newPos, newPos);
+      processed++;
+      if(processed>=files.length){ input.value=''; toast('已插入 '+files.length+' 张图片'); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
 function openModal(title, bodyHtml, onOk){
   $('modal-title').textContent = title;
   $('modal-body').innerHTML = bodyHtml;
@@ -427,17 +677,23 @@ function openModal(title, bodyHtml, onOk){
 function closeModal(){ $('modal').classList.remove('show'); }
 
 /* ================= 导航 ================= */
-const TABS = ['home','zibei','contacts','biz','map','stat','admin'];
+const TABS = ['home','news','zibei','contacts','biz','map','org','stat','admin'];
 function switchTab(tab){
   TABS.forEach(t=>{
-    $('page-'+t).classList.toggle('show', t===tab);
+    const el = $('page-'+t);
+    if(el) el.classList.toggle('show', t===tab);
   });
+  // 支系详情页独立处理
+  if(tab!=='branch-detail'){ const bd=$('page-branch-detail'); if(bd) bd.style.display='none'; }
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.tab===tab));
   window.scrollTo({top:0});
+  if(tab==='news') renderNewsPage();
   if(tab==='map') setTimeout(initMap, 150);
+  if(tab==='org') renderOrg();
   if(tab==='stat') renderStat();
   if(tab==='admin') renderAdmin();
   if(tab==='zibei') renderZbFreq();
+  renderLoginTag();
 }
 document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click', ()=>switchTab(n.dataset.tab)));
 
@@ -452,12 +708,124 @@ function renderHome(){
     {n:DB.skills.length, l:'技能/招工登记'},
   ];
   $('home-stats').innerHTML = stats.map(s=>'<div class="stat-box"><div class="stat-num">'+s.n+'</div><div class="stat-lab">'+s.l+'</div></div>').join('');
-  $('home-news').innerHTML = DB.news.map((n,i)=>
-    '<div style="padding:12px 0;border-bottom:1px dashed var(--line)"><b style="color:var(--red)">'+(i+1)+'. '+esc(n.t)+'</b><p style="font-size:13px;color:var(--ink2);margin-top:4px">'+esc(n.d)+'</p></div>').join('');
+  // 首页最新公告：取前5条
+  const newsList = (DB.news||[]).slice(0,5);
+  $('home-news').innerHTML = newsList.length? newsList.map((n,i)=>
+    '<div style="padding:12px 0;border-bottom:1px dashed var(--line);cursor:pointer" onclick="switchTab(\'news\')"><b style="color:var(--red)">'+(i+1)+'. '+esc(n.t)+'</b><p style="font-size:13px;color:var(--ink2);margin-top:4px">'+esc(n.d)+'</p></div>').join('')
+    : '<p style="color:var(--ink2);font-size:13px;padding:12px 0">暂无公告。管理员可在管理后台发布公告。</p>';
   $('home-branches').innerHTML = DB.branches.slice(0,8).map(b=>
     '<div style="padding:10px 0;border-bottom:1px dashed var(--line)"><b style="color:var(--red-d)">'+esc(b.name_disp)+'</b>'+
     '<span class="tag">'+esc(b.region)+'</span>'+
     '<p style="font-size:13px;color:var(--ink2);margin-top:4px;font-family:STKaiti,KaiTi,serif;letter-spacing:2px">'+esc(b.gens.filter(g=>g).slice(0,30).join(''))+(b.gens.filter(g=>g).length>30?'…':'')+'</p></div>').join('');
+}
+
+/* ================= 家族资讯模块 ================= */
+function renderNewsPage(){
+  // 总通知：取前5条
+  const totalNews = (DB.news||[]).slice(0,5);
+  $('news-total-tag').textContent = '总公告 '+totalNews.length+' 条';
+  $('news-list').innerHTML = totalNews.length? totalNews.map((n,i)=>
+    '<div style="padding:14px 0;border-bottom:1px dashed var(--line)">'+
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
+    '<span class="rank-no'+(i<3?' top':'')+'">'+(i+1)+'</span>'+
+    '<b style="color:var(--red);font-size:15px">'+esc(n.t)+'</b>'+
+    (n.time?'<span class="tag blue">'+esc(n.time)+'</span>':'')+
+    '</div>'+
+    '<div style="font-size:13px;color:var(--ink2);line-height:1.7;padding-left:28px">'+renderRichContent(n.d)+'</div>'+
+    '</div>').join('')
+    : '<p style="color:var(--ink2);font-size:13px;padding:14px 0">暂无总通知。管理员可前往管理后台发布。</p>';
+  renderNewsBranches();
+}
+function renderNewsBranches(){
+  const q = ($('news-branch-search')?.value || '').trim().toLowerCase();
+  const list = DB.branches.map((b,i)=>({b,i})).filter(x=>{
+    if(!q) return true;
+    return x.b.name_disp.toLowerCase().includes(q) || (x.b.region||'').toLowerCase().includes(q);
+  });
+  $('news-branch-count').textContent = '共 '+list.length+' 个支系';
+  $('news-branches-grid').innerHTML = list.map(x=>{
+    const bn = (DB.branchNews||[]).find(n=>n.branchIdx===x.i);
+    const cnt = bn? bn.items.length : 0;
+    const lastItem = bn && bn.items.length? bn.items[bn.items.length-1] : null;
+    return '<div class="quick-item" onclick="showBranchDetail('+x.i+')">'+
+      '<h4>'+esc(x.b.name_disp)+'</h4>'+
+      '<p style="margin-bottom:8px"><span class="tag">'+esc(x.b.region||'')+'</span> <span class="tag green">资讯 '+cnt+' 篇</span></p>'+
+      (lastItem? '<p style="font-size:12px;color:var(--ink2);line-height:1.6">最新：'+esc(lastItem.title)+(lastItem.time?' ('+esc(lastItem.time)+')':'')+'</p>' : '<p style="font-size:12px;color:var(--ink2)">暂无资讯</p>')+
+      '<p style="font-size:12px;color:var(--gold-d);margin-top:8px">点击进入查看 →</p>'+
+      '</div>';
+  }).join('') || '<p style="color:var(--ink2);font-size:13px">未找到匹配支系</p>';
+}
+let curBranchIdx = -1;
+function showBranchDetail(idx){
+  curBranchIdx = idx;
+  const b = DB.branches[idx];
+  if(!b) return;
+  // 隐藏其他页面，显示支系详情
+  TABS.forEach(t=>{ const el=$('page-'+t); if(el) el.classList.remove('show'); });
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  $('page-branch-detail').style.display = 'block';
+  $('branch-detail-title').textContent = b.name_disp + ' · 支系资讯';
+  $('branch-detail-tag').textContent = b.region || '泸州';
+  renderBranchDetailContent();
+  window.scrollTo({top:0});
+}
+function renderBranchDetailContent(){
+  if(curBranchIdx<0) return;
+  const b = DB.branches[curBranchIdx];
+  const bn = (DB.branchNews||[]).find(n=>n.branchIdx===curBranchIdx) || {items:[]};
+  const canManage = loginInfo.role==='admin' || (loginInfo.role==='branchAdmin' && loginInfo.branchIdx===curBranchIdx);
+  let html = '<div class="toolbar">'+
+    '<span class="tag blue">字辈 '+b.gens.filter(g=>g).length+' 代</span>'+
+    '<span class="tag green">资讯 '+bn.items.length+' 篇</span>'+
+    (canManage? '<span style="flex:1"></span><button class="btn small" onclick="openBranchNewsEditor()">＋发布本支系资讯</button><button class="btn small ghost" onclick="openBranchEditor(curBranchIdx)">编辑本支系字辈</button>' : '')+
+    '</div>';
+  if(bn.items.length){
+    html += bn.items.map((it,i)=>{
+      const actions = canManage? '<div style="margin-top:8px"><button class="btn small ghost" onclick="openBranchNewsEditor('+i+')">编辑</button> <button class="btn small gray" onclick="delBranchNews('+i+')">删除</button></div>' : '';
+      return '<div style="padding:14px 0;border-bottom:1px dashed var(--line)">'+
+        '<b style="color:var(--red);font-size:15px">'+esc(it.title)+'</b>'+
+        (it.time?'<span class="tag blue" style="margin-left:8px">'+esc(it.time)+'</span>':'')+
+        (it.author?'<span class="tag">'+esc(it.author)+'</span>':'')+
+        '<p style="font-size:13px;color:var(--ink);line-height:1.8;margin-top:8px;white-space:pre-wrap">'+renderRichContent(it.content)+'</p>'+
+        actions+
+        '</div>';
+    }).join('');
+  } else {
+    html += '<p style="color:var(--ink2);font-size:13px;padding:14px 0">本支系暂无资讯'+(canManage?'，点击上方"发布本支系资讯"添加':'')+'。</p>';
+  }
+  // 显示字辈
+  html += '<div style="margin-top:18px"><b style="color:var(--red-d)">本支系字辈：</b><p style="font-family:STKaiti,KaiTi,serif;font-size:16px;letter-spacing:3px;color:var(--ink);line-height:2;margin-top:8px">'+esc(b.gens.filter(g=>g).join('　'))+'</p></div>';
+  $('branch-detail-content').innerHTML = html;
+}
+function openBranchNewsEditor(idx){
+  if(curBranchIdx<0){ toast('请先选择支系'); return; }
+  const bn = (DB.branchNews||[]).find(n=>n.branchIdx===curBranchIdx);
+  if(!bn){ toast('支系资讯数据异常'); return; }
+  const isEdit = idx!==undefined;
+  const it = isEdit? bn.items[idx] : {title:'', content:'', time:'', author:''};
+  openModal(isEdit?'编辑支系资讯':'发布支系资讯：'+DB.branches[curBranchIdx].name_disp,
+    '<div class="field"><label>标题 *</label><input id="f-bn-t" value="'+esc(it.title)+'"></div>'+
+    '<div class="field"><label>正文内容（支持换行）</label><textarea id="f-bn-c" rows="8">'+esc(it.content)+'</textarea></div>'+
+    '<div class="field"><label>插入图片</label><input type="file" id="f-bn-img" accept="image/*" multiple onchange="insertImgToTextarea(this, \'f-bn-c\')"><small style="color:var(--ink2)">支持多选，图片将以base64嵌入正文，单张建议小于500KB</small></div>'+
+    '<div class="field"><label>作者/署名</label><input id="f-bn-a" value="'+esc(it.author||'')+'" placeholder="如：任文贵"></div>',
+    ()=>{
+      const title = $('f-bn-t').value.trim();
+      if(!title){ toast('请填写标题'); return false; }
+      const rec = {title, content:$('f-bn-c').value.trim(), time:new Date().toLocaleString(), author:$('f-bn-a').value.trim() || (loginInfo.name||'匿名')};
+      if(isEdit){ Object.assign(bn.items[idx], rec); addLog('编辑支系资讯：'+title+' ('+DB.branches[curBranchIdx].name_disp+')'); }
+      else{ bn.items.push(rec); addLog('发布支系资讯：'+title+' ('+DB.branches[curBranchIdx].name_disp+')'); }
+      saveDB(); renderBranchDetailContent(); renderNewsBranches(); toast('已保存');
+    });
+}
+function delBranchNews(idx){
+  if(curBranchIdx<0) return;
+  const bn = (DB.branchNews||[]).find(n=>n.branchIdx===curBranchIdx);
+  if(!bn || !bn.items[idx]) return;
+  if(confirm('确定删除资讯「'+bn.items[idx].title+'」？')){
+    bn.items.splice(idx,1); saveDB(); renderBranchDetailContent(); renderNewsBranches();
+    addLog('删除支系资讯：'+DB.branches[curBranchIdx].name_disp);
+    toast('已删除');
+  }
 }
 
 /* ================= 字辈模块 ================= */
@@ -514,6 +882,10 @@ function renderZbFreq(){
     '<span class="bar-val">'+a[1]+'次</span></div>').join('');
 }
 function openBranchEditor(idx){
+  // 权限：总管理员可编辑所有；支系管理员只能编辑自己支系；未登录无权限
+  if(loginInfo.role==='none'){ toast('请先登录管理员账号'); switchTab('admin'); return; }
+  if(loginInfo.role==='branchAdmin' && idx!==undefined && idx!==loginInfo.branchIdx){ toast('支系管理员只能编辑本支系内容'); return; }
+  if(loginInfo.role==='branchAdmin' && idx===undefined){ toast('支系管理员不能新增支系，仅可编辑本支系'); return; }
   const isEdit = idx!==undefined;
   const b = isEdit? DB.branches[idx] : {name_disp:'', region:'', gens:[]};
   openModal(isEdit?'编辑支系：'+b.name_disp:'新增支系',
@@ -548,6 +920,24 @@ function renderRegionSelect(){
   sel.innerHTML = '<option value="">全部地区</option>' + contactRegions().map(r=>'<option>'+esc(r)+'</option>').join('');
   if(cur) sel.value = cur;
 }
+function maskTel(tel){
+  // 默认隐藏电话最后2位
+  if(!tel) return '—';
+  tel = String(tel);
+  if(tel.length<=2) return '*'.repeat(tel.length);
+  return tel.slice(0,-2) + '**';
+}
+function canSeeFullTel(contactAddr){
+  // 管理员或本支系管理员可见完整电话
+  if(loginInfo.role==='admin') return true;
+  if(loginInfo.role==='branchAdmin'){
+    const b = DB.branches[loginInfo.branchIdx];
+    if(!b || !contactAddr) return false;
+    const short = b.region? b.region.replace(/县|区/g,'') : '';
+    return contactAddr.includes(short) || (b.region||'').includes(contactAddr);
+  }
+  return false;
+}
 function renderContacts(){
   renderRegionSelect();
   const q = $('ct-search').value.trim().toLowerCase();
@@ -557,14 +947,16 @@ function renderContacts(){
     if(q){ const s = (c.name+c.tel+c.addr+c.zibei+c.note).toLowerCase(); if(!s.includes(q)) return false; }
     return true;
   });
-  $('ct-count').textContent = '共 '+list.length+' 位宗亲';
+  $('ct-count').textContent = '共 '+list.length+' 位宗亲' + (loginInfo.role==='none'? ' · 电话已隐藏后2位，登录管理员可见完整号码' : '');
   const pages = Math.max(1, Math.ceil(list.length/CT_PAGE));
   if(ctPage>pages) ctPage = 1;
   const part = list.slice((ctPage-1)*CT_PAGE, ctPage*CT_PAGE);
   $('ct-body').innerHTML = part.length? part.map(c=>{
     const idx = DB.contacts.indexOf(c);
-    return '<tr><td><b>'+esc(c.name)+'</b></td><td>'+(c.zibei?'<span class="tag">'+esc(c.zibei)+'</span>':'—')+'</td><td>'+esc(c.addr||'—')+'</td><td>'+esc(c.tel||'—')+'</td><td>'+esc(c.note||'')+'</td>'+
-    '<td class="ops"><button class="btn small ghost" onclick="openContactEditor('+idx+')">编辑</button><button class="btn small gray" onclick="delContact('+idx+')">删除</button></td></tr>';
+    const telShow = canSeeFullTel(c.addr)? esc(c.tel||'—') : '<span style="color:var(--ink2)">'+esc(maskTel(c.tel))+'</span>';
+    const canEdit = loginInfo.role==='admin' || canSeeFullTel(c.addr);
+    return '<tr><td><b>'+esc(c.name)+'</b></td><td>'+(c.zibei?'<span class="tag">'+esc(c.zibei)+'</span>':'—')+'</td><td>'+esc(c.addr||'—')+'</td><td>'+telShow+'</td><td>'+esc(c.note||'')+'</td>'+
+    '<td class="ops">'+(canEdit?'<button class="btn small ghost" onclick="openContactEditor('+idx+')">编辑</button><button class="btn small gray" onclick="delContact('+idx+')">删除</button>':'<span style="color:var(--ink2);font-size:12px">无权限</span>')+'</td></tr>';
   }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--ink2)">暂无数据</td></tr>';
   let pg = '<button class="btn small ghost" onclick="ctPage=1;renderContacts()">首页</button>'+
     '<button class="btn small ghost" onclick="if(ctPage>1){ctPage--;renderContacts()}">上一页</button>'+
@@ -602,6 +994,7 @@ function bizTypeOf(c){
   if(t.includes('公司')) return '公司';
   if(t.includes('个体')) return '个体工商户';
   if(t.includes('个人')) return '个人';
+  if(t.includes('企业')) return '公司';
   return t || '公司';
 }
 function renderBiz(){
@@ -612,6 +1005,7 @@ function renderBiz(){
     if(q){ const s = JSON.stringify(c).toLowerCase(); if(!s.includes(q)) return false; }
     return true;
   });
+  $('bz-count').textContent = '共 '+list.length+' 个主体';
   $('bz-body').innerHTML = list.length? list.map(c=>{
     const idx = DB.companies.indexOf(c);
     return '<tr><td><span class="tag blue">'+esc(bizTypeOf(c))+'</span></td><td><b>'+esc(c['企业名称']||'—')+'</b></td><td>'+esc(c['法定代表人']||'—')+'</td><td>'+esc(c['所属行业']||'—')+'</td><td style="max-width:220px">'+esc(c['注册地址']||'—')+'</td><td>'+esc(c['注册资本']||'—')+'</td><td>'+esc(c['成立时间']||'—')+'</td><td>'+esc(c['经营状态']||'—')+'</td>'+
@@ -622,18 +1016,64 @@ function renderBiz(){
 function openBizEditor(idx){
   const isEdit = idx!==undefined;
   const c = isEdit? DB.companies[idx] : {};
-  const F = [['属性','类型(公司/个体工商户/个人)'],['企业名称','企业名称 *'],['法定代表人','法定代表人/负责人'],['所属行业','所属行业'],['注册地址','注册地址'],['注册资本','注册资本'],['成立时间','成立时间'],['经营状态','经营状态'],['企业联系电话','联系电话']];
-  openModal(isEdit?'编辑经营主体':'新增经营主体',
-    F.map(f=>'<div class="field"><label>'+f[1]+'</label><input id="f-bz-'+f[0]+'" value="'+esc(c[f[0]]||'')+'"></div>').join(''),
-    ()=>{
-      const name = $('f-bz-企业名称').value.trim();
-      if(!name){ toast('请填写企业名称'); return false; }
-      const rec = {}; F.forEach(f=>rec[f[0]] = $('f-bz-'+f[0]).value.trim());
-      if(!rec['序号']) rec['序号'] = String(DB.companies.length+1);
-      if(isEdit){ Object.assign(DB.companies[idx], rec); addLog('编辑企业：'+name); }
-      else{ DB.companies.push(rec); addLog('新增企业：'+name); }
-      saveDB(); renderBiz(); renderHome(); toast('已保存');
-    });
+  // 不同类型对应不同字段模板
+  const TPL = {
+    '公司': [
+      ['属性','类型'],['企业名称','企业名称 *'],['法定代表人','法定代表人 *'],
+      ['统一社会信用代码','统一社会信用代码'],['所属行业','所属行业'],['注册地址','注册地址'],
+      ['注册资本','注册资本'],['成立时间','成立时间'],['营业期限','营业期限'],
+      ['经营范围','经营范围'],['企业联系电话','联系电话'],['经营状态','经营状态']
+    ],
+    '个体工商户': [
+      ['属性','类型'],['企业名称','个体户名称 *'],['经营者','经营者姓名 *'],
+      ['统一社会信用代码','统一社会信用代码'],['所属行业','所属行业'],['注册地址','注册地址'],
+      ['成立时间','成立时间'],['经营范围','经营范围'],['企业联系电话','联系电话'],['经营状态','经营状态']
+    ],
+    '个人': [
+      ['属性','类型'],['企业名称','姓名 *'],['法定代表人','身份证号(可选)'],
+      ['所属行业','从事行业'],['注册地址','常住地'],['企业联系电话','联系电话'],
+      ['经营状态','状态'],['经营范围','技能/服务项目']
+    ]
+  };
+  const curType = (c['属性']||'').includes('个体')? '个体工商户' : (c['属性']||'').includes('个人')? '个人' : '公司';
+  const F = TPL[curType];
+  const typeOpts = Object.keys(TPL).map(t=>'<option value="'+t+'"'+(t===curType?' selected':'')+'>'+t+'</option>').join('');
+  const fieldsHtml = '<div class="field"><label>类型 *</label><select id="f-bz-type" onchange="switchBizTpl()">'+typeOpts+'</select></div>'+
+    '<div id="f-bz-fields">'+F.map(f=>'<div class="field"><label>'+f[1]+'</label>'+(f[0]==='经营范围'?'<textarea id="f-bz-'+f[0]+'" rows="3">'+esc(c[f[0]]||'')+'</textarea>':'<input id="f-bz-'+f[0]+'" value="'+esc(c[f[0]]||'')+'">')+'</div>').join('')+'</div>';
+  openModal(isEdit?'编辑经营主体':'新增经营主体', fieldsHtml, ()=>{
+    const type = $('f-bz-type').value;
+    const nameField = TPL[type].find(f=>f[1].includes('*'))[0];
+    const name = $('f-bz-'+nameField)?.value.trim() || '';
+    if(!name){ toast('请填写名称'); return false; }
+    const rec = {属性:type};
+    TPL[type].forEach(f=>{ const el = $('f-bz-'+f[0]); if(el) rec[f[0]] = el.value.trim(); });
+    if(!rec['序号']) rec['序号'] = String(DB.companies.length+1);
+    if(isEdit){
+      // 清空旧字段后合并新字段
+      Object.keys(DB.companies[idx]).forEach(k=>{ if(!(k in rec) && k!=='序号') delete DB.companies[idx][k]; });
+      Object.assign(DB.companies[idx], rec); addLog('编辑企业：'+name);
+    }
+    else{ DB.companies.push(rec); addLog('新增企业：'+name); }
+    saveDB(); renderBiz(); renderHome(); toast('已保存');
+  });
+}
+function switchBizTpl(){
+  // 切换类型时，保留已填写的同名字段，重新渲染字段
+  const type = $('f-bz-type').value;
+  const TPL = openBizEditor.TPL || null;
+  // 收集已填字段
+  const collected = {};
+  document.querySelectorAll('[id^="f-bz-"]').forEach(el=>{
+    const k = el.id.replace('f-bz-','');
+    if(k!=='type') collected[k] = el.value;
+  });
+  const TPL2 = {
+    '公司': [['企业名称','企业名称 *'],['法定代表人','法定代表人 *'],['统一社会信用代码','统一社会信用代码'],['所属行业','所属行业'],['注册地址','注册地址'],['注册资本','注册资本'],['成立时间','成立时间'],['营业期限','营业期限'],['经营范围','经营范围'],['企业联系电话','联系电话'],['经营状态','经营状态']],
+    '个体工商户': [['企业名称','个体户名称 *'],['经营者','经营者姓名 *'],['统一社会信用代码','统一社会信用代码'],['所属行业','所属行业'],['注册地址','注册地址'],['成立时间','成立时间'],['经营范围','经营范围'],['企业联系电话','联系电话'],['经营状态','经营状态']],
+    '个人': [['企业名称','姓名 *'],['法定代表人','身份证号(可选)'],['所属行业','从事行业'],['注册地址','常住地'],['企业联系电话','联系电话'],['经营状态','状态'],['经营范围','技能/服务项目']]
+  };
+  const F = TPL2[type];
+  $('f-bz-fields').innerHTML = F.map(f=>'<div class="field"><label>'+f[1]+'</label>'+(f[0]==='经营范围'?'<textarea id="f-bz-'+f[0]+'" rows="3">'+esc(collected[f[0]]||'')+'</textarea>':'<input id="f-bz-'+f[0]+'" value="'+esc(collected[f[0]]||'')+'">')+'</div>').join('');
 }
 function delBiz(idx){
   const c = DB.companies[idx];
@@ -678,7 +1118,7 @@ const REGION_CENTER = {
 function loadAmap(cb){
   if(window.AMap){ amapLoaded = true; cb(); return; }
   const s = document.createElement('script');
-  s.src = 'https://webapi.amap.com/maps?v=2.0&key='+BUILTIN_DATA.meta.amap_key+'&plugin=AMap.DistrictSearch,AMap.Geocoder,AMap.Scale';
+  s.src = 'https://webapi.amap.com/maps?v=2.0&key='+BUILTIN_DATA.meta.amap_key+'&plugin=AMap.DistrictSearch,AMap.Geocoder,AMap.Scale,AMap.GeometryUtil';
   s.onload = ()=>{ amapLoaded = true; cb(); };
   s.onerror = ()=>{ $('map-box').innerHTML = '<div style="padding:60px 30px;text-align:center;color:var(--ink2)">高德地图加载失败（可能因网络或 Key 配额限制）。<br>支系数据与导航链接仍可在下方列表中使用。</div>'; };
   document.head.appendChild(s);
@@ -695,25 +1135,247 @@ function initMap(){
     map = new AMap.Map('map-box', {zoom:9, center:[105.55,28.7], mapStyle:'amap://styles/whitesmoke'});
     map.addControl(new AMap.Scale());
     infoWin = new AMap.InfoWindow({offset:new AMap.Pixel(0,-30)});
-    addBranchMarkers();
+    // 预加载企业坐标（地理编码）
+    preloadBizCoords(()=>{
+      addAllMarkers();
+      filterMapMarkers();
+    });
   });
 }
-function addBranchMarkers(){
+// 不同类型标记的颜色和图标
+const MARKER_STYLE = {
+  branch: {color:'r', label:'支系', iconUrl:'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png'},
+  company: {color:'b', label:'公司', iconUrl:'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'},
+  geti: {color:'g', label:'个体', iconUrl:'https://webapi.amap.com/theme/v1.3/markers/n/mark_g.png'},
+  person: {color:'y', label:'个人', iconUrl:'https://webapi.amap.com/theme/v1.3/markers/n/mark_y.png'}
+};
+// 预加载企业坐标（用高德Geocoder地理编码注册地址）
+function preloadBizCoords(cb){
+  if(!window.AMap || !AMap.Geocoder){ cb && cb(); return; }
+  const geocoder = new AMap.Geocoder({city:'泸州'});
+  let pending = 0;
+  DB.companies.forEach(c=>{
+    if(c._lng) return; // 已有坐标
+    const addr = c['注册地址'] || '';
+    if(!addr) return;
+    pending++;
+  });
+  if(pending===0){ cb && cb(); return; }
+  let done = 0;
+  DB.companies.forEach(c=>{
+    if(c._lng) return;
+    const addr = c['注册地址'] || '';
+    if(!addr) return;
+    // 限制地理编码并发，避免触发频率限制
+    setTimeout(()=>{
+      geocoder.getLocation(addr+' 泸州', (status, result)=>{
+        done++;
+        if(status==='complete' && result.geocodes && result.geocodes[0]){
+          c._lng = result.geocodes[0].location.getLng();
+          c._lat = result.geocodes[0].location.getLat();
+        }
+        if(done>=pending){ cb && cb(); }
+      });
+    }, (done*200));
+  });
+}
+function getBizType(b){
+  const t = (b['属性']||'').toString();
+  if(t.includes('个体')) return 'geti';
+  if(t.includes('个人')) return 'person';
+  if(t.includes('公司')||t.includes('企业')) return 'company';
+  return 'company';
+}
+function addAllMarkers(){
+  if(!map) return;
   markers.forEach(m=>map.remove(m)); markers = [];
+  // 支系标记
   DB.branches.forEach((b,i)=>{
     if(!b.lng) return;
     const mk = new AMap.Marker({
       position:[b.lng,b.lat],
       title:b.name_disp,
-      label:{content:'<div style="font-size:11px;padding:1px 6px">'+esc(b.name_disp.length>8?b.name_disp.slice(0,8)+'…':b.name_disp)+'</div>', direction:'top'},
-      icon: new AMap.Icon({size:new AMap.Size(25,34), image:'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png', imageSize:new AMap.Size(25,34)})
+      label:{content:'<div style="font-size:11px;padding:1px 6px;background:#8C1F28;color:#fff;border-radius:3px">'+esc(b.name_disp.length>8?b.name_disp.slice(0,8)+'…':b.name_disp)+'</div>', direction:'top'},
+      icon: new AMap.Icon({size:new AMap.Size(25,34), image:MARKER_STYLE.branch.iconUrl, imageSize:new AMap.Size(25,34)})
     });
+    mk._type='branch'; mk._idx=i;
     mk.on('click', ()=>focusBranch(i));
     map.add(mk); markers.push(mk);
   });
+  // 企业/产业标记
+  DB.companies.forEach((c,i)=>{
+    if(!c._lng) return;
+    const t = getBizType(c);
+    const name = c['企业名称'] || '未命名';
+    const mk = new AMap.Marker({
+      position:[c._lng,c._lat],
+      title:name,
+      label:{content:'<div style="font-size:10px;padding:1px 5px;background:'+(t==='company'?'#2D5F8A':t==='geti'?'#2E7D5B':'#A07E43')+';color:#fff;border-radius:3px">'+esc(name.length>6?name.slice(0,6)+'…':name)+'</div>', direction:'top'},
+      icon: new AMap.Icon({size:new AMap.Size(20,28), image:MARKER_STYLE[t].iconUrl, imageSize:new AMap.Size(20,28)})
+    });
+    mk._type=t; mk._bizIdx=i;
+    mk.on('click', ()=>focusBiz(i));
+    map.add(mk); markers.push(mk);
+  });
+}
+function filterMapMarkers(){
+  if(!map) return;
+  const showBranch = $('mf-branch')?.checked;
+  const showCompany = $('mf-company')?.checked;
+  const showGeti = $('mf-geti')?.checked;
+  const showPerson = $('mf-person')?.checked;
+  markers.forEach(mk=>{
+    let show = false;
+    if(mk._type==='branch' && showBranch) show=true;
+    if(mk._type==='company' && showCompany) show=true;
+    if(mk._type==='geti' && showGeti) show=true;
+    if(mk._type==='person' && showPerson) show=true;
+    mk.show();
+    if(!show) mk.hide();
+  });
+  // 同时刷新左侧支系列表（按勾选决定是否显示支系部分）
+  // 范围筛选：如果已选择范围，重新过滤
+  if(myPosition) filterMapByRange();
+  else renderNearbyList([]);
+}
+let myPosition = null; // [lng,lat] 当前位置
+let myPositionMarker = null;
+function locateMe(){
+  if(!navigator.geolocation){ toast('浏览器不支持定位'); return; }
+  if(!amapLoaded || !map){ toast('地图尚未加载完成'); return; }
+  toast('正在获取您的位置…');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    myPosition = [pos.coords.longitude, pos.coords.latitude];
+    if(myPositionMarker) map.remove(myPositionMarker);
+    myPositionMarker = new AMap.Marker({
+      position:myPosition,
+      title:'我的位置',
+      label:{content:'<div style="font-size:11px;padding:2px 8px;background:var(--gold-d);color:#fff;border-radius:12px">📍 我在这里</div>', direction:'top'},
+      icon: new AMap.Icon({size:new AMap.Size(28,36), image:'https://webapi.amap.com/theme/v1.3/markers/n/mark_y.png', imageSize:new AMap.Size(28,36)})
+    });
+    map.add(myPositionMarker);
+    map.setZoomAndCenter(13, myPosition);
+    $('my-pos-tag').style.display = 'inline-block';
+    $('my-pos-tag').textContent = '我的位置：'+myPosition[0].toFixed(4)+', '+myPosition[1].toFixed(4);
+    filterMapByRange();
+    toast('已定位到您的位置');
+  }, err=>{
+    let msg = '定位失败';
+    if(err.code===1) msg='定位被拒绝，请允许浏览器获取位置';
+    else if(err.code===2) msg='位置信息不可用';
+    else if(err.code===3) msg='定位超时';
+    toast(msg);
+  }, {enableHighAccuracy:true, timeout:10000, maximumAge:60000});
+}
+function filterMapByRange(){
+  const range = parseInt($('map-range')?.value || '0');
+  if(!myPosition && range>0){
+    toast('请先点击"我的位置"获取定位');
+    $('map-range').value='0';
+    return;
+  }
+  // 收集所有可见目标（按勾选类型）
+  const showBranch = $('mf-branch')?.checked;
+  const showCompany = $('mf-company')?.checked;
+  const showGeti = $('mf-geti')?.checked;
+  const showPerson = $('mf-person')?.checked;
+  const targets = [];
+  if(showBranch){
+    DB.branches.forEach((b,i)=>{
+      if(!b.lng) return;
+      const dist = myPosition? calcDist(myPosition, [b.lng,b.lat]) : 0;
+      targets.push({type:'branch', typeLabel:'支系', name:b.name_disp, addr:b.region, lng:b.lng, lat:b.lat, dist, idx:i});
+    });
+  }
+  if(showCompany || showGeti || showPerson){
+    DB.companies.forEach((c,i)=>{
+      if(!c._lng) return;
+      const t = getBizType(c);
+      if(t==='company' && !showCompany) return;
+      if(t==='geti' && !showGeti) return;
+      if(t==='person' && !showPerson) return;
+      const dist = myPosition? calcDist(myPosition, [c._lng,c._lat]) : 0;
+      targets.push({type:t, typeLabel:MARKER_STYLE[t].label, name:c['企业名称']||'未命名', addr:c['注册地址']||'', lng:c._lng, lat:c._lat, dist, idx:i});
+    });
+  }
+  // 范围过滤
+  let filtered = range>0? targets.filter(t=>t.dist<=range) : targets;
+  // 按距离排序
+  if(myPosition) filtered.sort((a,b)=>a.dist-b.dist);
+  // 隐藏不在范围内或不在勾选类型中的标记
+  markers.forEach(mk=>{
+    let show = false;
+    // 类型过滤
+    if(mk._type==='branch' && showBranch) show=true;
+    if(mk._type==='company' && showCompany) show=true;
+    if(mk._type==='geti' && showGeti) show=true;
+    if(mk._type==='person' && showPerson) show=true;
+    // 范围过滤（如已选择范围且有位置）
+    if(show && range>0 && myPosition){
+      if(mk._type==='branch'){
+        const b = DB.branches[mk._idx];
+        if(b && b.lng){ const d = calcDist(myPosition,[b.lng,b.lat]); show = d<=range; }
+      } else {
+        const c = DB.companies[mk._bizIdx];
+        if(c && c._lng){ const d = calcDist(myPosition,[c._lng,c._lat]); show = d<=range; }
+        else show = false;
+      }
+    }
+    if(show) mk.show(); else mk.hide();
+  });
+  renderNearbyList(filtered);
+}
+function calcDist(p1, p2){
+  if(!window.AMap || !AMap.GeometryUtil) return Math.sqrt(Math.pow((p1[0]-p2[0])*111000,2)+Math.pow((p1[1]-p2[1])*111000,2));
+  return AMap.GeometryUtil.distance(p1, p2);
+}
+function renderNearbyList(list){
+  const card = $('map-nearby-card');
+  if(!myPosition || list.length===0){ card.style.display='none'; return; }
+  card.style.display = 'block';
+  const range = parseInt($('map-range')?.value || '0');
+  $('map-nearby-tip').textContent = range>0? '范围 '+formatDist(range)+' 内共 '+list.length+' 个目标' : '全部 '+list.length+' 个目标（按距离排序）';
+  $('map-nearby-body').innerHTML = list.map((t,i)=>{
+    const color = t.type==='branch'? 'var(--red)' : t.type==='company'? 'var(--blue)' : t.type==='geti'? 'var(--green)' : 'var(--gold-d)';
+    return '<tr><td><span class="rank-no'+(i<3?' top':'')+'">'+(i+1)+'</span></td>'+
+      '<td><span class="tag" style="background:'+color+';color:#fff;border-color:'+color+'">'+esc(t.typeLabel)+'</span></td>'+
+      '<td><b>'+esc(t.name)+'</b></td>'+
+      '<td style="max-width:240px">'+esc(t.addr||'—')+'</td>'+
+      '<td>'+(myPosition? formatDist(t.dist) : '—')+'</td>'+
+      '<td class="ops"><a class="btn small ghost" target="_blank" href="https://uri.amap.com/navigation?to='+t.lng+','+t.lat+','+encodeURIComponent(t.name)+'&mode=car&src=lzren&coordinate=gaode">导航</a>'+
+      '<button class="btn small gold" onclick="focusMapTarget(\''+t.type+'\','+t.idx+')">查看</button></td></tr>';
+  }).join('');
+}
+function formatDist(m){
+  if(m<1000) return Math.round(m)+' 米';
+  return (m/1000).toFixed(1)+' 公里';
+}
+function focusMapTarget(type, idx){
+  if(type==='branch') focusBranch(idx);
+  else focusBiz(idx);
+}
+function focusBiz(i){
+  const c = DB.companies[i];
+  if(!c || !c._lng){ toast('该主体无坐标信息'); return; }
+  const t = getBizType(c);
+  $('map-info').style.display = 'block';
+  $('map-info').innerHTML = '<div class="sec-title" style="font-size:16px">'+esc(c['企业名称']||'未命名')+'</div>'+
+    '<p style="font-size:13px;margin-bottom:8px"><span class="tag '+(t==='company'?'blue':t==='geti'?'green':'')+'">'+esc(MARKER_STYLE[t].label)+'</span>'+
+    (c['法定代表人']?'<span class="tag">法人：'+esc(c['法定代表人'])+'</span>':'')+
+    (c['所属行业']?'<span class="tag green">'+esc(c['所属行业'])+'</span>':'')+'</p>'+
+    '<p style="font-size:13px;color:var(--ink2);margin-bottom:6px">地址：'+esc(c['注册地址']||'—')+(c['企业联系电话']?' · 电话：'+esc(c['企业联系电话']):'')+'</p>'+
+    (c['经营范围']?'<p style="font-size:12px;color:var(--ink2);margin-bottom:8px">经营范围：'+esc(c['经营范围'])+'</p>':'')+
+    '<div style="margin-top:12px"><a class="btn gold small" target="_blank" href="https://uri.amap.com/marker?position='+c._lng+','+c._lat+'&name='+encodeURIComponent(c['企业名称']||'')+'&src=lzren">在高德地图中查看</a> '+
+    '<a class="btn green small" target="_blank" href="https://uri.amap.com/navigation?to='+c._lng+','+c._lat+','+encodeURIComponent(c['企业名称']||'')+'&mode=car&src=lzren&coordinate=gaode">一键导航前往</a></div>';
+  if(amapLoaded && map){
+    map.setZoomAndCenter(13, [c._lng,c._lat]);
+    infoWin.setContent('<div style="padding:6px 10px;font-size:13px"><b>'+esc(c['企业名称']||'')+'</b><br>'+esc(c['注册地址']||'')+'</div>');
+    infoWin.open(map, [c._lng,c._lat]);
+  }
 }
 function focusBranch(i){
   const b = DB.branches[i];
+  if(!b) return;
   document.querySelectorAll('.region-item').forEach(e=>e.classList.toggle('active', +e.dataset.i===i));
   // 区域统计
   const rgKey = b.region.split('·')[0];
@@ -771,6 +1433,186 @@ function clearHighlight(){
   document.querySelectorAll('.region-item').forEach(e=>e.style.background='');
 }
 function fitMap(){ if(amapLoaded&&map){ map.setZoomAndCenter(9,[105.55,28.7]); clearHighlight(); } }
+
+/* ================= 组织架构模块 ================= */
+const ORG_GROUPS = ['家族理事会','字辈文化研究委员会','联谊活动委员会','产业合作委员会','青年委员会'];
+const ORG_LEVEL_COLORS = {
+  '总会长':'#8C1F28','副总会长':'#B43520','秘书长':'#2D5F8A','副秘书长':'#2D5F8A',
+  '财务长':'#A07E43','主任':'#2E7D5B','副主任':'#2E7D5B','理事':'#6A5F58','成员':'#6A5F58'
+};
+function renderOrg(){
+  const q = ($('org-search')?.value || '').trim().toLowerCase();
+  const members = DB.orgMembers || [];
+  // 按组分类
+  const groups = {};
+  ORG_GROUPS.forEach(g=>groups[g]=[]);
+  members.forEach(m=>{
+    if(!groups[m.group]) groups[m.group] = [];
+    groups[m.group].push(m);
+  });
+  // 渲染组织架构图
+  let html = '<div class="org-tree">';
+  // 家族理事会排在最前
+  const order = Object.keys(groups);
+  order.forEach(g=>{
+    if(!groups[g] || !groups[g].length) return;
+    const list = groups[g].filter(m=>{
+      if(!q) return true;
+      return m.name.toLowerCase().includes(q) || m.level.toLowerCase().includes(q) ||
+             (m.branch||'').toLowerCase().includes(q) || (m.duty||'').toLowerCase().includes(q);
+    });
+    if(!list.length) return;
+    html += '<div class="org-group">';
+    html += '<div class="org-group-title">'+esc(g)+'</div>';
+    html += '<div class="org-members">';
+    list.forEach((m,i)=>{
+      const color = ORG_LEVEL_COLORS[m.level] || '#6A5F58';
+      const telDisplay = (loginInfo.role==='admin' || loginInfo.role==='branchAdmin')? esc(m.tel||'—') : maskTel(m.tel||'');
+      const actions = (loginInfo.role==='admin')?
+        '<div style="margin-top:8px;font-size:11px">'+
+        '<button class="btn small ghost" onclick="openOrgEditor('+members.indexOf(m)+')">编辑</button> '+
+        '<button class="btn small gray" onclick="delOrgMember('+members.indexOf(m)+')">删除</button></div>' : '';
+      html += '<div class="org-card">'+
+        '<div class="org-avatar" style="background:'+color+'">'+esc((m.name||'?').slice(0,1))+'</div>'+
+        '<div class="org-info">'+
+        '<div style="font-weight:600;color:var(--ink)">'+esc(m.name)+'</div>'+
+        '<div style="font-size:12px;color:'+color+';font-weight:600;margin-top:2px">'+esc(m.level)+'</div>'+
+        '<div style="font-size:11px;color:var(--ink2);margin-top:4px">'+esc(m.branch||'')+' · 任期 '+esc(m.term||'—')+'</div>'+
+        '<div style="font-size:11px;color:var(--ink2);margin-top:2px">'+esc(m.duty||'')+'</div>'+
+        '<div style="font-size:11px;color:var(--blue);margin-top:4px">📞 '+telDisplay+'</div>'+
+        actions+
+        '</div></div>';
+    });
+    html += '</div></div>';
+  });
+  html += '</div>';
+  $('org-chart').innerHTML = html;
+  $('org-count').textContent = '共 '+members.length+' 位成员';
+  // 显示新增按钮
+  $('org-add-btn').style.display = loginInfo.role==='admin'? 'inline-block' : 'none';
+  // 渲染各支系负责人
+  renderOrgBranch();
+  // 渲染家族章程
+  renderOrgDocs();
+}
+function renderOrgBranch(){
+  const tbody = $('org-branch-body');
+  if(!tbody) return;
+  // 从 DB.branches 中提取支系负责人信息（使用第一个管理员账号或从通讯录中筛选）
+  // 这里简化：每个支系显示其支系管理员为负责人
+  const rows = DB.branches.map((b,i)=>{
+    const admin = (DB.branchAdmins||[]).find(ba=>ba.branchIdx===i);
+    return {
+      branch: b.name_disp,
+      region: b.region,
+      leader: admin? admin.name : '待任命',
+      level: admin? '支系管理员' : '—',
+      tel: admin? admin.tel : '',
+      term: admin? (admin.time||'').slice(0,10)+' 至今' : '—'
+    };
+  });
+  tbody.innerHTML = rows.map((r,i)=>{
+    const telDisplay = (loginInfo.role==='admin' || loginInfo.role==='branchAdmin')? esc(r.tel||'—') : maskTel(r.tel||'');
+    const actions = (loginInfo.role==='admin')?
+      '<button class="btn small ghost" onclick="switchTab(\'admin\')">管理</button>' : '';
+    return '<tr><td><b>'+esc(r.branch)+'</b></td><td>'+esc(r.region)+'</td>'+
+      '<td>'+esc(r.leader)+'</td><td>'+esc(r.level)+'</td>'+
+      '<td>'+telDisplay+'</td><td>'+esc(r.term)+'</td>'+
+      '<td class="ops">'+actions+'</td></tr>';
+  }).join('');
+}
+function renderOrgDocs(){
+  const docs = DB.orgDocs || [];
+  const q = ($('org-search')?.value || '').trim().toLowerCase();
+  const filtered = q? docs.filter(d=>d.title.toLowerCase().includes(q) || (d.content||'').toLowerCase().includes(q)) : docs;
+  $('org-docs').innerHTML = filtered.length? filtered.map((d,i)=>{
+    const realIdx = docs.indexOf(d);
+    const actions = (loginInfo.role==='admin')?
+      '<div style="margin-top:8px"><button class="btn small ghost" onclick="openOrgDocEditor('+realIdx+')">编辑</button> '+
+      '<button class="btn small gray" onclick="delOrgDoc('+realIdx+')">删除</button></div>' : '';
+    return '<div style="padding:14px 0;border-bottom:1px dashed var(--line)">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
+      '<span class="tag '+(d.type==='章程'?'red':'blue')+'">'+esc(d.type)+'</span>'+
+      '<b style="color:var(--red);font-size:15px">'+esc(d.title)+'</b>'+
+      '</div>'+
+      '<p style="font-size:12px;color:var(--ink2);margin-bottom:8px">发布时间：'+esc(d.time)+' · 作者：'+esc(d.author||'')+'</p>'+
+      '<p style="font-size:13px;color:var(--ink);line-height:1.9;white-space:pre-wrap">'+renderRichContent(d.content)+'</p>'+
+      actions+
+      '</div>';
+  }).join('') : '<p style="color:var(--ink2);font-size:13px;padding:14px 0">暂无家族章程与制度文件</p>';
+}
+function openOrgEditor(idx){
+  if(loginInfo.role!=='admin'){ toast('仅总管理员可管理组织架构'); return; }
+  const isEdit = idx!==undefined;
+  const m = isEdit? DB.orgMembers[idx] : {group:'家族理事会', level:'理事', name:'', branch:'', tel:'', term:'2024-2028', duty:'', time:new Date().toLocaleDateString()};
+  openModal(isEdit?'编辑组织成员':'新增组织成员',
+    '<div class="field"><label>所属机构 *</label><select id="f-org-g">'+ORG_GROUPS.map(g=>'<option value="'+g+'"'+(g===m.group?' selected':'')+'>'+g+'</option>').join('')+'</select></div>'+
+    '<div class="field"><label>职务/级别 *</label><input id="f-org-l" value="'+esc(m.level)+'" placeholder="如：总会长、理事"></div>'+
+    '<div class="field"><label>姓名 *</label><input id="f-org-n" value="'+esc(m.name)+'"></div>'+
+    '<div class="field"><label>所属支系/片区</label><input id="f-org-b" value="'+esc(m.branch)+'" placeholder="如：合江片区、全家族"></div>'+
+    '<div class="field"><label>联系电话</label><input id="f-org-t" value="'+esc(m.tel)+'"></div>'+
+    '<div class="field"><label>任期</label><input id="f-org-term" value="'+esc(m.term)+'" placeholder="如：2024-2028"></div>'+
+    '<div class="field"><label>职责分工</label><textarea id="f-org-d" rows="3">'+esc(m.duty)+'</textarea></div>',
+    ()=>{
+      const name = $('f-org-n').value.trim();
+      if(!name){ toast('请填写姓名'); return false; }
+      const rec = {
+        group: $('f-org-g').value,
+        level: $('f-org-l').value.trim() || '理事',
+        name, branch: $('f-org-b').value.trim(),
+        tel: $('f-org-t').value.trim(),
+        term: $('f-org-term').value.trim(),
+        duty: $('f-org-d').value.trim(),
+        time: m.time
+      };
+      if(isEdit){ DB.orgMembers[idx] = rec; addLog('编辑组织成员：'+name); }
+      else{ DB.orgMembers.push(rec); addLog('新增组织成员：'+name+' ('+rec.group+')'); }
+      saveDB(); renderOrg(); toast('已保存');
+    });
+}
+function delOrgMember(idx){
+  if(loginInfo.role!=='admin'){ toast('仅总管理员可管理组织架构'); return; }
+  const m = DB.orgMembers[idx];
+  if(!m) return;
+  if(confirm('确定删除组织成员「'+m.name+'」？')){
+    DB.orgMembers.splice(idx,1); saveDB(); renderOrg();
+    addLog('删除组织成员：'+m.name); toast('已删除');
+  }
+}
+function openOrgDocEditor(idx){
+  if(loginInfo.role!=='admin'){ toast('仅总管理员可管理家族章程'); return; }
+  const isEdit = idx!==undefined;
+  const d = isEdit? DB.orgDocs[idx] : {title:'', type:'制度', time:new Date().toLocaleDateString(), author:'家族理事会', content:''};
+  openModal(isEdit?'编辑家族章程':'新增家族章程',
+    '<div class="field"><label>标题 *</label><input id="f-od-t" value="'+esc(d.title)+'"></div>'+
+    '<div class="field"><label>类型</label><select id="f-od-ty"><option value="章程"'+(d.type==='章程'?' selected':'')+'>章程</option><option value="制度"'+(d.type==='制度'?' selected':'')+'>制度</option><option value="办法"'+(d.type==='办法'?' selected':'')+'>办法</option><option value="公告"'+(d.type==='公告'?' selected':'')+'>公告</option></select></div>'+
+    '<div class="field"><label>发布时间</label><input id="f-od-time" value="'+esc(d.time)+'"></div>'+
+    '<div class="field"><label>作者/发布机构</label><input id="f-od-a" value="'+esc(d.author)+'"></div>'+
+    '<div class="field"><label>正文内容（支持换行）</label><textarea id="f-od-c" rows="10">'+esc(d.content)+'</textarea></div>'+
+    '<div class="field"><label>插入图片</label><input type="file" id="f-od-img" accept="image/*" multiple onchange="insertImgToTextarea(this, \'f-od-c\')"><small style="color:var(--ink2)">支持多选，图片将以base64嵌入正文</small></div>',
+    ()=>{
+      const title = $('f-od-t').value.trim();
+      if(!title){ toast('请填写标题'); return false; }
+      const rec = {
+        title, type: $('f-od-ty').value,
+        time: $('f-od-time').value.trim() || new Date().toLocaleDateString(),
+        author: $('f-od-a').value.trim() || '家族理事会',
+        content: $('f-od-c').value.trim()
+      };
+      if(isEdit){ DB.orgDocs[idx] = rec; addLog('编辑家族章程：'+title); }
+      else{ DB.orgDocs.push(rec); addLog('新增家族章程：'+title); }
+      saveDB(); renderOrg(); toast('已保存');
+    });
+}
+function delOrgDoc(idx){
+  if(loginInfo.role!=='admin'){ toast('仅总管理员可管理家族章程'); return; }
+  const d = DB.orgDocs[idx];
+  if(!d) return;
+  if(confirm('确定删除「'+d.title+'」？')){
+    DB.orgDocs.splice(idx,1); saveDB(); renderOrg();
+    addLog('删除家族章程：'+d.title); toast('已删除');
+  }
+}
 
 /* ================= 统计模块 ================= */
 function regionOfContact(c){ return c.addr || '未登记'; }
@@ -844,17 +1686,59 @@ function openRegionEditor(rg){
 
 /* ================= 管理后台 ================= */
 let adminOk = false;
+// 登录信息：role 取值 none/guest/admin/branchAdmin；branchAdmin 时 branchIdx 表示所属支系
+let loginInfo = {role:'none', name:'', branchIdx:-1};
 function getPwd(){ return localStorage.getItem('lzren_pwd') || 'admin888'; }
 function adminLogin(){
   if($('admin-pwd').value === getPwd()){
-    adminOk = true; renderAdmin(); addLog('管理员登录'); toast('登录成功');
+    adminOk = true;
+    loginInfo = {role:'admin', name:'总管理员', branchIdx:-1};
+    renderAdmin(); addLog('总管理员登录'); toast('登录成功，已获得全部管理权限');
+    renderLoginTag();
   } else toast('密码错误');
 }
-function adminLogout(){ adminOk = false; renderAdmin(); }
+function branchAdminLogin(){
+  const user = $('bm-user').value.trim();
+  const pwd = $('bm-pwd').value.trim();
+  if(!user || !pwd){ toast('请输入支系管理员账号和密码'); return; }
+  const ba = (DB.branchAdmins||[]).find(b=>b.user===user && b.pwd===pwd && b.status==='正常');
+  if(ba){
+    adminOk = true;
+    loginInfo = {role:'branchAdmin', name:ba.name, branchIdx:ba.branchIdx};
+    renderAdmin(); addLog('支系管理员登录：'+ba.name+' ('+(DB.branches[ba.branchIdx]?.name_disp||'')+'), 可管理本支系内容'); toast('支系管理员登录成功，可管理：'+(DB.branches[ba.branchIdx]?.name_disp||''));
+    renderLoginTag();
+  } else toast('账号或密码错误，或已被禁用');
+}
+function adminLogout(){
+  const who = loginInfo.name || '管理员';
+  adminOk = false;
+  loginInfo = {role:'none', name:'', branchIdx:-1};
+  renderAdmin(); renderLoginTag();
+  addLog(who+' 退出登录'); toast('已退出登录');
+}
+function renderLoginTag(){
+  const tag = $('nav-login-tag');
+  if(!tag) return;
+  if(loginInfo.role==='admin'){ tag.innerHTML = '👤 总管理员 <button class="btn small ghost" style="margin-left:6px;padding:2px 8px" onclick="adminLogout()">退出</button>'; }
+  else if(loginInfo.role==='branchAdmin'){ tag.innerHTML = '👤 '+esc(loginInfo.name)+' ['+esc(DB.branches[loginInfo.branchIdx]?.name_disp||'')+'] <button class="btn small ghost" style="margin-left:6px;padding:2px 8px" onclick="adminLogout()">退出</button>'; }
+  else { tag.innerHTML = '<span style="color:var(--gold-l);cursor:pointer" onclick="switchTab(\'admin\')">未登录</span>'; }
+}
 function renderAdmin(){
   $('admin-login').style.display = adminOk? 'none':'block';
   $('admin-panel').style.display = adminOk? 'block':'none';
   if(!adminOk) return;
+  // 区分角色显示
+  if(loginInfo.role==='admin'){
+    $('admin-role-tag').textContent = '已登录 · 总管理员（全部权限）';
+    $('admin-scope-tag').style.display = 'none';
+  } else if(loginInfo.role==='branchAdmin'){
+    $('admin-role-tag').textContent = '已登录 · 支系管理员：'+loginInfo.name;
+    $('admin-scope-tag').style.display = 'inline-block';
+    $('admin-scope-tag').textContent = '管理范围：'+(DB.branches[loginInfo.branchIdx]?.name_disp||'')+'（仅可管理本支系资讯与字辈）';
+  }
+  // 支系管理员只能看本支系资讯；总管理员可看全部
+  renderAdminNews();
+  renderBranchAdmins();
   $('arc-body').innerHTML = (DB.archives||[]).length? DB.archives.map((a,i)=>
     '<tr><td>'+esc(a.time)+'</td><td>'+esc(a.note)+'</td>'+
     '<td class="ops"><button class="btn small ghost" onclick="restoreArchive('+i+')">恢复</button>'+
@@ -864,6 +1748,154 @@ function renderAdmin(){
   $('admin-logs').innerHTML = (DB.logs||[]).length? DB.logs.map(l=>
     '<div class="log-line"><b>['+esc(l.time)+']</b> '+esc(l.msg)+'</div>').join('')
     : '<p style="color:var(--ink2);font-size:13px">暂无操作日志</p>';
+}
+/* 公告资讯管理 */
+function filterAdminNews(){
+  const tp = $('admin-news-type').value;
+  const sel = $('admin-news-branch');
+  if(tp==='branch'){
+    sel.style.display='';
+    sel.innerHTML = '<option value="">全部支系</option>' + DB.branches.map((b,i)=>'<option value="'+i+'">'+esc(b.name_disp)+'</option>').join('');
+  } else {
+    sel.style.display='none';
+  }
+  renderAdminNews();
+}
+function renderAdminNews(){
+  const tp = $('admin-news-type').value;
+  const branchSel = $('admin-news-branch')?.value || '';
+  let rows = [];
+  if(tp==='total'){
+    // 总通知：仅总管理员可管理
+    if(loginInfo.role!=='admin'){
+      $('admin-news-body').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink2)">总通知仅总管理员可管理</td></tr>';
+      $('admin-news-count').textContent = '';
+      return;
+    }
+    rows = (DB.news||[]).map((n,i)=>({type:'总通知', title:n.t, scope:'全家族', time:n.time||'', summary:(n.d||'').slice(0,40), ref:i, kind:'total'}));
+  } else {
+    // 支系资讯
+    const list = (DB.branchNews||[]).filter(bn=>{
+      if(loginInfo.role==='branchAdmin' && bn.branchIdx!==loginInfo.branchIdx) return false;
+      if(branchSel!=='' && bn.branchIdx!==parseInt(branchSel)) return false;
+      return true;
+    });
+    list.forEach(bn=>{
+      bn.items.forEach((it,i)=>{
+        rows.push({type:'支系资讯', title:it.title, scope:DB.branches[bn.branchIdx]?.name_disp||'', time:it.time||'', summary:(it.content||'').slice(0,40), ref:i, branchIdx:bn.branchIdx, kind:'branch'});
+      });
+    });
+  }
+  $('admin-news-count').textContent = '共 '+rows.length+' 条';
+  $('admin-news-body').innerHTML = rows.length? rows.map(r=>
+    '<tr><td><span class="tag '+(r.kind==='total'?'':'blue')+'">'+esc(r.type)+'</span></td>'+
+    '<td><b>'+esc(r.title)+'</b></td><td>'+esc(r.scope)+'</td><td>'+esc(r.time)+'</td><td style="max-width:280px;color:var(--ink2)">'+esc(r.summary)+'</td>'+
+    '<td class="ops"><button class="btn small ghost" onclick="openNewsEditor('+r.ref+',\''+r.kind+'\''+(r.branchIdx!==undefined?','+r.branchIdx:'')+')">编辑</button>'+
+    '<button class="btn small gray" onclick="delNews('+r.ref+',\''+r.kind+'\''+(r.branchIdx!==undefined?','+r.branchIdx:'')+')">删除</button></td></tr>').join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--ink2)">暂无资讯</td></tr>';
+}
+function openNewsEditor(idx, kind, branchIdx){
+  const isEdit = idx!==undefined;
+  if(kind==='total'){
+    if(loginInfo.role!=='admin'){ toast('仅总管理员可管理总通知'); return; }
+    const it = isEdit? DB.news[idx] : {t:'', d:'', time:''};
+    openModal(isEdit?'编辑总通知':'发布总通知',
+      '<div class="field"><label>标题 *</label><input id="f-n-t" value="'+esc(it.t)+'"></div>'+
+      '<div class="field"><label>正文内容（支持多段，可粘贴文字）</label><textarea id="f-n-d" rows="6">'+esc(it.d)+'</textarea></div>'+
+      '<div class="field"><label>插入图片</label><input type="file" id="f-n-img" accept="image/*" multiple onchange="insertImgToTextarea(this, \'f-n-d\')"><small style="color:var(--ink2)">支持多选，图片将以base64嵌入正文</small></div>',
+      ()=>{
+        const t = $('f-n-t').value.trim();
+        if(!t){ toast('请填写标题'); return false; }
+        const rec = {t, d:$('f-n-d').value.trim(), time:new Date().toLocaleString()};
+        if(isEdit){ Object.assign(DB.news[idx], rec); addLog('编辑总通知：'+t); }
+        else{ DB.news.unshift(rec); addLog('发布总通知：'+t); }
+        saveDB(); renderAdminNews(); renderHome(); renderNewsPage?.(); toast('已保存');
+      });
+  } else {
+    // 支系资讯
+    const targetBranch = branchIdx!==undefined? branchIdx : (loginInfo.role==='branchAdmin'? loginInfo.branchIdx : -1);
+    if(targetBranch<0){ toast('请选择支系'); return; }
+    const bn = (DB.branchNews||[]).find(n=>n.branchIdx===targetBranch);
+    if(!bn){ toast('支系资讯数据异常'); return; }
+    const it = isEdit? bn.items[idx] : {title:'', content:'', time:'', author:''};
+    openModal(isEdit?'编辑支系资讯':'发布支系资讯：'+(DB.branches[targetBranch]?.name_disp||''),
+      '<div class="field"><label>标题 *</label><input id="f-bn-t2" value="'+esc(it.title)+'"></div>'+
+      '<div class="field"><label>正文内容</label><textarea id="f-bn-c2" rows="8">'+esc(it.content)+'</textarea></div>'+
+      '<div class="field"><label>作者/署名</label><input id="f-bn-a2" value="'+esc(it.author||'')+'"></div>',
+      ()=>{
+        const title = $('f-bn-t2').value.trim();
+        if(!title){ toast('请填写标题'); return false; }
+        const rec = {title, content:$('f-bn-c2').value.trim(), time:new Date().toLocaleString(), author:$('f-bn-a2').value.trim() || loginInfo.name};
+        if(isEdit){ Object.assign(bn.items[idx], rec); addLog('编辑支系资讯：'+title); }
+        else{ bn.items.push(rec); addLog('发布支系资讯：'+title); }
+        saveDB(); renderAdminNews(); renderNewsBranches?.(); toast('已保存');
+      });
+  }
+}
+function delNews(idx, kind, branchIdx){
+  if(kind==='total'){
+    if(loginInfo.role!=='admin'){ toast('仅总管理员可管理总通知'); return; }
+    if(confirm('确定删除总通知「'+DB.news[idx].t+'」？')){
+      DB.news.splice(idx,1); saveDB(); renderAdminNews(); renderHome(); renderNewsPage?.();
+      addLog('删除总通知'); toast('已删除');
+    }
+  } else {
+    const bn = (DB.branchNews||[]).find(n=>n.branchIdx===branchIdx);
+    if(!bn || !bn.items[idx]) return;
+    if(confirm('确定删除支系资讯「'+bn.items[idx].title+'」？')){
+      bn.items.splice(idx,1); saveDB(); renderAdminNews(); renderNewsBranches?.();
+      addLog('删除支系资讯'); toast('已删除');
+    }
+  }
+}
+/* 支系管理员管理（仅总管理员） */
+function renderBranchAdmins(){
+  if(loginInfo.role!=='admin'){
+    $('admin-bm-body').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink2)">仅总管理员可管理支系管理员账号</td></tr>';
+    $('admin-bm-count').textContent = '';
+    return;
+  }
+  const list = DB.branchAdmins||[];
+  $('admin-bm-count').textContent = '共 '+list.length+' 个支系管理员账号';
+  $('admin-bm-body').innerHTML = list.length? list.map((ba,i)=>
+    '<tr><td><b>'+esc(ba.user)+'</b></td><td>'+esc(ba.name)+'</td><td>'+esc(DB.branches[ba.branchIdx]?.name_disp||'已删除')+'</td><td>'+esc(ba.tel||'—')+'</td><td>'+esc(ba.time||'')+'</td><td>'+(ba.status==='正常'?'<span class="tag green">正常</span>':'<span class="tag">禁用</span>')+'</td>'+
+    '<td class="ops"><button class="btn small ghost" onclick="openBranchAdminEditor('+i+')">编辑</button><button class="btn small gray" onclick="delBranchAdmin('+i+')">删除</button></td></tr>').join('')
+    : '<tr><td colspan="7" style="text-align:center;color:var(--ink2)">暂无支系管理员账号，点击"＋新增支系管理员"创建</td></tr>';
+}
+function openBranchAdminEditor(idx){
+  if(loginInfo.role!=='admin'){ toast('仅总管理员可管理支系管理员账号'); return; }
+  const isEdit = idx!==undefined;
+  const ba = isEdit? DB.branchAdmins[idx] : {user:'', name:'', branchIdx:0, tel:'', pwd:'', status:'正常'};
+  const opts = DB.branches.map((b,i)=>'<option value="'+i+'"'+(i===ba.branchIdx?' selected':'')+'>'+esc(b.name_disp)+'</option>').join('');
+  openModal(isEdit?'编辑支系管理员':'新增支系管理员',
+    '<div class="field"><label>登录账号 *</label><input id="f-ba-u" value="'+esc(ba.user)+'" placeholder="如：hejiang_admin"></div>'+
+    '<div class="field"><label>姓名 *</label><input id="f-ba-n" value="'+esc(ba.name)+'"></div>'+
+    '<div class="field"><label>所属支系 *</label><select id="f-ba-b">'+opts+'</select></div>'+
+    '<div class="field"><label>联系电话</label><input id="f-ba-t" value="'+esc(ba.tel||'')+'"></div>'+
+    '<div class="field"><label>登录密码 *</label><input id="f-ba-p" value="'+esc(ba.pwd||'')+'" placeholder="至少6位"></div>'+
+    '<div class="field"><label>状态</label><select id="f-ba-s"><option value="正常"'+(ba.status==='正常'?' selected':'')+'>正常</option><option value="禁用"'+(ba.status==='禁用'?' selected':'')+'>禁用</option></select></div>',
+    ()=>{
+      const user = $('f-ba-u').value.trim();
+      const name = $('f-ba-n').value.trim();
+      const pwd = $('f-ba-p').value.trim();
+      if(!user || !name || !pwd){ toast('账号、姓名、密码不能为空'); return false; }
+      if(pwd.length<6){ toast('密码至少6位'); return false; }
+      // 账号唯一性检查
+      const dup = (DB.branchAdmins||[]).find((b,i)=>b.user===user && i!==idx);
+      if(dup){ toast('账号已存在：'+user); return false; }
+      const rec = {user, name, branchIdx:parseInt($('f-ba-b').value), tel:$('f-ba-t').value.trim(), pwd, status:$('f-ba-s').value, time:isEdit? DB.branchAdmins[idx].time : new Date().toLocaleString()};
+      if(isEdit){ Object.assign(DB.branchAdmins[idx], rec); addLog('编辑支系管理员：'+name); }
+      else{ DB.branchAdmins.push(rec); addLog('新增支系管理员：'+name+' 账号:'+user); }
+      saveDB(); renderBranchAdmins(); toast('已保存');
+    });
+}
+function delBranchAdmin(idx){
+  if(loginInfo.role!=='admin'){ toast('无权限'); return; }
+  const ba = DB.branchAdmins[idx];
+  if(confirm('确定删除支系管理员「'+ba.name+'」(账号:'+ba.user+')？')){
+    DB.branchAdmins.splice(idx,1); saveDB(); renderBranchAdmins();
+    addLog('删除支系管理员：'+ba.name); toast('已删除');
+  }
 }
 function changePwd(){
   const p = $('new-pwd').value.trim();
@@ -900,6 +1932,8 @@ function resetData(){
   const pwd = getPwd();
   DB = JSON.parse(JSON.stringify(BUILTIN_DATA));
   DB.searchStats={}; DB.archives=[]; DB.logs=[]; DB.regionExtra={}; DB.news=defaultNews();
+  DB.branchAdmins=[]; DB.branchNews=defaultBranchNews();
+  DB.orgMembers=defaultOrgMembers(); DB.orgDocs=defaultOrgDocs(); DB.version=3;
   saveDB(); renderAll(); addLog('恢复出厂数据'); toast('已恢复出厂数据');
 }
 
@@ -938,9 +1972,24 @@ function exportCSV(type){
       DB.branches.forEach(b=>rows.push([b.name_disp, b.region||'', b.gens.filter(g=>g).length, ...Array.from({length:n},(_,i)=>b.gens[i]||'')]));
       return rows;
     }},
-    contacts: {name:'宗亲通讯录', fn: ()=>[['姓名','字辈','地区','电话','备注'], ...DB.contacts.map(c=>[c.name,c.zibei,c.addr,c.tel,c.note])]},
+    contacts: {name:'宗亲通讯录', fn: ()=>[['姓名','字辈','地区','电话','备注'], ...DB.contacts.map(c=>[c.name,c.zibei,c.addr,loginInfo.role==='admin'||canSeeFullTel(c.addr)?c.tel:maskTel(c.tel),c.note])]},
     companies: {name:'宗亲企业', fn: ()=>[['类型','企业名称','法定代表人','所属行业','注册地址','注册资本','成立时间','经营状态','联系电话'], ...DB.companies.map(c=>[bizTypeOf(c),c['企业名称']||'',c['法定代表人']||'',c['所属行业']||'',c['注册地址']||'',c['注册资本']||'',c['成立时间']||'',c['经营状态']||'',c['企业联系电话']||''])]},
-    skills: {name:'技能招工登记', fn: ()=>[['姓名','支系','字辈','技术技能企业','常住地','备注'], ...DB.skills.map(s=>[s.name,s.branch,s.zibei,s.skill,s.addr,s.note])]}
+    skills: {name:'技能招工登记', fn: ()=>[['姓名','支系','字辈','技术技能企业','常住地','备注'], ...DB.skills.map(s=>[s.name,s.branch,s.zibei,s.skill,s.addr,s.note])]},
+    news: {name:'家族资讯', fn: ()=>{
+      const rows = [['类型','标题','所属','时间','作者','内容']];
+      (DB.news||[]).forEach(n=>rows.push(['总通知', n.t, '全家族', n.time||'', '管理员', n.d||'']));
+      (DB.branchNews||[]).forEach(bn=>bn.items.forEach(it=>rows.push(['支系资讯', it.title, DB.branches[bn.branchIdx]?.name_disp||'', it.time||'', it.author||'', it.content||''])));
+      return rows;
+    }},
+    branchAdmins: {name:'支系管理员账号', fn: ()=>{
+      if(loginInfo.role!=='admin') return [['无权限导出']];
+      return [['账号','姓名','所属支系','联系电话','创建时间','状态'], ...(DB.branchAdmins||[]).map(ba=>[ba.user, ba.name, DB.branches[ba.branchIdx]?.name_disp||'', ba.tel||'', ba.time||'', ba.status])];
+    }},
+    org: {name:'组织架构', fn: ()=>{
+      const canSeeFull = loginInfo.role==='admin' || loginInfo.role==='branchAdmin';
+      return [['所属机构','职务','姓名','所属支系','联系电话','任期','职责分工','任职时间'],
+        ...(DB.orgMembers||[]).map(m=>[m.group, m.level, m.name, m.branch||'', canSeeFull?m.tel||'':maskTel(m.tel||''), m.term||'', m.duty||'', m.time||''])];
+    }}
   };
   const cfg = CSV_MAP[type]; if(!cfg) return;
   const csv = cfg.fn().map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\n');
@@ -952,10 +2001,13 @@ function exportCSV(type){
 function renderAll(){
   renderHome(); renderZbMatrix(null); renderZbFreq();
   renderContacts(); renderBiz(); renderRegionTable();
+  renderNewsPage?.(); renderLoginTag();
   if($('page-map').classList.contains('show')) initMap();
+  if($('page-org').classList.contains('show')) renderOrg();
 }
 initDB();
 renderAll();
+renderLoginTag();
 
 </script>
 </body>
