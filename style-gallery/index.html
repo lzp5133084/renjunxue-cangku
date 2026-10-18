@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>风格图鉴 · AI 提示词风格库</title>
+<meta name="description" content="5 大类 38 种 AI 绘画风格参考图与提示词库：写实摄影、东方国风、二次元插画、创意潮流、3D 渲染，一键复制通用提示词，上传图片实时预览风格效果。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='%23F6F3EC' stroke='%23B79B62' stroke-width='3'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%232B2722' font-family='serif'%3E图%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap">
+<style>
+/* ============ 设计变量 ============ */
+:root{
+  --paper:#F6F3EC;
+  --paper-2:#EFEAE0;
+  --card:#FCFAF5;
+  --ink:#2B2722;
+  --ink-2:#6E675D;
+  --ink-3:#9A9284;
+  --line:#E3DDD0;
+  --sage:#7E9182;
+  --sage-deep:#5F7366;
+  --sage-soft:#DDE4DC;
+  --gold:#B79B62;
+  --gold-soft:#E8DCC2;
+  --shadow:0 10px 30px rgba(43,39,34,.08);
+  --radius:16px;
+  --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:16px;color:var(--ink)}
+::selection{background:var(--gold-soft)}
+:focus-visible{outline:2px solid var(--sage);outline-offset:2px;border-radius:4px}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+/* ============ 顶部导航 ============ */
+.nav{position:sticky;top:0;z-index:100;background:rgba(246,243,236,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:700;font-size:19px;letter-spacing:1px}
+.brand-mark{width:32px;height:32px;border:1.5px solid var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink);background:var(--card)}
+.nav-links{display:none;align-items:center;gap:6px}
+.nav-link{padding:8px 14px;border-radius:10px;font-size:14px;color:var(--ink-2);transition:.2s}
+.nav-link:hover,.nav-link.on{color:var(--ink);background:var(--card);box-shadow:var(--shadow)}
+.dropdown{position:relative}
+.dd-menu{display:none;position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px;z-index:50}
+.dropdown.open .dd-menu{display:block}
+.dd-item{display:block;padding:9px 12px;border-radius:9px;font-size:14px;color:var(--ink-2)}
+.dd-item:hover{background:var(--paper-2);color:var(--ink)}
+.dd-item small{display:block;font-size:12px;color:var(--ink-3);margin-top:1px}
+.burger{width:40px;height:40px;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;border-radius:10px}
+.burger span{width:20px;height:2px;background:var(--ink);border-radius:2px;transition:.25s}
+.burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.burger.open span:nth-child(2){opacity:0}
+.burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{display:none;border-top:1px solid var(--line);background:var(--card);padding:10px 20px 16px}
+.mobile-menu.open{display:block}
+.mm-link{display:block;padding:11px 8px;border-radius:10px;font-size:15px;color:var(--ink-2)}
+.mm-link:hover{background:var(--paper-2);color:var(--ink)}
+@media(min-width:768px){
+  .nav-links{display:flex}
+  .burger{display:none}
+  .mobile-menu{display:none!important}
+}
+
+/* ============ 通用区块 ============ */
+.page{padding:28px 0 70px;min-height:70vh}
+.eyebrow{font-size:12px;letter-spacing:3px;color:var(--sage-deep);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:22px;height:1px;background:var(--gold)}
+h1.display{font-family:var(--serif);font-size:34px;line-height:1.35;font-weight:700;letter-spacing:1px}
+h2.section-title{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+.section-sub{color:var(--ink-2);font-size:14px;margin-bottom:28px}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px}
+@media(min-width:768px){
+  h1.display{font-size:46px}
+  h2.section-title{font-size:32px}
+  .page{padding:44px 0 90px}
+}
+
+/* ============ 首页 Hero ============ */
+.hero{padding:52px 0 44px}
+.hero-grid{display:grid;gap:36px;align-items:center}
+.hero-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:26px 0}
+@media(min-width:768px){.hero-stats{display:flex;flex-wrap:wrap;gap:12px}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 18px;min-width:104px}
+.stat b{font-family:var(--serif);font-size:24px;display:block;color:var(--ink)}
+.stat span{font-size:12px;color:var(--ink-3)}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:15px;font-weight:500;transition:.25s;border:1px solid transparent}
+.btn-primary{background:var(--ink);color:#F8F5EE}
+.btn-primary:hover{background:#3D372F;transform:translateY(-1px)}
+.btn-ghost{border-color:var(--line);background:var(--card);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--gold);transform:translateY(-1px)}
+.btn-sage{background:var(--sage);color:#FBFAF6}
+.btn-sage:hover{background:var(--sage-deep)}
+.hero-visual{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,auto);gap:12px;position:relative}
+.hero-visual img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:14px;box-shadow:var(--shadow)}
+.hero-visual img:nth-child(1){grid-row:span 3;aspect-ratio:3/4}
+.hero-visual img:nth-child(2){aspect-ratio:16/10}
+.hero-visual img:nth-child(3){aspect-ratio:16/10}
+.hero-visual img:nth-child(4){aspect-ratio:16/10}
+.hero-visual::after{content:"";position:absolute;inset:8px;border:1px solid var(--gold);border-radius:18px;pointer-events:none;opacity:.45}
+@media(min-width:768px){.hero-grid{grid-template-columns:1.05fr .95fr}}
+@media(min-width:1024px){
+  .hero{padding:76px 0 56px}
+  h1.display{font-size:52px}
+}
+
+/* ============ 分类卡片 ============ */
+.cat-grid{display:grid;gap:16px;grid-template-columns:repeat(1,1fr)}
+@media(min-width:600px){.cat-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.cat-grid{grid-template-columns:repeat(3,1fr)}}
+.cat-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.3s;display:block}
+.cat-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--gold-soft)}
+.cat-card .cover{position:relative;aspect-ratio:16/10;overflow:hidden}
+.cat-card .cover img{width:100%;height:100%;object-fit:cover;transition:.5s}
+.cat-card:hover .cover img{transform:scale(1.05)}
+.cat-card .cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(43,39,34,.55))}
+.cat-card .cover b{position:absolute;left:16px;bottom:12px;z-index:2;color:#F8F5EE;font-family:var(--serif);font-size:21px;letter-spacing:1px}
+.cat-card .cover em{position:absolute;right:14px;top:12px;z-index:2;font-style:normal;font-size:12px;color:#F8F5EE;background:rgba(43,39,34,.4);padding:3px 10px;border-radius:999px;letter-spacing:1px}
+.cat-card .body{padding:16px 18px 18px}
+.cat-card .tagline{font-size:13px;color:var(--sage-deep);margin-bottom:6px;letter-spacing:1px}
+.cat-card .desc{font-size:13px;color:var(--ink-2);margin-bottom:12px;min-height:38px}
+.cat-card .meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--ink-3)}
+.cat-card .go{color:var(--sage-deep);font-size:13px;display:inline-flex;align-items:center;gap:4px}
+.cat-card:hover .go{gap:8px;color:var(--sage-deep)}
+/* 5 个卡片 3列布局修正：最后一行2个，OK；2列时3行中最后1行1个 */
+@media(min-width:600px) and (max-width:999px){
+  .cat-card:last-child:nth-child(odd){grid-column:span 2;max-width:50%}
+}
+
+/* ============ 风格墙 ============ */
+.gallery-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:22px}
+.chip{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13px;color:var(--ink-2);transition:.2s}
+.chip:hover{border-color:var(--sage);color:var(--sage-deep)}
+.chip.on{background:var(--ink);color:#F8F5EE;border-color:var(--ink)}
+.search-box{flex:1;min-width:200px;position:relative}
+.search-box input{width:100%;padding:9px 16px 9px 40px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.search-box svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
+.style-grid{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:768px){.style-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1100px){.style-grid{grid-template-columns:repeat(4,1fr)}}
+.style-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.3s;display:flex;flex-direction:column}
+.style-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--gold-soft)}
+.style-card .thumb{position:relative;aspect-ratio:3/4;overflow:hidden}
+.style-card .thumb img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:.5s}
+.style-card:hover .thumb img{transform:scale(1.04)}
+.style-card .type-tag{position:absolute;left:10px;top:10px;z-index:2;font-size:11px;background:rgba(252,250,245,.92);color:var(--sage-deep);padding:3px 9px;border-radius:999px;letter-spacing:1px}
+.style-card .body{padding:13px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.style-card h3{font-family:var(--serif);font-size:16px;font-weight:700;letter-spacing:.5px}
+.style-card .tags{display:flex;flex-wrap:wrap;gap:5px}
+.style-card .tags span{font-size:11px;color:var(--ink-3);border:1px solid var(--line);padding:1px 8px;border-radius:999px}
+.style-card .actions{display:flex;gap:8px;margin-top:auto}
+.mini-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:9px 8px;border-radius:10px;font-size:13px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);transition:.2s}
+.mini-btn:hover{border-color:var(--sage);color:var(--sage-deep);background:var(--card)}
+.mini-btn.solid{background:var(--ink);color:#F8F5EE;border-color:var(--ink)}
+.mini-btn.solid:hover{background:#3D372F}
+.empty-tip{padding:60px 20px;text-align:center;color:var(--ink-3);font-size:14px}
+
+/* ============ 使用指南 ============ */
+.steps{display:grid;gap:16px;grid-template-columns:repeat(1,1fr)}
+@media(min-width:768px){.steps{grid-template-columns:repeat(3,1fr)}}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 22px;position:relative}
+.step .no{font-family:var(--serif);font-size:15px;color:var(--gold);letter-spacing:2px;margin-bottom:12px}
+.step h3{font-family:var(--serif);font-size:18px;margin-bottom:8px}
+.step p{font-size:13.5px;color:var(--ink-2)}
+
+/* ============ CTA 条 ============ */
+.cta-band{background:var(--ink);color:#F8F5EE;border-radius:20px;padding:38px 26px;text-align:center;position:relative;overflow:hidden}
+.cta-band h2{font-family:var(--serif);font-size:24px;margin-bottom:10px;letter-spacing:1px}
+.cta-band p{color:#C9C2B4;font-size:14px;margin-bottom:22px}
+.cta-band .btn-primary{background:#F8F5EE;color:var(--ink)}
+.cta-band .btn-primary:hover{background:#fff}
+.cta-band::before{content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(184,155,98,.35)}
+.cta-band::after{content:"";position:absolute;bottom:-80px;left:-40px;width:260px;height:260px;border-radius:50%;border:1px solid rgba(126,145,130,.3)}
+@media(min-width:768px){.cta-band{padding:54px 40px}.cta-band h2{font-size:30px}}
+
+/* ============ 类别页 ============ */
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3);margin-bottom:22px;flex-wrap:wrap}
+.breadcrumb a:hover{color:var(--sage-deep)}
+.cat-hero{margin-bottom:30px}
+.cat-hero h1{font-family:var(--serif);font-size:32px;margin-bottom:8px}
+.cat-hero .tagline{color:var(--sage-deep);font-size:14px;letter-spacing:1px;margin-bottom:8px}
+.cat-hero .desc{color:var(--ink-2);font-size:14px;max-width:720px}
+.cat-hero .stat-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.cat-hero .stat-row span{font-size:12px;color:var(--ink-3);background:var(--card);border:1px solid var(--line);padding:5px 12px;border-radius:999px}
+
+/* ============ 风格详情页 ============ */
+.detail-grid{display:grid;gap:26px}
+@media(min-width:900px){.detail-grid{grid-template-columns:.92fr 1.08fr;gap:40px}}
+.detail-img-wrap{position:sticky;top:80px;align-self:start}
+.detail-img{width:100%;border-radius:18px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.detail-img-cap{font-size:12px;color:var(--ink-3);text-align:center;margin-top:10px;letter-spacing:1px}
+.detail-head h1{font-family:var(--serif);font-size:28px;margin-bottom:10px}
+.detail-head .tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.detail-head .tags span{font-size:12px;color:var(--sage-deep);background:var(--sage-soft);padding:3px 12px;border-radius:999px}
+.detail-desc{color:var(--ink-2);font-size:14px;margin-bottom:22px}
+.prompt-block{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.prompt-block .p-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.prompt-block .p-title{font-family:var(--serif);font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
+.prompt-block .p-title .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex:none}
+.prompt-block .p-note{font-size:12px;color:var(--ink-3)}
+.prompt-block .p-text{font-size:13.5px;color:var(--ink);line-height:1.9;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-word}
+.prompt-block .p-text .ph{background:var(--gold-soft);border-radius:4px;padding:0 3px;font-weight:600;color:#5A4A22}
+.copy-btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sage-deep);border:1px solid var(--line);padding:7px 14px;border-radius:999px;background:var(--paper);transition:.2s}
+.copy-btn:hover{background:var(--sage-soft);border-color:var(--sage)}
+.detail-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.related-title{font-family:var(--serif);font-size:20px;margin:44px 0 16px;letter-spacing:1px}
+.related-scroll{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:900px){.related-scroll{grid-template-columns:repeat(4,1fr)}}
+.rel-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.25s}
+.rel-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.rel-card img{aspect-ratio:3/4;object-fit:cover;object-position:center top;width:100%}
+.rel-card .rel-name{padding:10px 12px;font-size:13px;font-weight:600;font-family:var(--serif)}
+.rel-card .rel-type{font-size:11px;color:var(--ink-3);padding:0 12px 10px}
+
+/* ============ 上传工作台 ============ */
+.studio-wrap{max-width:1060px}
+.drop-zone{border:1.5px dashed var(--gold);border-radius:18px;background:var(--card);padding:40px 20px;text-align:center;cursor:pointer;transition:.25s;position:relative;overflow:hidden}
+.drop-zone:hover,.drop-zone.drag{background:var(--sage-soft);border-color:var(--sage)}
+.drop-zone .dz-icon{width:56px;height:56px;margin:0 auto 14px;border-radius:50%;background:var(--paper-2);display:flex;align-items:center;justify-content:center;color:var(--sage-deep)}
+.drop-zone p{font-size:14px;color:var(--ink-2)}
+.drop-zone small{display:block;font-size:12px;color:var(--ink-3);margin-top:6px}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.preview-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;margin-top:16px}
+.preview-box{position:relative;width:200px}
+.preview-box img{width:100%;max-height:280px;object-fit:contain;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+.preview-box .del{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(43,39,34,.65);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center}
+.preview-box .del:hover{background:rgba(43,39,34,.9)}
+.form-grid{display:grid;gap:14px;margin-top:20px}
+@media(min-width:768px){.form-grid{grid-template-columns:1fr 1fr}}
+.field{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.field label{display:block;font-family:var(--serif);font-weight:700;font-size:14px;margin-bottom:8px;letter-spacing:.5px}
+.field .hint{font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.6}
+.mode-options{display:flex;flex-direction:column;gap:8px}
+@media(min-width:768px){.mode-options{flex-direction:row}}
+.mode-opt{flex:1;display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:.2s;background:var(--paper)}
+.mode-opt:hover{border-color:var(--sage)}
+.mode-opt.on{border-color:var(--sage);background:var(--sage-soft)}
+.mode-opt input{margin-top:4px;accent-color:var(--sage)}
+.mode-opt b{font-size:14px;display:block}
+.mode-opt small{font-size:12px;color:var(--ink-2)}
+select.style-select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+textarea.subject{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--paper);resize:vertical;min-height:64px}
+.studio-run{margin:22px 0 6px;width:100%;justify-content:center;padding:15px;font-size:16px}
+.result-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 16px;flex-wrap:wrap}
+.result-head h3{font-family:var(--serif);font-size:20px}
+.result-head small{color:var(--ink-3);font-size:12px}
+.result-grid{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:768px){.result-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1100px){.result-grid{grid-template-columns:repeat(4,1fr)}}
+.result-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+.result-card:hover{border-color:var(--gold-soft);box-shadow:var(--shadow)}
+.result-card canvas{width:100%;aspect-ratio:3/4;display:block;object-fit:cover}
+.result-card .r-body{padding:12px 13px;display:flex;flex-direction:column;gap:8px;flex:1}
+.result-card h4{font-family:var(--serif);font-size:14.5px;font-weight:700}
+.result-card .r-type{font-size:11px;color:var(--ink-3)}
+.result-card .r-prompt{font-size:11.5px;color:var(--ink-2);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;max-height:76px;overflow:hidden;position:relative;line-height:1.7}
+.result-card .r-prompt.more{max-height:none}
+.result-card .r-prompt::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22px;background:linear-gradient(180deg,transparent,var(--paper))}
+.result-card .r-prompt.more::after{display:none}
+.result-card .r-actions{display:flex;gap:7px;margin-top:auto}
+.studio-note{background:var(--sage-soft);border:1px solid var(--sage);border-radius:12px;padding:12px 16px;font-size:12.5px;color:var(--sage-deep);margin-top:18px;line-height:1.8}
+.loading-mask{position:fixed;inset:0;background:rgba(246,243,236,.85);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.loading-mask.show{display:flex}
+.spinner{width:38px;height:38px;border:3px solid var(--line);border-top-color:var(--sage);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-mask p{font-size:14px;color:var(--ink-2);letter-spacing:1px}
+
+/* ============ Toast / 页脚 ============ */
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#F8F5EE;padding:11px 22px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.3s;z-index:300;box-shadow:var(--shadow)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.footer{border-top:1px solid var(--line);padding:34px 0 40px;margin-top:20px}
+.footer-grid{display:grid;gap:26px;grid-template-columns:1fr}
+@media(min-width:768px){.footer-grid{grid-template-columns:1.2fr 1fr 1fr}}
+.footer h4{font-family:var(--serif);font-size:14px;margin-bottom:10px;letter-spacing:1px}
+.footer p,.footer a{font-size:13px;color:var(--ink-2)}
+.footer a:hover{color:var(--sage-deep)}
+.footer .f-links{display:flex;flex-direction:column;gap:7px}
+.footer .foot-note{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);text-align:center}
+</style>
+</head>
+<body>
+
+<!-- ============ 导航 ============ -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="#/" class="brand" data-nav><span class="brand-mark">图</span>风格图鉴</a>
+    <div class="nav-links">
+      <a href="#/" class="nav-link" data-nav>首页</a>
+      <div class="dropdown" id="ddCat">
+        <button class="nav-link" id="ddBtn" type="button">五大分类<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="margin-left:4px;vertical-align:-1px"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dd-menu" id="ddMenu"></div>
+      </div>
+      <a href="#/studio" class="nav-link" data-nav>上传工作台</a>
+    </div>
+    <button class="burger" id="burger" type="button" aria-label="菜单"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu"></div>
+</nav>
+
+<main id="app"></main>
+
+<!-- ============ 页脚 ============ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>风格图鉴</h4>
+        <p>AI 绘画提示词风格参考库。5 大类 38 种风格，每款都配有默认参考图与可一键复制的通用提示词模板。</p>
+      </div>
+      <div>
+        <h4>五大分类</h4>
+        <div class="f-links" id="footCats"></div>
+      </div>
+      <div>
+        <h4>快速入口</h4>
+        <div class="f-links">
+          <a href="#/studio">上传图片试效果</a>
+          <a href="#/" data-nav>返回首页</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-note">提示词可自由复制用于豆包、即梦等 AI 绘图工具；页面演示图为浏览器实时风格模拟，正式生成请使用复制后的提示词。</div>
+  </div>
+</footer>
+
+<!-- 静态资源清单：全部参考图（供发布链路静态识别并上传，运行时与页面展示共用同一批文件） -->
+<div style="display:none" aria-hidden="true">
+<img src="assets/r1.jpg" alt=""><img src="assets/r2.jpg" alt=""><img src="assets/r3.jpg" alt=""><img src="assets/r4.jpg" alt=""><img src="assets/r5.jpg" alt=""><img src="assets/r6.jpg" alt=""><img src="assets/r7.jpg" alt=""><img src="assets/r8.jpg" alt="">
+<img src="assets/g1.jpg" alt=""><img src="assets/g2.jpg" alt=""><img src="assets/g3.jpg" alt=""><img src="assets/g4.jpg" alt=""><img src="assets/g5.jpg" alt=""><img src="assets/g6.jpg" alt=""><img src="assets/g7.jpg" alt=""><img src="assets/g8.jpg" alt="">
+<img src="assets/a1.jpg" alt=""><img src="assets/a2.jpg" alt=""><img src="assets/a3.jpg" alt=""><img src="assets/a4.jpg" alt=""><img src="assets/a5.jpg" alt=""><img src="assets/a6.jpg" alt=""><img src="assets/a7.jpg" alt=""><img src="assets/a8.jpg" alt="">
+<img src="assets/t1.jpg" alt=""><img src="assets/t2.jpg" alt=""><img src="assets/t3.jpg" alt=""><img src="assets/t4.jpg" alt=""><img src="assets/t5.jpg" alt=""><img src="assets/t6.jpg" alt=""><img src="assets/t7.jpg" alt=""><img src="assets/t8.jpg" alt="">
+<img src="assets/d1.jpg" alt=""><img src="assets/d2.jpg" alt=""><img src="assets/d3.jpg" alt=""><img src="assets/d4.jpg" alt=""><img src="assets/d5.jpg" alt=""><img src="assets/d6.jpg" alt="">
+</div>
+
+<div id="toast" role="status"></div>
+<div class="loading-mask" id="loadingMask"><div class="spinner"></div><p>正在生成风格演示图…</p></div>
+
+<script>
+/* ============ 分类数据 ============ */
+var CATS=[
+ {id:"realistic",name:"写实摄影类",tagline:"胶片 · 光影 · 真实情绪",desc:"以真实质感为底色的摄影风格：胶片颗粒、自然光线、情绪氛围，还原人物与场景的真实肌理。",cover:"assets/r1.jpg",count:8},
+ {id:"guofeng",name:"东方国风类",tagline:"水墨 · 工笔 · 敦煌 · 青绿",desc:"水墨、工笔、敦煌与青绿山水：留白、晕染、绢纸纹理，东方美学的清幽雅致。",cover:"assets/g1.jpg",count:8},
+ {id:"anime",name:"二次元插画类",tagline:"赛璐璐 · 韩漫 · Q 版萌系",desc:"日系赛璐璐、韩漫精致与 Q 版萌系：干净色块、柔和渐变，轻盈治愈的二次元世界。",cover:"assets/a1.jpg",count:8},
+ {id:"trend",name:"创意潮流 & 艺术绘画类",tagline:"霓虹 · 水彩 · 蒸汽朋克 · 超现实",desc:"赛博霓虹、水彩、蒸汽朋克与超现实梦境：强风格化的创意表达与光影实验。",cover:"assets/t1.jpg",count:8},
+ {id:"3d",name:"3D 渲染游戏美术类",tagline:"黏土 · 盲盒 · 次世代",desc:"黏土 OC、潮玩盲盒与次世代游戏美术：材质、光影与高精度的三维渲染质感。",cover:"assets/d1.jpg",count:6}
+];
+var TYPE_NAMES={portrait:"人像",scene:"场景",both:"人景一体"};
+
+/* ============ 风格数据 ============ */
+var STYLES = [
+{id:"r1",cat:"realistic",name:"日系治愈写真 · 人像",type:"portrait",tags:["胶片质感","窗边晨光","治愈氛围"],img:"assets/r1.jpg",fx:"filmWarm",desc:"温柔治愈的日系居家人像，强调原生皮肤质感与胶片颗粒，安静忧郁的氛围。",pos:`8K 单反写真，30 岁温柔东亚女性，中长发微毛躁，素颜淡雀斑，柔和窗边晨光照，四分之三侧脸低头浅笑，米白亚麻衬衫，虚化居家背景，浅景深，胶片细腻颗粒，原生皮肤毛孔清晰，安静忧郁氛围感，9:16 竖构图`,neg:`卡通、动漫、厚重磨皮、塑料假脸、浓妆、高饱和、水印、畸形五官`,tpl:`8K 单反写真，【主体描述】，柔和窗边晨光照，浅景深，胶片细腻颗粒，原生皮肤质感，安静氛围感，9:16 竖构图`},
+{id:"r2",cat:"realistic",name:"日系治愈写真 · 场景",type:"scene",tags:["林间木屋","薄雾晨光","生活化"],img:"assets/r2.jpg",fx:"filmWarm",desc:"清晨林间小院的松弛生活氛围，柔和暖调与细腻胶片颗粒。",pos:`8K 单反风光，清晨林间木屋小院，长满雏菊的草地，薄雾漫射自然光，木质栅栏、藤编小桌，浅景深，柔和暖调，松弛生活化氛围，细腻胶片颗粒，9:16 竖构图`,neg:`卡通、动漫、高饱和、杂乱电线、塑料道具、畸形物体、文字水印、浓艳滤镜`,tpl:`8K 单反风光，【主体描述】，清晨薄雾漫射自然光，浅景深，柔和暖调，松弛生活化氛围，细腻胶片颗粒，9:16 竖构图`},
+{id:"r3",cat:"realistic",name:"胶片复古人像",type:"portrait",tags:["柯达金200","暖黄怀旧","树荫漫射"],img:"assets/r3.jpg",fx:"filmRetro",desc:"柯达金 200 的暖黄怀旧色调，轻微褪色与暗角，故事感十足。",pos:`柯达金 200 胶片人像，25 岁女生，蓬松羊毛卷，复古碎花连衣裙，午后树荫漫射光，侧身看向远方，暖黄怀旧色调，轻微褪色，柔和暗角，胶片颗粒，自然皮肤质感，故事感，3:2 画幅`,neg:`CG、动漫、过度锐化、惨白假皮、鲜艳高饱和、变形手脚、文字水印、美颜过度`,tpl:`柯达金 200 胶片人像，【主体描述】，午后树荫漫射光，暖黄怀旧色调，轻微褪色，柔和暗角，胶片颗粒，自然质感，故事感，3:2 画幅`},
+{id:"r4",cat:"realistic",name:"胶片复古场景",type:"scene",tags:["90年代","街角","市井怀旧"],img:"assets/r4.jpg",fx:"filmRetro",desc:"90 年代街头小卖部的市井怀旧感，暖黄褪色与胶片颗粒。",pos:`柯达金 200 胶片摄影，90 年代老旧街角小卖部，铁皮招牌、老式自行车，午后树荫侧光，暖黄怀旧色调，轻微褪色，暗角，胶片颗粒，故事感，3:2 画幅`,neg:`CG、二次元、过度锐化、鲜亮色彩、现代招牌、变形物体、logo 贴纸`,tpl:`柯达金 200 胶片摄影，【主体描述】，午后树荫侧光，暖黄怀旧色调，轻微褪色，暗角，胶片颗粒，故事感，3:2 画幅`},
+{id:"r5",cat:"realistic",name:"港风复古电影 · 人像",type:"portrait",tags:["电影感","暖橙逆光","情绪氛围"],img:"assets/r5.jpg",fx:"filmRetro",desc:"港风电影感人像，傍晚路灯逆光与暖橙色调，朦胧情绪氛围。",pos:`电影感港风人像，28 岁东亚女生，大波浪黑发，红色吊带裙，傍晚街边路灯逆光，朦胧柔光，暖橙色调，轻微噪点，胶片颗粒，情绪氛围感，暗调电影画幅，浅景深`,neg:`卡通、二次元、网红磨皮、亮白曝光、卡通眼睛、畸形五官、水印、贴纸`,tpl:`电影感港风人像，【主体描述】，傍晚街边路灯逆光，朦胧柔光，暖橙色调，轻微噪点，胶片颗粒，情绪氛围感，暗调电影画幅，浅景深`},
+{id:"r6",cat:"realistic",name:"港风电影夜景 · 场景",type:"scene",tags:["霓虹灯牌","潮湿路面","市井"],img:"assets/r6.jpg",fx:"filmRetro",desc:"雨夜港风街道，霓虹倒影与低对比暗调，市井烟火气。",pos:`电影感港风夜景街道，老式霓虹灯牌、潮湿柏油马路，路灯暖橙逆光，空气薄雾，路面反光，低对比度暗调，胶片噪点，市井氛围感，16:9 横构图`,neg:`卡通、二次元、亮度过曝、干净无积水、卡通风格、畸形建筑、水印文字`,tpl:`电影感港风夜景街道，【主体描述】，路灯暖橙逆光，空气薄雾，路面反光，低对比度暗调，胶片噪点，市井氛围感，16:9 横构图`},
+{id:"r7",cat:"realistic",name:"暗黑电影人像",type:"portrait",tags:["硬光侧打","冷灰暗调","疏离感"],img:"assets/r7.jpg",fx:"filmCool",desc:"单侧硬光与强烈明暗对比，暗调冷灰的安静疏离氛围。",pos:`8K 电影人像，年轻男生，利落短发，黑色风衣，单侧硬光侧打，明暗强烈对比，暗调冷灰氛围，背景昏暗空旷走廊，景深虚化，皮肤真实肌理，安静疏离感，16:9 横构图`,neg:`明亮、马卡龙色、动漫、Q 版、过度美颜、光滑塑料皮肤、扭曲肢体、文字 logo`,tpl:`8K 电影人像，【主体描述】，单侧硬光侧打，明暗强烈对比，暗调冷灰氛围，景深虚化，真实肌理，安静疏离感，16:9 横构图`},
+{id:"r8",cat:"realistic",name:"自然风光纪实 · 场景",type:"scene",tags:["秋日山谷","大景深","原生色彩"],img:"assets/r8.jpg",fx:"nature",desc:"秋日山谷湖泊的纪实风光，原生色彩与真实地貌纹理。",pos:`8K 纪实风光，秋日山谷湖泊，层叠彩林，湖面平静倒影，下午侧逆光，大景深，原生自然色彩，原生态山野，真实地貌纹理，辽阔安静，横版构图`,neg:`动漫插画、夸张滤镜、漂浮杂物、鲜艳假色、3D 卡通、文字 logo`,tpl:`8K 纪实风光，【主体描述】，下午侧逆光，大景深，原生自然色彩，真实地貌纹理，辽阔安静，横版构图`},
+{id:"g1",cat:"guofeng",name:"水墨国风写意 · 人像",type:"portrait",tags:["淡墨勾勒","留白","宣纸纹理"],img:"assets/g1.jpg",fx:"ink",desc:"淡墨写意的古风女子，飞白笔触与留白构图，清冷诗意。",pos:`水墨写意古风女子，淡墨勾勒，披浅色纱衣，立于山涧青石，远山留白构图，毛笔飞白笔触，黑白淡青晕染，淡雅清冷，宣纸纹理，国风诗意，竖版卷轴构图，8K`,neg:`厚涂、写实照片、鲜艳高饱和、立体光影、塑料质感、多余杂物、畸形手部、水印`,tpl:`水墨写意古风【主体描述】，淡墨勾勒，远山留白构图，毛笔飞白笔触，黑白淡青晕染，淡雅清冷，宣纸纹理，国风诗意，竖版卷轴构图，8K`},
+{id:"g2",cat:"guofeng",name:"水墨写意山水 · 场景",type:"scene",tags:["一叶扁舟","大面积留白","淡青晕染"],img:"assets/g2.jpg",fx:"ink",desc:"远山含雾、孤舟江面，大面积留白的清幽寂静。",pos:`水墨写意山水，远山含雾，一叶扁舟行于江面，大面积留白构图，毛笔飞白笔触，淡墨 + 浅青晕染，宣纸纹理，清幽寂静，国风诗意卷轴，竖版 8K`,neg:`厚涂、照片写实、鲜艳高饱和、强烈立体光影、现代建筑、多余杂物、水印`,tpl:`水墨写意【主体描述】，远山含雾，大面积留白构图，毛笔飞白笔触，淡墨 + 浅青晕染，宣纸纹理，清幽寂静，国风诗意卷轴，竖版 8K`},
+{id:"g3",cat:"guofeng",name:"新中式工笔 · 人像",type:"portrait",tags:["细线勾勒","莫兰迪","绢布纹理"],img:"assets/g3.jpg",fx:"gongbi",desc:"工笔细描的古风少女，低饱和莫兰迪配色，雅致安静。",pos:`新中式工笔少女，细线条勾勒，素雅汉服，手持一枝玉兰花，低饱和国风莫兰迪配色，服饰纹样精致细腻，绢布纹理，柔和平光，雅致安静，卷轴构图`,neg:`厚涂油画、赛博朋克、浓艳撞色、写实摄影、卡通大眼、变形五官、文字`,tpl:`新中式工笔【主体描述】，细线条勾勒，低饱和国风莫兰迪配色，纹样精致细腻，绢布纹理，柔和平光，雅致安静，卷轴构图`},
+{id:"g4",cat:"guofeng",name:"新中式工笔庭院 · 场景",type:"scene",tags:["太湖石","锦鲤","曲径回廊"],img:"assets/g4.jpg",fx:"gongbi",desc:"工笔园林庭院，太湖石、海棠与锦鲤，绢本质感的雅致。",pos:`新中式工笔园林庭院，太湖石、海棠花、曲径回廊，池塘锦鲤，细腻勾线，低饱和国风莫兰迪配色，纹样精致，绢布质感，柔和平光，雅致安静，卷轴构图`,neg:`油画厚涂、赛博朋克、浓艳撞色、摄影照片、刺眼强光、现代杂物、文字`,tpl:`新中式工笔【主体描述】，细腻勾线，低饱和国风莫兰迪配色，纹样精致，绢布质感，柔和平光，雅致安静，卷轴构图`},
+{id:"g5",cat:"guofeng",name:"敦煌古风插画 · 人像",type:"portrait",tags:["飞天","鎏金纹饰","壁画配色"],img:"assets/g5.jpg",fx:"dunhuang",desc:"敦煌飞天神女，浓郁壁画配色与鎏金纹饰，庄重柔美。",pos:`敦煌飞天神女，飘逸帛带，鎏金渐变纹饰，浓郁敦煌壁画配色，莲花纹样，柔和壁画肌理，淡斑驳做旧感，漂浮于祥云之间，庄重柔美，4K 插画`,neg:`现代服装、写实人像、赛璐璐平涂、高对比强光、畸形肢体、杂乱背景、水印`,tpl:`敦煌风【主体描述】，飘逸帛带，鎏金渐变纹饰，浓郁敦煌壁画配色，莲花纹样，柔和壁画肌理，淡斑驳做旧感，漂浮于祥云之间，庄重柔美，4K 插画`},
+{id:"g6",cat:"guofeng",name:"敦煌壁画石窟 · 场景",type:"scene",tags:["藻井","飞天祥云","做旧肌理"],img:"assets/g6.jpg",fx:"dunhuang",desc:"石窟内壁的敦煌壁画场景，斑驳做旧与窟内漫射光。",pos:`敦煌壁画场景，石窟内部，飞天祥云，莲花藻井，鎏金纹饰，浓郁敦煌传统配色，墙面斑驳做旧肌理，柔和窟内漫射光，庄重古朴，4K 插画`,neg:`现代物品、写实照片、赛璐璐平涂、强光对比、杂乱现代元素、水印`,tpl:`敦煌壁画场景，【主体描述】，飞天祥云，莲花藻井，鎏金纹饰，浓郁敦煌传统配色，墙面斑驳做旧肌理，柔和漫射光，庄重古朴，4K 插画`},
+{id:"g7",cat:"guofeng",name:"青绿山水国画 · 人物场景一体",type:"both",tags:["石青石绿","重彩","隐士"],img:"assets/g7.jpg",fx:"qinglv",desc:"青绿重彩与云雾缭绕，隐士立于江岸的雅致古朴。",pos:`青绿山水国画，古装隐士立于江岸边，层叠山峦，石青石绿重彩，云雾缭绕，传统山水卷轴，细腻皴法，雅致古朴，留白构图`,neg:`现代建筑、3D 卡通、霓虹、照片质感、刺眼亮色、畸形人物、logo 文字`,tpl:`青绿山水国画，【主体描述】，层叠山峦，石青石绿重彩，云雾缭绕，传统山水卷轴，细腻皴法，雅致古朴，留白构图`},
+{id:"g8",cat:"guofeng",name:"青绿山水卷轴 · 纯场景",type:"scene",tags:["连绵青山","飞瀑","长卷"],img:"assets/g8.jpg",fx:"qinglv",desc:"连绵青山与溪流飞瀑，石青石绿重彩的古风长卷。",pos:`青绿山水卷轴，连绵层叠青山，山间云雾，溪流飞瀑，石青石绿重彩，传统皴法，古雅色调，留白云海，古风山水，竖版长卷构图`,neg:`高楼、汽车、霓虹灯光、3D 卡通、照片质感、亮色刺眼、文字 logo`,tpl:`青绿山水卷轴，【主体描述】，连绵层叠青山，山间云雾，溪流飞瀑，石青石绿重彩，传统皴法，古雅色调，留白云海，竖版长卷构图`},
+{id:"a1",cat:"anime",name:"日系赛璐璐平涂 · 人像",type:"portrait",tags:["水手服","马卡龙","蓝天"],img:"assets/a1.jpg",fx:"cel",desc:"干净色块与柔和渐变的赛璐璐少女，清新治愈。",pos:`日系赛璐璐平涂少女，黑色短发，水手服，清新马卡龙配色，干净色块，柔和渐变，晴朗蓝天背景，大眼睛，柔和轮廓线，干净清爽，插画，9:16`,neg:`厚涂、油画笔触、写实照片、复杂肌理、脏色块、畸形手指、水印、3D 黏土`,tpl:`日系赛璐璐平涂【主体描述】，清新马卡龙配色，干净色块，柔和渐变，晴朗蓝天背景，大眼睛，柔和轮廓线，干净清爽，插画，9:16`},
+{id:"a2",cat:"anime",name:"日系赛璐璐校园天台 · 场景",type:"scene",tags:["校园天台","平涂色块","治愈"],img:"assets/a2.jpg",fx:"cel",desc:"晴空下的校园天台，干净平涂与清新马卡龙配色。",pos:`日系赛璐璐平涂校园天台，晴朗蓝天、薄云，白色围栏，远处城市屋顶，干净平涂色块，柔和渐变，清新马卡龙配色，轮廓干净，清爽治愈插画，9:16`,neg:`厚涂油画、复杂肌理、写实照片、脏色块、强烈阴影、杂乱噪点、3D 黏土`,tpl:`日系赛璐璐平涂【主体描述】，晴朗蓝天、薄云，干净平涂色块，柔和渐变，清新马卡龙配色，轮廓干净，清爽治愈插画，9:16`},
+{id:"a3",cat:"anime",name:"韩系精致人像",type:"portrait",tags:["长卷发","伪素颜","柔光"],img:"assets/a3.jpg",fx:"korean",desc:"清透伪素颜的韩漫少女，低对比柔光与细腻发丝。",pos:`韩漫精致少女，浅棕长卷发，清透伪素颜，柔光漫射，低对比，细腻肤色，淡粉色腮红，简约纯色背景，精致发丝，柔和氛围感，二次元插画`,neg:`粗黑轮廓、像素画、写实摄影、浓阴影、畸形五官、杂乱噪点、文字`,tpl:`韩漫精致【主体描述】，清透伪素颜，柔光漫射，低对比，细腻质感，简约背景，精致细节，柔和氛围感，二次元插画`},
+{id:"a4",cat:"anime",name:"韩漫街角夜景 · 场景",type:"scene",tags:["樱花","暖光路灯","浪漫"],img:"assets/a4.jpg",fx:"korean",desc:"飘落樱花的街角夜景，柔和漫射光与清透色调。",pos:`韩漫风格街角夜景，街边暖光路灯，飘落樱花，柔和漫射柔光，低对比，清透色调，虚化远景，细腻渐变，安静浪漫，二次元插画`,neg:`粗黑轮廓、像素画、写实摄影、硬阴影、杂乱涂鸦、文字水印`,tpl:`韩漫风格【主体描述】，街边暖光路灯，柔和漫射柔光，低对比，清透色调，虚化远景，细腻渐变，安静浪漫，二次元插画`},
+{id:"a5",cat:"anime",name:"Q 版卡通萌系 · 人像",type:"portrait",tags:["头大身小","圆润线条","软萌"],img:"assets/a5.jpg",fx:"qsoft",desc:"头大身小的 Q 版萌系角色，马卡龙配色软萌治愈。",pos:`Q 版萌系小女孩，头大身小，圆滚滚脸型，软糯粉色卫衣，圆润线条，马卡龙柔和配色，纯色背景，软萌治愈，干净插画，无强烈阴影`,neg:`写实、暗黑、厚涂油画、尖锐轮廓、恐怖表情、畸形肢体、水印`,tpl:`Q 版萌系【主体描述】，头大身小，圆滚滚造型，圆润线条，马卡龙柔和配色，纯色背景，软萌治愈，干净插画，无强烈阴影`},
+{id:"a6",cat:"anime",name:"Q 版糖果小屋 · 场景",type:"scene",tags:["奶油屋顶","糖果屋","治愈"],img:"assets/a6.jpg",fx:"qsoft",desc:"奶油屋顶与彩色小花的糖果小屋，圆润软萌。",pos:`Q 版卡通糖果小屋，圆滚滚房子，奶油屋顶、彩色小花，圆润线条，马卡龙柔和配色，干净纯色背景，柔和漫射光，软萌治愈，无强烈阴影`,neg:`写实、暗黑风、油画厚涂、尖锐棱角、恐怖氛围、破损杂物、水印`,tpl:`Q 版卡通【主体描述】，圆滚滚造型，奶油质感，彩色小花，圆润线条，马卡龙柔和配色，干净纯色背景，柔和漫射光，软萌治愈，无强烈阴影`},
+{id:"a7",cat:"anime",name:"日系漫画线稿 · 人像",type:"portrait",tags:["黑白勾线","网点纸","速写感"],img:"assets/a7.jpg",fx:"line",desc:"干净黑色勾线与网点纸阴影的黑白少年线稿。",pos:`黑白少年漫画线稿，少年侧脸，利落短发，风衣，干净黑色勾线，网点纸阴影纹理，手绘速写感，漫画分镜质感，线条流畅`,neg:`上色、彩色、厚涂、照片、3D 渲染、杂乱涂鸦、变形五官`,tpl:`黑白漫画线稿【主体描述】，干净黑色勾线，网点纸阴影纹理，手绘速写感，漫画分镜质感，线条流畅`},
+{id:"a8",cat:"anime",name:"日系漫画线稿 · 废弃站台 · 场景",type:"scene",tags:["废弃站台","生锈铁轨","分镜"],img:"assets/a8.jpg",fx:"line",desc:"废弃车站站台的漫画分镜线稿，利落勾线质感。",pos:`黑白少年漫画线稿，废弃车站站台，生锈铁轨，干净利落勾线，网点纸表现阴影，手绘速写质感，线条流畅，漫画分镜构图`,neg:`上色、彩色、厚涂、照片、3D 渲染、杂乱涂鸦、畸形结构`,tpl:`黑白漫画线稿【主体描述】，废弃车站氛围，干净利落勾线，网点纸表现阴影，手绘速写质感，线条流畅，漫画分镜构图`},
+{id:"t1",cat:"trend",name:"赛博朋克霓虹 · 人像",type:"portrait",tags:["蓝紫霓虹","雨夜","机能风"],img:"assets/t1.jpg",fx:"cyber",desc:"雨夜霓虹下的赛博少女，强光影对比与金属反光。",pos:`赛博朋克少女，银灰短发，未来机能外套，蓝紫霓虹光影，雨夜潮湿街道，金属反光质感，朦胧雾气，未来都市背景，强光影对比，插画，16:9`,neg:`古风、水墨、低饱和、自然光、暖调、卡通黏土、畸形手脚、水印文字`,tpl:`赛博朋克【主体描述】，银灰短发风格，未来机能感，蓝紫霓虹光影，雨夜潮湿街道，金属反光质感，朦胧雾气，未来都市背景，强光影对比，插画，16:9`},
+{id:"t2",cat:"trend",name:"赛博朋克霓虹都市 · 场景",type:"scene",tags:["霓虹招牌","潮湿路面","科幻"],img:"assets/t2.jpg",fx:"cyber",desc:"高楼幕墙与霓虹光影的未来都市，雨夜科幻感。",pos:`赛博朋克未来都市，高楼幕墙，蓝紫粉霓虹招牌，雨夜，潮湿路面反光，雾气朦胧，金属建筑质感，光影交错，科幻氛围感，16:9 横版插画`,neg:`古风水墨、低饱和暖调、自然光田园、黏土卡通、建筑扭曲崩坏、水印文字`,tpl:`赛博朋克未来都市，【主体描述】，高楼幕墙，蓝紫粉霓虹招牌，雨夜潮湿路面反光，雾气朦胧，金属质感，光影交错，科幻氛围感，16:9 横版插画`},
+{id:"t3",cat:"trend",name:"水彩手绘 · 人像",type:"portrait",tags:["水痕晕染","粗纹纸","通透"],img:"assets/t3.jpg",fx:"watercolor",desc:"通透水痕晕染的水彩少女，浅淡清新配色。",pos:`水彩手绘少女，浅棕长发，淡蓝色连衣裙，窗边微风，通透水痕晕染，浅淡清新配色，粗纹水彩纸肌理，朦胧温柔，松散笔触，柔和自然光`,neg:`厚重厚涂、写实摄影、锐利硬边、高饱和撞色、3D、塑料质感、畸形五官`,tpl:`水彩手绘【主体描述】，通透水痕晕染，浅淡清新配色，粗纹水彩纸肌理，朦胧温柔，松散笔触，柔和自然光`},
+{id:"t4",cat:"trend",name:"水彩林间小屋 · 场景",type:"scene",tags:["溪边青苔","野花","清晨柔光"],img:"assets/t4.jpg",fx:"watercolor",desc:"溪边小屋的水彩风景，松散笔触与清晨柔光。",pos:`水彩手绘林间小屋，溪边青苔石头，野花，通透水痕晕染，浅淡清新配色，粗纹水彩纸肌理，松散笔触，清晨柔光，朦胧温柔`,neg:`厚重厚涂、写实摄影、锐利硬边、高饱和撞色、3D 建模、塑料质感`,tpl:`水彩手绘【主体描述】，通透水痕晕染，浅淡清新配色，粗纹水彩纸肌理，松散笔触，清晨柔光，朦胧温柔`},
+{id:"t5",cat:"trend",name:"蒸汽朋克工业 · 人像",type:"portrait",tags:["黄铜护目镜","齿轮","丁达尔光"],img:"assets/t5.jpg",fx:"steam",desc:"黄铜护目镜与齿轮外套的少年，暖棕旧金属质感。",pos:`蒸汽朋克少年，复古黄铜护目镜，齿轮机械外套，暖棕旧金属色调，复古机械管道背景，旧金属磨损肌理，柔和丁达尔光，奇幻插画`,neg:`霓虹、赛博朋克、水墨、扁平插画、鲜亮马卡龙色、畸形、水印`,tpl:`蒸汽朋克【主体描述】，复古黄铜护目镜，齿轮机械元素，暖棕旧金属色调，复古机械管道背景，旧金属磨损肌理，柔和丁达尔光，奇幻插画`},
+{id:"t6",cat:"trend",name:"蒸汽朋克浮空工厂 · 场景",type:"scene",tags:["黄铜齿轮","蒸汽管道","浮空"],img:"assets/t6.jpg",fx:"steam",desc:"浮空工厂的黄铜齿轮与蒸汽管道，丁达尔光穿过白雾。",pos:`蒸汽朋克浮空工厂，巨大黄铜齿轮、蒸汽管道，烟囱飘白雾，暖棕旧金属色调，复古机械结构，丁达尔光束穿过蒸汽，奇幻插画`,neg:`霓虹赛博、水墨国风、扁平插画、鲜亮马卡龙色、结构崩坏、水印`,tpl:`蒸汽朋克浮空工厂，【主体描述】，巨大黄铜齿轮、蒸汽管道，烟囱飘白雾，暖棕旧金属色调，复古机械结构，丁达尔光束穿过蒸汽，奇幻插画`},
+{id:"t7",cat:"trend",name:"超现实主义梦境 · 人像",type:"portrait",tags:["云海漂浮","梦幻柔光","油画质感"],img:"assets/t7.jpg",fx:"surreal",desc:"漂浮云海的少女，花草从裙摆生长，梦幻低饱和色调。",pos:`超现实插画，少女漂浮在云海，花草从裙摆生长，奇幻混搭构图，柔和梦幻柔光，低饱和朦胧色调，天马行空，油画质感，氛围感`,neg:`写实纪实照片、清晰锐利、现实场景、卡通 Q 版、刺眼高光、扭曲崩坏五官`,tpl:`超现实插画，【主体描述】，漂浮在云海，花草从裙摆生长，奇幻混搭构图，柔和梦幻柔光，低饱和朦胧色调，天马行空，油画质感，氛围感`},
+{id:"t8",cat:"trend",name:"超现实悬浮梦境 · 场景",type:"scene",tags:["悬浮岛屿","倒长树木","空灵"],img:"assets/t8.jpg",fx:"surreal",desc:"悬浮岛屿与倒长树木的梦境场景，空灵奇幻。",pos:`超现实梦境场景，悬浮岛屿，倒长的树木，云朵湖泊，奇幻混搭构图，梦幻柔光，朦胧低饱和色调，油画质感，空灵奇幻`,neg:`写实纪实照片、锐利清晰、现实城市、刺眼高光、物体扭曲崩坏、文字`,tpl:`超现实梦境场景，【主体描述】，悬浮岛屿，奇幻混搭构图，梦幻柔光，朦胧低饱和色调，油画质感，空灵奇幻`},
+{id:"d1",cat:"3d",name:"卡通 OC 渲染 · 黏土 3D 人像",type:"portrait",tags:["Octane","黏土材质","哑光天光"],img:"assets/d1.jpg",fx:"clay",desc:"圆润软质黏土材质的 3D 卡通女孩，童趣治愈。",pos:`Octane 渲染，黏土 3D 卡通女孩，圆润软质黏土材质，齐刘海短发，针织毛衣，柔和哑光天光，干净浅灰背景，细腻黏土肌理，童趣治愈，8K，9:16`,neg:`写实人像、二次元平涂、油画、锋利棱角、反光强烈、畸形、水印`,tpl:`Octane 渲染，黏土 3D 卡通【主体描述】，圆润软质黏土材质，柔和哑光天光，干净浅灰背景，细腻黏土肌理，童趣治愈，8K，9:16`},
+{id:"d2",cat:"3d",name:"黏土 3D 森林营地 · 场景",type:"scene",tags:["蘑菇房子","黏土森林","童趣"],img:"assets/d2.jpg",fx:"clay",desc:"圆润树木与蘑菇房子的黏土森林营地，治愈感。",pos:`Octane 渲染，黏土风格森林小营地，圆润树木、蘑菇房子、小圆石头，软质黏土材质，柔和哑光天光，浅灰干净背景，细腻黏土肌理，童趣治愈，8K，9:16`,neg:`写实照片、二次元平涂、油画笔触、锋利棱角、强烈反光、结构畸形、水印`,tpl:`Octane 渲染，黏土风格【主体描述】，圆润树木、蘑菇房子、小圆石头，软质黏土材质，柔和哑光天光，浅灰干净背景，细腻黏土肌理，童趣治愈，8K，9:16`},
+{id:"d3",cat:"3d",name:"盲盒手办模型 · 人像",type:"portrait",tags:["哑光树脂","环形柔光","产品渲染"],img:"assets/d3.jpg",fx:"box",desc:"哑光树脂材质的潮玩手办，展台环形柔光高级感。",pos:`潮玩盲盒手办，少女造型，哑光树脂材质，精致柔和涂装，展台环形柔光，纯色展示台，轻微阴影，干净高级，产品渲染，特写构图`,neg:`真人照片、厚涂插画、水墨、划痕破损杂乱、畸形、背景杂乱、文字`,tpl:`潮玩盲盒手办，【主体描述】，哑光树脂材质，精致柔和涂装，展台环形柔光，纯色展示台，轻微阴影，干净高级，产品渲染，特写构图`},
+{id:"d4",cat:"3d",name:"盲盒简约展台 · 场景",type:"scene",tags:["弧形展台","低饱和","产品渲染"],img:"assets/d4.jpg",fx:"box",desc:"简约白色展台的盲盒展示场景，干净高级。",pos:`潮玩盲盒展示场景，简约白色弧形展台，低饱和浅灰背景，环形柔和展台柔光，轻微环境阴影，干净高级，产品渲染特写构图`,neg:`真人、厚涂插画、水墨、杂乱杂物、划痕破损、背景花哨、文字 logo`,tpl:`潮玩盲盒展示场景，【主体描述】，简约白色弧形展台，低饱和浅灰背景，环形柔和展台柔光，轻微环境阴影，干净高级，产品渲染特写构图`},
+{id:"d5",cat:"3d",name:"次世代写实游戏角色 · 人像",type:"portrait",tags:["PBR","铠甲磨损","电影光影"],img:"assets/d5.jpg",fx:"pbr",desc:"次世代 PBR 女战士，金属磨损质感与幽暗古堡。",pos:`次世代 PBR 游戏角色，年轻女战士，皮质铠甲，金属磨损质感，定向主光，环境反光，高精度材质，场景为幽暗古堡，写实渲染，电影级光影`,neg:`卡通、Q 版、平涂、水墨、高饱和马卡龙色、塑料假质感、畸形五官`,tpl:`次世代 PBR 游戏角色，【主体描述】，皮质铠甲，金属磨损质感，定向主光，环境反光，高精度材质，幽暗古堡场景，写实渲染，电影级光影`},
+{id:"d6",cat:"3d",name:"次世代古堡大厅 · 场景",type:"scene",tags:["石质墙面","火把暖光","环境漫反射"],img:"assets/d6.jpg",fx:"pbr",desc:"幽暗古堡大厅，石墙、生锈铠甲与火把暖光。",pos:`次世代 PBR 游戏场景，幽暗古堡大厅，石质墙面、生锈铠甲、火把暖光，材质磨损真实，环境漫反射，高精度模型，电影级光影，写实渲染`,neg:`卡通 Q 版、平涂插画、水墨国风、马卡龙亮色、塑料假质感、建筑畸形`,tpl:`次世代 PBR 游戏场景，【主体描述】，幽暗古堡大厅，石质墙面、生锈铠甲、火把暖光，材质磨损真实，环境漫反射，高精度模型，电影级光影，写实渲染`}
+];
+
+/* ============ 滤镜配置 ============ */
+var FX = {
+  filmWarm:{css:"sepia(0.22) saturate(1.08) contrast(1.05) brightness(1.02)",grain:0.06,vig:0.35},
+  filmRetro:{css:"sepia(0.32) saturate(1.05) contrast(1.06) brightness(1.0)",grain:0.08,vig:0.42},
+  filmCool:{css:"grayscale(0.25) contrast(1.25) brightness(0.84) saturate(0.9)",vig:0.5,tint:[0.85,0.9,1,0.1]},
+  nature:{css:"saturate(1.1) contrast(1.08) brightness(1.02)",vig:0.15},
+  ink:{css:"grayscale(1) contrast(1.45) brightness(1.03)",post:3,tint:[0.96,0.97,1,0.06],grain:0.05},
+  gongbi:{css:"saturate(0.85) contrast(0.98) brightness(1.03)",post:5,tint:[0.97,0.98,1,0.08]},
+  dunhuang:{css:"sepia(0.4) saturate(1.3) contrast(1.05) brightness(1.02)",tint:[1,0.93,0.78,0.14],grain:0.05,vig:0.25},
+  qinglv:{css:"saturate(0.9) contrast(1.02) brightness(1.02)",post:5,tint:[0.82,0.95,0.88,0.3]},
+  cel:{css:"saturate(1.4) contrast(1.2) brightness(1.02)",post:5},
+  korean:{css:"saturate(1.15) brightness(1.06) contrast(0.94)",blur:0.6},
+  qsoft:{css:"saturate(1.25) brightness(1.1) contrast(0.93)",blur:1.2},
+  line:{css:"grayscale(1) contrast(2.4) brightness(1.06)",post:2},
+  cyber:{css:"saturate(1.45) contrast(1.28) brightness(0.95) hue-rotate(-14deg)",shift:5,vig:0.4,tint:[0.85,0.9,1,0.12]},
+  watercolor:{css:"saturate(0.78) brightness(1.1) contrast(0.9)",blur:1.6,tint:[0.98,0.97,0.94,0.1]},
+  steam:{css:"sepia(0.55) saturate(0.95) contrast(1.1) brightness(0.95)",tint:[1,0.94,0.84,0.12],vig:0.35,grain:0.06},
+  surreal:{css:"saturate(0.82) brightness(1.07) contrast(0.92)",blur:0.9,tint:[1,0.97,0.95,0.08]},
+  clay:{css:"saturate(1.2) brightness(1.1) contrast(0.96)",blur:0.5},
+  box:{css:"saturate(1.06) brightness(1.04) contrast(0.98)",vig:0.18},
+  pbr:{css:"saturate(0.88) contrast(1.2) brightness(0.9)",vig:0.5}
+};
+
+/* ============ 工具函数 ============ */
+function $(s,el){return (el||document).querySelector(s)}
+function $$(s,el){return Array.prototype.slice.call((el||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function catOf(id){return CATS.find(function(c){return c.id===id})}
+function styleOf(id){return STYLES.find(function(s){return s.id===id})}
+function stylesOfCat(id){return STYLES.filter(function(s){return s.cat===id})}
+function toast(msg){var t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("show")},1800)}
+function copyText(text){
+  var done=function(){toast("已复制到剪贴板")};
+  var fail=function(){toast("复制失败，请手动选择复制")};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done,fail);return;
+  }
+  var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand("copy");done()}catch(e){fail()}
+  document.body.removeChild(ta);
+}
+function statLine(cat){
+  var st=stylesOfCat(cat.id);var p=0,sc=0,b=0;
+  st.forEach(function(s){if(s.type==="portrait")p++;else if(s.type==="scene")sc++;else b++});
+  var parts=[];
+  if(p)parts.push(p+" 人像");if(sc)parts.push(sc+" 场景");if(b)parts.push(b+" 人景一体");
+  return cat.count+" 种风格 · "+parts.join(" · ");
+}
+
+/* ============ 图标 ============ */
+var ICO_COPY='<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2.5" stroke="currentColor" stroke-width="2"/><path d="M5 15H4.5A2.5 2.5 0 0 1 2 12.5v-8A2.5 2.5 0 0 1 4.5 2h8A2.5 2.5 0 0 1 15 4.5V5" stroke="currentColor" stroke-width="2"/></svg>';
+var ICO_DL='<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3v11m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+var ICO_SEARCH='<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.5-4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+/* ============ 视图渲染 ============ */
+function cardHTML(s,quick){
+  var c=catOf(s.cat);
+  return '<article class="style-card">'+
+    '<a class="thumb" href="#/style/'+s.id+'"><img src="'+s.img+'" alt="'+esc(s.name)+'" loading="lazy"><span class="type-tag">'+TYPE_NAMES[s.type]+' · '+c.name+'</span></a>'+
+    '<div class="body"><h3>'+esc(s.name)+'</h3>'+
+    '<div class="tags">'+s.tags.map(function(t){return "<span>"+esc(t)+"</span>"}).join("")+'</div>'+
+    '<div class="actions">'+
+    (quick?'<button class="mini-btn solid" data-action="copy" data-copy="pos" data-id="'+s.id+'" type="button">'+ICO_COPY+'复制提示词</button>':'')+
+    '<a class="mini-btn" href="#/style/'+s.id+'">查看详情</a>'+
+    '</div></div></article>';
+}
+function renderHome(){
+  var st=STAT.home||{cat:"all",type:"all",kw:""};
+  var list=STYLES.filter(function(s){
+    if(st.cat!=="all"&&s.cat!==st.cat)return false;
+    if(st.type!=="all"&&s.type!==st.type)return false;
+    if(st.kw){var hay=(s.name+s.tags.join("")+s.desc+s.pos).toLowerCase();if(hay.indexOf(st.kw.toLowerCase())<0)return false}
+    return true;
+  });
+  var totalP=0,totalS=0,totalB=0;
+  STYLES.forEach(function(s){if(s.type==="portrait")totalP++;else if(s.type==="scene")totalS++;else totalB++});
+  var heroImgs=["assets/r1.jpg","assets/a1.jpg","assets/t1.jpg","assets/g5.jpg"];
+  var chips=['<button class="chip'+(st.cat==="all"&&st.type==="all"?" on":"")+'" data-filter="all" type="button">全部</button>'];
+  CATS.forEach(function(c){chips.push('<button class="chip'+(st.cat===c.id?" on":"")+'" data-filter="cat:'+c.id+'" type="button">'+c.name+'（'+c.count+'）</button>')});
+  chips.push('<button class="chip'+(st.type==="portrait"?" on":"")+'" data-filter="type:portrait" type="button">人像</button>');
+  chips.push('<button class="chip'+(st.type==="scene"?" on":"")+'" data-filter="type:scene" type="button">场景</button>');
+  $('#app').innerHTML=
+    '<section class="hero"><div class="container hero-grid">'+
+      '<div><p class="eyebrow">AI 绘画提示词风格库</p>'+
+      '<h1 class="display">一图看懂<br>每一种绘画风格</h1>'+
+      '<p style="margin-top:16px;color:var(--ink-2);font-size:15px;max-width:520px">写实摄影、东方国风、二次元插画、创意潮流与 3D 渲染五大类 38 种风格，每款附默认参考图与通用提示词模板，上传一张自己的图片即可预览风格效果。</p>'+
+      '<div class="hero-stats">'+
+        '<div class="stat"><b>5</b><span>大类</span></div>'+
+        '<div class="stat"><b>38</b><span>种风格</span></div>'+
+        '<div class="stat"><b>76</b><span>条提示词</span></div>'+
+        '<div class="stat"><b>'+totalP+' / '+totalS+'</b><span>人像 / 场景</span></div>'+
+      '</div>'+
+      '<div class="hero-cta"><a class="btn btn-primary" href="#/studio">上传图片试效果</a><a class="btn btn-ghost" href="#/gallery">浏览全部风格</a></div>'+
+    '</div>'+
+    '<div class="hero-visual" aria-hidden="true">'+heroImgs.map(function(u){return '<img src="'+u+'" alt="" loading="eager">'}).join("")+'</div>'+
+    '</div></section>'+
+    '<section class="page"><div class="container">'+
+      '<div class="section-head"><div><p class="eyebrow">分类总览</p><h2 class="section-title">五大风格分类</h2></div></div>'+
+      '<div class="cat-grid">'+CATS.map(function(c){
+        return '<a class="cat-card" href="#/cat/'+c.id+'">'+
+          '<div class="cover"><img src="'+c.cover+'" alt="'+esc(c.name)+'" loading="lazy"><em>'+c.count+' 种风格</em><b>'+c.name+'</b></div>'+
+          '<div class="body"><div class="tagline">'+c.tagline+'</div><div class="desc">'+c.desc+'</div>'+
+          '<div class="meta"><span>'+statLine(c)+'</span><span class="go">查看全部 →</span></div></div></a>';
+      }).join("")+'</div>'+
+    '</div></section>'+
+    '<section class="page" style="padding-top:8px"><div class="container">'+
+      '<div class="section-head"><div><p class="eyebrow">风格墙</p><h2 class="section-title">全部风格 · 可按分类与类型筛选</h2></div><small style="color:var(--ink-3);font-size:13px">点击卡片可查看完整提示词与通用模板</small></div>'+
+      '<div class="gallery-tools">'+chips.join("")+
+        '<div class="search-box">'+ICO_SEARCH+'<input id="gallerySearch" type="text" placeholder="搜索风格名称 / 标签" value="'+esc(st.kw)+'"></div>'+
+      '</div>'+
+      '<div class="style-grid">'+(list.length?list.map(function(s){return cardHTML(s,true)}).join(""):'<div class="empty-tip" style="grid-column:1/-1">没有匹配的风格，换个关键词试试</div>')+'</div>'+
+    '</div></section>'+
+    '<section class="page" style="padding-top:8px"><div class="container">'+
+      '<div class="section-head"><div><p class="eyebrow">三步上手</p><h2 class="section-title">怎么用这套风格库</h2></div></div>'+
+      '<div class="steps">'+
+        '<div class="step"><div class="no">01</div><h3>浏览选风格</h3><p>按分类、类型或关键词找到喜欢的风格，参考图直观展示画面基调。</p></div>'+
+        '<div class="step"><div class="no">02</div><h3>一键复制提示词</h3><p>每款风格都配有正向示例、反向提示词与通用模板，复制即可用到 AI 绘图工具。</p></div>'+
+        '<div class="step"><div class="no">03</div><h3>上传图片试效果</h3><p>上传自己的图片，选择单风格自定义或全部风格批量生成演示图，直观比较适配度。</p></div>'+
+      '</div>'+
+    '</div></section>'+
+    '<section class="page" style="padding-top:8px"><div class="container">'+
+      '<div class="cta-band"><h2>上传一张照片，看看它适配哪种风格</h2><p>38 种风格一键批量预览，提示词自动替换为你图片的主体描述。</p><a class="btn btn-primary" href="#/studio">进入上传工作台</a></div>'+
+    '</div></section>';
+  $("#gallerySearch").addEventListener("input",function(){STAT.home.kw=this.value;refreshGrid()});
+}
+function galleryList(){
+  var st=STAT.home;
+  return STYLES.filter(function(s){
+    if(st.cat!=="all"&&s.cat!==st.cat)return false;
+    if(st.type!=="all"&&s.type!==st.type)return false;
+    if(st.kw){var hay=(s.name+s.tags.join("")+s.desc+s.pos).toLowerCase();if(hay.indexOf(st.kw.toLowerCase())<0)return false}
+    return true;
+  });
+}
+function gridHTML(list){
+  return list.length?list.map(function(s){return cardHTML(s,true)}).join(""):'<div class="empty-tip" style="grid-column:1/-1">没有匹配的风格，换个关键词试试</div>';
+}
+function refreshGrid(){
+  var g=$(".style-grid");if(g)g.innerHTML=gridHTML(galleryList());
+}
+function refreshGalleryTools(){
+  var st=STAT.home;
+  var chipsHtml='<button class="chip'+(st.cat==="all"&&st.type==="all"?" on":"")+'" data-filter="all" type="button">全部</button>';
+  CATS.forEach(function(c){chipsHtml+='<button class="chip'+(st.cat===c.id?" on":"")+'" data-filter="cat:'+c.id+'" type="button">'+c.name+'（'+c.count+'）</button>'});
+  chipsHtml+='<button class="chip'+(st.type==="portrait"?" on":"")+'" data-filter="type:portrait" type="button">人像</button>';
+  chipsHtml+='<button class="chip'+(st.type==="scene"?" on":"")+'" data-filter="type:scene" type="button">场景</button>';
+  chipsHtml+='<div class="search-box">'+ICO_SEARCH+'<input id="gallerySearch" type="text" placeholder="搜索风格名称 / 标签" value="'+esc(st.kw)+'"></div>';
+  $(".gallery-tools").innerHTML=chipsHtml;
+  $(".style-grid").innerHTML=gridHTML(galleryList());
+  $("#gallerySearch").addEventListener("input",function(){STAT.home.kw=this.value;refreshGrid()});
+}
+function renderCat(id){
+  var c=catOf(id);if(!c){location.hash="#/";return}
+  var list=stylesOfCat(id);
+  $('#app').innerHTML=
+    '<section class="page"><div class="container">'+
+    '<div class="breadcrumb"><a href="#/">首页</a><span>/</span><span>'+c.name+'</span></div>'+
+    '<div class="cat-hero"><p class="tagline">'+c.tagline+'</p><h1>'+c.name+'</h1><p class="desc">'+c.desc+'</p>'+
+    '<div class="stat-row"><span>'+c.count+' 种风格</span><span>'+statLine(c)+'</span><span>每款含正向 / 反向提示词</span></div></div>'+
+    '<div class="style-grid">'+list.map(function(s){return cardHTML(s,true)}).join("")+'</div>'+
+    '<div style="margin-top:34px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn-primary" href="#/studio">用这些风格试我的图</a><a class="btn btn-ghost" href="#/">返回首页</a></div>'+
+    '</div></section>';
+}
+function renderStyle(id){
+  var s=styleOf(id);if(!s){location.hash="#/";return}
+  var c=catOf(s.cat);var rel=stylesOfCat(s.cat).filter(function(x){return x.id!==s.id}).slice(0,8);
+  $('#app').innerHTML=
+    '<section class="page"><div class="container">'+
+    '<div class="breadcrumb"><a href="#/">首页</a><span>/</span><a href="#/cat/'+c.id+'">'+c.name+'</a><span>/</span><span>'+s.name+'</span></div>'+
+    '<div class="detail-grid">'+
+      '<div class="detail-img-wrap"><img class="detail-img" src="'+s.img+'" alt="'+esc(s.name)+' 参考图"><div class="detail-img-cap">默认参考图 · '+TYPE_NAMES[s.type]+'</div></div>'+
+      '<div>'+
+        '<div class="detail-head"><div class="tags"><span>'+c.name+'</span><span>'+TYPE_NAMES[s.type]+'</span>'+s.tags.map(function(t){return "<span>"+esc(t)+"</span>"}).join("")+'</div>'+
+        '<h1>'+s.name+'</h1><p class="detail-desc">'+s.desc+'</p></div>'+
+        '<div class="prompt-block"><div class="p-head"><div class="p-title"><span class="dot"></span>通用提示词模板（可替换主体）</div><button class="copy-btn" data-action="copy" data-copy="tpl" data-id="'+s.id+'" type="button">'+ICO_COPY+'复制</button></div>'+
+        '<div class="p-text">'+esc(s.tpl).replace(/【主体描述】/g,'<span class="ph">【主体描述】</span>')+'</div></div>'+
+        '<div class="prompt-block"><div class="p-head"><div class="p-title"><span class="dot"></span>完整示例（正向提示词）</div><button class="copy-btn" data-action="copy" data-copy="pos" data-id="'+s.id+'" type="button">'+ICO_COPY+'复制</button></div>'+
+        '<div class="p-text">'+esc(s.pos)+'</div></div>'+
+        '<div class="prompt-block"><div class="p-head"><div class="p-title"><span class="dot" style="background:var(--sage)"></span>反向提示词（规避翻车）</div><button class="copy-btn" data-action="copy" data-copy="neg" data-id="'+s.id+'" type="button">'+ICO_COPY+'复制</button></div>'+
+        '<div class="p-text">'+esc(s.neg)+'</div></div>'+
+        '<div class="detail-actions"><a class="btn btn-sage" href="#/studio/'+s.id+'">用此风格试我的图</a><a class="btn btn-ghost" href="#/cat/'+c.id+'">返回分类</a></div>'+
+      '</div>'+
+    '</div>'+
+    '<h3 class="related-title">同类别其他风格</h3>'+
+    '<div class="related-scroll">'+rel.map(function(x){
+      return '<a class="rel-card" href="#/style/'+x.id+'"><img src="'+x.img+'" alt="'+esc(x.name)+'" loading="lazy"><div class="rel-name">'+esc(x.name)+'</div><div class="rel-type">'+TYPE_NAMES[x.type]+'</div></a>';
+    }).join("")+'</div>'+
+    '</div></section>';
+}
+function renderStudio(presetId){
+  STUDIO.mode=presetId?"single":"all";STUDIO.styleId=presetId||null;
+  var opts='';
+  CATS.forEach(function(c){
+    opts+='<optgroup label="'+c.name+'">';
+    stylesOfCat(c.id).forEach(function(s){opts+='<option value="'+s.id+'"'+(presetId===s.id?" selected":"")+'>'+s.name+'</option>'});
+    opts+='</optgroup>';
+  });
+  $('#app').innerHTML=
+    '<section class="page"><div class="container studio-wrap">'+
+    '<div class="breadcrumb"><a href="#/">首页</a><span>/</span><span>上传工作台</span></div>'+
+    '<p class="eyebrow">风格试衣间</p><h1 class="display" style="font-size:30px;margin-bottom:8px">上传图片 · 预览风格效果</h1>'+
+    '<p style="color:var(--ink-2);font-size:14px;margin-bottom:24px;max-width:760px">上传一张图片后，选择“单个风格自定义”或“全部 38 种风格”，系统会把对应风格的通用提示词替换为你图片的主体描述，并实时生成该风格的演示图。</p>'+
+    '<div class="drop-zone" id="dropZone">'+
+      '<div class="dz-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>'+
+      '<p>点击选择或拖拽图片到此处</p><small>支持 JPG / PNG / WebP，建议人物或场景类图片效果更直观</small>'+
+      '<input type="file" id="fileInput" accept="image/*">'+
+    '</div>'+
+    '<div id="previewRow" class="preview-row" style="display:none"></div>'+
+    '<div class="form-grid">'+
+      '<div class="field"><label>生成模式</label><div class="mode-options">'+
+        '<label class="mode-opt'+(presetId?" on":"")+'" id="modeSingle"><input type="radio" name="mode" value="single"'+(presetId?" checked":"")+'>'+
+          '<span><b>单个风格自定义</b><small>选一款风格，单独生成演示图与提示词</small></span></label>'+
+        '<label class="mode-opt'+(presetId?"":" on")+'" id="modeAll"><input type="radio" name="mode" value="all"'+(presetId?"":" checked")+'>'+
+          '<span><b>全部 38 种风格</b><small>一键批量生成所有风格的演示图与提示词</small></span></label>'+
+      '</div><div class="hint" id="modeHint">'+(presetId?"已按所选风格进入单风格模式，可切换":"选择“全部”会生成 38 张演示图，稍等片刻即可")+'</div></div>'+
+      '<div class="field"><label>选择风格</label><select class="style-select" id="styleSelect">'+opts+'</select>'+
+      '<div class="hint">仅“单个风格自定义”模式下生效；也可先在风格详情页点“用此风格试我的图”直达</div></div>'+
+      '<div class="field" style="grid-column:1/-1"><label>图片主体描述（可选）</label>'+
+      '<textarea class="subject" id="subjectInput" placeholder="例如：一只橘猫趴在窗台上、穿着风衣的年轻男生、清晨的古镇小巷…"></textarea>'+
+      '<div class="hint">留空时使用“你上传的图片主体”作为占位；填写后会替换进每款风格的【主体描述】位置</div></div>'+
+    '</div>'+
+    '<button class="btn btn-primary studio-run" id="runBtn" type="button">生成风格演示图</button>'+
+    '<div class="studio-note">说明：演示图为浏览器端实时风格模拟（滤镜 + 画布处理），用于直观比较各风格适配度；正式出图请复制对应提示词，到豆包、即梦等 AI 绘图工具中生成。</div>'+
+    '<div id="resultArea"></div>'+
+    '</div></section>';
+  bindStudio(presetId);
+}
+
+/* ============ 上传工作台逻辑 ============ */
+var STUDIO={img:null,mode:"all",styleId:null,subject:"",results:{}};
+function bindStudio(presetId){
+  var dz=$("#dropZone"),fi=$("#fileInput"),pv=$("#previewRow");
+  dz.addEventListener("click",function(){fi.click()});
+  dz.addEventListener("dragover",function(e){e.preventDefault();dz.classList.add("drag")});
+  dz.addEventListener("dragleave",function(){dz.classList.remove("drag")});
+  dz.addEventListener("drop",function(e){e.preventDefault();dz.classList.remove("drag");var f=e.dataTransfer.files[0];if(f&&f.type.indexOf("image")===0)loadFile(f)});
+  fi.addEventListener("change",function(){if(fi.files&&fi.files[0]){loadFile(fi.files[0]);fi.value=""}});
+  function loadFile(f){
+    var r=new FileReader();
+    r.onload=function(){STUDIO.img=new Image();STUDIO.img.onload=function(){
+      pv.style.display="flex";
+      pv.innerHTML='<div class="preview-box"><img src="'+r.result+'" alt="原图预览"><button class="del" data-action="clearimg" type="button">×</button><div style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:6px">原图 · '+STUDIO.img.naturalWidth+'×'+STUDIO.img.naturalHeight+'</div></div>';
+      toast("图片已载入，选择模式后生成");
+    };STUDIO.img.src=r.result};
+    r.readAsDataURL(f);
+  }
+  $$(".mode-opt").forEach(function(el){
+    el.addEventListener("click",function(){
+      $$(".mode-opt").forEach(function(x){x.classList.remove("on")});
+      el.classList.add("on");
+      var inp=el.querySelector("input");inp.checked=true;STUDIO.mode=inp.value;
+      $("#modeHint").textContent=inp.value==="all"?"选择“全部”会生成 38 张演示图，稍等片刻即可":"已按所选风格进入单风格模式，可切换";
+      if(inp.value==="single")$("#styleSelect").value=STUDIO.styleId||$("#styleSelect").value;
+    });
+  });
+  $("#styleSelect").addEventListener("change",function(){STUDIO.styleId=this.value});
+  $("#subjectInput").addEventListener("input",function(){STUDIO.subject=this.value});
+  $("#runBtn").addEventListener("click",runStudio);
+}
+function runStudio(){
+  if(!STUDIO.img){toast("请先上传一张图片");return}
+  var mask=$("#loadingMask");mask.classList.add("show");
+  setTimeout(function(){
+    var subject=(STUDIO.subject&&STUDIO.subject.trim())||"你上传的图片主体";
+    var ids=STUDIO.mode==="all"?STYLES.map(function(s){return s.id}):[STUDIO.styleId||$("#styleSelect").value];
+    var out="";
+    ids.forEach(function(id){
+      var s=styleOf(id);if(!s)return;
+      var adapted=s.tpl.replace(/【主体描述】/g,subject);
+      STUDIO.results[id]=adapted;
+      var dataURL=renderFX(s,subject);
+      out+='<div class="result-card" data-id="'+id+'">'+
+        (dataURL?'<img src="'+dataURL+'" alt="'+esc(s.name)+' 风格演示图" style="width:100%;aspect-ratio:3/4;object-fit:cover">':'<canvas></canvas>')+
+        '<div class="r-body"><h4>'+esc(s.name)+'</h4><span class="r-type">'+TYPE_NAMES[s.type]+' · '+catOf(s.cat).name+'</span>'+
+        '<div class="r-prompt" title="点击展开">'+esc(adapted)+'</div>'+
+        '<div class="r-actions"><button class="mini-btn solid" data-action="copy" data-copy="adapted" data-id="'+id+'" type="button">'+ICO_COPY+'复制提示词</button>'+
+        (dataURL?'<button class="mini-btn" data-action="dl" data-id="'+id+'" type="button">'+ICO_DL+'下载</button>':'')+
+        '</div></div></div>';
+    });
+    var head='<div class="result-head"><h3>演示图（'+ids.length+' 款风格）</h3><small>演示图为实时风格模拟 · 提示词已替换为你上传图片的主体描述</small></div>';
+    if(ids.length>1)head='<div class="result-head"><h3>演示图（'+ids.length+' 款风格）</h3><div style="display:flex;gap:10px;align-items:center"><button class="copy-btn" data-action="copyAll" type="button">'+ICO_COPY+'复制全部提示词</button><small>演示图为实时风格模拟</small></div></div>';
+    $("#resultArea").innerHTML=head+'<div class="result-grid">'+out+'</div>';
+    $$("#resultArea .r-prompt").forEach(function(el){
+      el.addEventListener("click",function(){el.classList.toggle("more")});
+    });
+    mask.classList.remove("show");
+    $("#resultArea").scrollIntoView({behavior:"smooth",block:"start"});
+  },60);
+}
+function renderFX(s,subject){
+  try{
+    var fx=FX[s.fx]||FX.filmWarm;
+    var img=STUDIO.img;
+    var maxW=900;var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+    if(w>maxW){h=Math.round(h*maxW/w);w=maxW}
+    var c=document.createElement("canvas");c.width=w;c.height=h;
+    var ctx=c.getContext("2d");
+    var css=(fx.blur?"blur("+fx.blur+"px) ":"")+fx.css;
+    ctx.filter=css;
+    ctx.drawImage(img,0,0,w,h);
+    ctx.filter="none";
+    var d=ctx.getImageData(0,0,w,h),pix=d.data;
+    if(fx.post){var lvl=fx.post,step=255/(lvl-1);for(var i=0;i<pix.length;i+=4){pix[i]=Math.round(pix[i]/step)*step;pix[i+1]=Math.round(pix[i+1]/step)*step;pix[i+2]=Math.round(pix[i+2]/step)*step}}
+    if(fx.shift){var off=fx.shift;for(var j=0;j<pix.length;j+=4){var r=pix[j];pix[j]=pix[(j+off*4)%pix.length]||r}}
+    ctx.putImageData(d,0,0);
+    if(fx.tint){ctx.globalCompositeOperation="source-atop";ctx.fillStyle="rgba("+fx.tint[0]*255+","+fx.tint[1]*255+","+fx.tint[2]*255+","+fx.tint[3]+")";ctx.fillRect(0,0,w,h);ctx.globalCompositeOperation="source-over"}
+    if(fx.vig){var g=ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*0.42,w/2,h/2,Math.max(w,h)*0.75);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,"+fx.vig+")");ctx.fillStyle=g;ctx.fillRect(0,0,w,h)}
+    if(fx.grain){for(var k=0;k<Math.min(9000,w*h/220);k++){var gx=Math.random()*w,gy=Math.random()*h;ctx.fillStyle=Math.random()>0.5?"rgba(0,0,0,"+(Math.random()*0.05+0.02)+")":"rgba(255,255,255,"+(Math.random()*0.05+0.02)+")";ctx.fillRect(gx,gy,1.5,1.5)}}
+    return c.toDataURL("image/jpeg",0.88);
+  }catch(e){return null}
+}
+
+/* ============ 全局事件（事件委托） ============ */
+var STAT={home:{cat:"all",type:"all",kw:""}};
+function clearimg(){STUDIO.img=null;$("#previewRow").style.display="none";$("#previewRow").innerHTML="";toast("已移除图片，可重新上传")}
+document.getElementById("app").addEventListener("click",function(e){
+  var el=e.target.closest("[data-action],[data-filter],[href^='#/']");
+  if(!el)return;
+  if(el.hasAttribute("data-nav")){return}
+  var action=el.dataset.action;
+  if(action==="copy"){
+    var s=styleOf(el.dataset.id);if(!s)return;
+    var map={pos:s.pos,neg:s.neg,tpl:s.tpl,adapted:(STUDIO.results[el.dataset.id]||s.tpl)};
+    copyText(map[el.dataset.copy]||s.pos);return;
+  }
+  if(action==="copyAll"){
+    var txt=STYLES.map(function(s){return "【"+s.name+"】\n"+(STUDIO.results[s.id]||s.tpl)}).join("\n\n");
+    copyText(txt);return;
+  }
+  if(action==="dl"){
+    var card=$('.result-card[data-id="'+el.dataset.id+'"]');if(!card)return;
+    var img=card.querySelector("img");if(!img)return;
+    var a=document.createElement("a");a.href=img.src;a.download=el.dataset.id+"-style-demo.jpg";document.body.appendChild(a);a.click();document.body.removeChild(a);toast("已开始下载");return;
+  }
+  if(action==="clearimg"){clearimg();return}
+  var f=el.dataset.filter;
+  if(f){
+    if(f==="all"){STAT.home={cat:"all",type:"all",kw:STAT.home.kw}}
+    else if(f.indexOf("cat:")===0){STAT.home.cat=f.slice(4);STAT.home.type="all"}
+    else if(f.indexOf("type:")===0){STAT.home.type=f.slice(5);STAT.home.cat="all"}
+    refreshGalleryTools();window.scrollTo(0,$(".gallery-tools").offsetTop-90);return;
+  }
+});
+
+/* ============ 路由 ============ */
+function route(){
+  var h=location.hash.replace(/^#\/?/,"");
+  var parts=h.split("/").filter(Boolean);
+  if(!parts.length){renderHome();return}
+  if(parts[0]==="cat"){renderCat(parts[1]);return}
+  if(parts[0]==="style"){renderStyle(parts[1]);return}
+  if(parts[0]==="studio"){renderStudio(parts[1]||null);return}
+  if(parts[0]==="gallery"){renderHome();setTimeout(function(){var g=$(".gallery-tools");if(g)g.scrollIntoView({behavior:"smooth"})},80);return}
+  renderHome();
+}
+window.addEventListener("hashchange",function(){route();window.scrollTo(0,0)});
+
+/* ============ 导航装配 ============ */
+function buildNav(){
+  var dd=$("#ddMenu");
+  dd.innerHTML=CATS.map(function(c){return '<a class="dd-item" href="#/cat/'+c.id+'" data-nav>'+c.name+'<small>'+c.count+' 种风格</small></a>'}).join("");
+  var mm=$("#mobileMenu");
+  mm.innerHTML='<a class="mm-link" href="#/" data-nav>首页</a>'+CATS.map(function(c){return '<a class="mm-link" href="#/cat/'+c.id+'" data-nav>'+c.name+'</a>'}).join("")+'<a class="mm-link" href="#/studio" data-nav>上传工作台</a>';
+  $("#footCats").innerHTML=CATS.map(function(c){return '<a href="#/cat/'+c.id+'" data-nav>'+c.name+'</a>'}).join("");
+  var ddBtn=$("#ddBtn"),ddCat=$("#ddCat");
+  ddBtn.addEventListener("click",function(e){e.stopPropagation();ddCat.classList.toggle("open")});
+  document.addEventListener("click",function(){ddCat.classList.remove("open")});
+  $("#burger").addEventListener("click",function(){this.classList.toggle("open");$("#mobileMenu").classList.toggle("open")});
+}
+buildNav();
+route();
+</script>
+</body>
+</html>
