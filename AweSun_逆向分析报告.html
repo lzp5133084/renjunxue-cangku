@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AweSun 16.6 逆向工程分析报告</title>
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --surface: #111827;
+            --surface-2: #1f2937;
+            --border: #374151;
+            --text: #f3f4f6;
+            --text-2: #9ca3af;
+            --accent: #3b82f6;
+            --accent-2: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+        header {
+            text-align: center;
+            padding: 60px 0;
+            background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15));
+            border-radius: 24px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+        }
+        header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+        header p { color: var(--text-2); font-size: 1.1rem; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 4px;
+        }
+        .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+        .badge-purple { background: rgba(139,92,246,0.2); color: #a78bfa; }
+        .badge-orange { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+        section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h2::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            border-radius: 2px;
+        }
+        h3 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 12px; color: var(--text); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+        .card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .card-title { font-size: 0.875rem; color: var(--text-2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .card-value { font-size: 1.25rem; font-weight: 600; font-family: 'Consolas', 'Monaco', monospace; }
+        .evidence {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 16px 20px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+        .evidence .addr { color: var(--accent-2); }
+        .evidence .val { color: var(--success); }
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9rem; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-2); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        .arch-diagram {
+            background: var(--surface-2);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .highlight { color: var(--accent); font-weight: 600; }
+        .warning-box {
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .warning-box strong { color: var(--warning); }
+        .success-box {
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success-box strong { color: var(--success); }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+        .tag { display: inline-block; padding: 2px 8px; background: var(--surface-2); border-radius: 4px; font-size: 0.75rem; margin: 2px; font-family: monospace; }
+        .footer { text-align: center; color: var(--text-2); font-size: 0.875rem; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AweSun 16.6 逆向工程分析报告</h1>
+            <p>基于 REA (Reverse Engineer Anything) + Ghidra 12.1.4 的静态分析</p>
+            <div style="margin-top: 20px;">
+                <span class="badge badge-blue">x86_64 PE</span>
+                <span class="badge badge-green">7048 函数</span>
+                <span class="badge badge-purple">2975 字符串</span>
+                <span class="badge badge-orange">SunloginClient 11.0.0.0</span>
+            </div>
+        </header>
+
+        <section>
+            <h2>一、目标画像</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">主程序</div>
+                    <div class="card-value">AweSun.exe</div>
+                    <div style="font-size:0.85rem; color:var(--text-2); margin-top:8px;">198,984,640 bytes | Flutter Desktop 壳</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">被控端代理</div>
+                    <div class="card-value">agent\AweSun.exe</div>
+                    <div style="font-size:0.85rem; color:var(--text-2); margin-top:8px;">2,346,432 bytes | 核心远控逻辑</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">文件版本</div>
+                    <div class="card-value">16.6.0.32198</div>
+                    <div style="font-size:0.85rem; color:var(--text-2); margin-top:8px;">上海贝锐信息科技股份有限公司</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">真实身份</div>
+                    <div class="card-value" style="color:var(--warning);">SunloginClient 11.0.0.0</div>
+                    <div style="font-size:0.85rem; color:var(--text-2); margin-top:8px;">PE Manifest 与 node.dll 双重确认</div>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <strong>结论：</strong> AweSun 并非独立研发的远程控制软件，而是基于向日葵（Sunlogin）11.0 代码库的深度定制/海外版本。其网络协议、插件架构、驱动模型与向日葵完全一致。
+            </div>
+        </section>
+
+        <section>
+            <h2>二、架构总览</h2>
+            <div class="arch-diagram">┌─────────────────────────────────────────────────────────────────────────────┐
+│                         AweSun 主程序 (198 MB)                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  Flutter Desktop UI (AweSun.exe 启动器 + flutter_windows.dll)      │   │
+│  │  • 设备列表 / 远程桌面窗口 / 文件传输 / 设置 / 会员体系              │   │
+│  │  • 通过 Platform Channel 调用原生插件                                │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                              │                                            │
+│  ┌───────────────────────────┼─────────────────────────────────────────┐   │
+│  │           Flutter 原生插件层 (flutter\*.dll)                        │   │
+│  │  • sl_dart_core_plugin.dll (5.3 MB) ── 核心业务桥接                 │   │
+│  │  • sl_rdp_plugin.dll ── RDP/远程桌面会话                            │   │
+│  │  • freerdp2.dll / freerdp-client2.dll ── FreeRDP 客户端             │   │
+│  │  • desktop_multi_window / webview / tray / file_selector ...        │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                              │                                            │
+│  ┌───────────────────────────┼─────────────────────────────────────────┐   │
+│  │           node.dll (SunloginClient) ── 遗留 Node.js 运行时          │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└──────────────────────────────┼────────────────────────────────────────────┘
+                               │ IPC / 命令行
+                               ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      被控端代理 agent\AweSun.exe (2.3 MB)                    │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  C++ 插件化架构 (oray::plugin::*)                                    │   │
+│  │  ├─ remotedesktop ── 屏幕捕获 + 视频编码 + 输入注入                  │   │
+│  │  ├─ clipboard ── 剪贴板同步 (文本/文件/拖拽)                        │   │
+│  │  ├─ cursorsender ── 远程光标形状同步                                │   │
+│  │  └─ DragServerProxy ── 拖拽文件传输                                 │   │
+│  ├─────────────────────────────────────────────────────────────────────┤   │
+│  │  网络层                                                             │   │
+│  │  ├─ CSockAcceptor / CSockStream / CTCPStreamTask ── TCP 流          │   │
+│  │  ├─ CUdpLoopback / select_tracker ── UDP / P2P                      │   │
+│  │  ├─ UDT (可靠 UDP) / force_tcp 回退                                 │   │
+│  │  └─ upnp:rootdevice ── UPnP 打洞                                    │   │
+│  ├─────────────────────────────────────────────────────────────────────┤   │
+│  │  系统接口                                                           │   │
+│  │  ├─ DwmCapture / SetDIBitsToDevice / EnumDisplayDevices ── 屏幕捕获 │   │
+│  │  ├─ OpenInputDesktop / SetThreadDesktop ── 输入桌面切换 (UAC/锁屏)  │   │
+│  │  ├─ OpenServiceW / QueryServiceConfigW ── Windows 服务管理          │   │
+│  │  └─ SetupDi* ── 虚拟 HID / 显示器驱动管理                           │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        ▼                      ▼                      ▼
+┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+│  驱动层        │    │  守护进程      │    │  云端 API      │
+│  Idd64 (虚拟   │    │  awesun_guard │    │  slapi.oray.net│
+│   显示器)      │    │  p2ptelemetry │    │  api-std.sun...│
+│  Mirror64     │    │  awesun-mcp   │    │  client-api... │
+│   (镜像捕获)   │    │  -server.exe  │    │  user-api-v2   │
+│  Vhid64 (虚拟  │    └───────────────┘    └───────────────┘
+│   HID/手柄/笔) │
+│  OrayUSB*     │
+│   (USB重定向)  │
+│  VGC64 (虚拟   │
+│   游戏控制器)  │
+└───────────────┘</div>
+        </section>
+
+        <section>
+            <h2>三、核心证据链</h2>
+
+            <h3>3.1 身份确认证据</h3>
+            <div class="evidence">
+                <span class="addr">0x14023d598</span> <span class="val">PE Manifest</span><br>
+                &lt;assemblyIdentity type="win32" name="<strong>SunloginClient</strong>" version="11.0.0.0"&gt;
+            </div>
+            <div class="evidence">
+                <span class="addr">node.dll VersionInfo</span><br>
+                ProductName: <strong>SunloginClient</strong> | FileDescription: SunloginClient | Version: 1.0.0.20103
+            </div>
+            <div class="evidence">
+                <span class="addr">0x140119bc0</span><br>
+                构建路径泄露: <strong>D:\gitlab-runner\builds\FVsaFsXW\0\sunlogin\client\sunloginclient\includes\orayvhid\client\VHIDDevice.cpp</strong>
+            </div>
+
+            <h3>3.2 网络通信证据</h3>
+            <div class="evidence">
+                <span class="addr">0x1400fdc70</span> <span class="val">slapi.oray.net</span><br>
+                <span class="addr">0x1400fdc80</span> <span class="val">api-std.sunlogin.oray.com</span><br>
+                <span class="addr">0x1400fdca0</span> <span class="val">slapi-cus.oray.net</span><br>
+                <span class="addr">0x1400fdcb8</span> <span class="val">api-cus.sunlogin.oray.com</span><br>
+                <span class="addr">0x1400fdcd8</span> <span class="val">client.sunlogin.oray.com</span><br>
+                <span class="addr">0x1400fdcf8</span> <span class="val">client-api.oray.com</span> / <span class="val">client-api-v2.oray.com</span> / <span class="val">user-api-v2.oray.com</span>
+            </div>
+            <div class="evidence">
+                <span class="addr">0x1400fd008+</span><br>
+                p2p_server_address / p2p_server_ip / p2p_server_ip6 / refresh_p2p_session / isudpp2p / evt_isudpp2p / force_tcp / upnp:rootdevice
+            </div>
+
+            <h3>3.3 插件架构证据 (oray::plugin::*)</h3>
+            <table>
+                <tr><th>插件</th><th>关键类/函数</th><th>职责</th></tr>
+                <tr><td><span class="tag">remotedesktop</span></td><td>client::handler::OnP2PInfo / OnFindUU / OnStartChat / auxiliary_handler</td><td>远程桌面会话、P2P 信息交换、辅助通道</td></tr>
+                <tr><td><span class="tag">clipboard</span></td><td>clipboard_router / dragandclipboard / CClipboardRaw / CClipboardViewer</td><td>剪贴板文本/文件/拖拽同步，支持 P2P 和辅助通道</td></tr>
+                <tr><td><span class="tag">cursorsender</span></td><td>cursorsender_router / CursorSenderProxy / dragandcursorsender</td><td>远程光标形状、位置、自动相对鼠标模式</td></tr>
+                <tr><td><span class="tag">DragServerProxy</span></td><td>proxy_run / proxy_render / enable_auxchannel</td><td>拖拽文件渲染与传输</td></tr>
+            </table>
+
+            <h3>3.4 屏幕捕获与编码证据</h3>
+            <div class="evidence">
+                DwmCapture | SetDIBitsToDevice | EnumDisplayDevicesW | GetDeviceCaps | GdiFlush<br>
+                IVEncoder / IVDecoder | sl.codec.policy.dec.screenbuffer<br>
+                extendscreen / projectionscreen / screen_wall / live_screenid<br>
+                BlackScreen_Usable / BlackScreen_ExtractResource / BlackScreen_SyncRunHelper
+            </div>
+            <p style="margin-top:12px; color:var(--text-2); font-size:0.9rem;">
+                支持 DWM 捕获与 GDI BitBlt 双模式；编解码器抽象为 IVEncoder/IVDecoder 接口；支持扩展屏、投屏、屏幕墙、黑屏隐私保护。
+            </p>
+
+            <h3>3.5 输入注入与桌面切换证据</h3>
+            <div class="evidence">
+                OpenInputDesktop / SetThreadDesktop / GetThreadDesktop / EnsureAttachInputDesktop<br>
+                attach input desktop %s from %s / SetThreadDesktop failed, err: %d<br>
+                --lockscreen=0 / lock_screen / UnLockScreen / desktop exitInstance over! UnLockScreen=true
+            </div>
+            <p style="margin-top:12px; color:var(--text-2); font-size:0.9rem;">
+                通过 Windows 输入桌面切换机制处理 UAC 提权窗口和锁屏界面，确保远程输入在系统级对话框中依然有效。
+            </p>
+
+            <h3>3.6 虚拟设备驱动证据</h3>
+            <table>
+                <tr><th>驱动</th><th>文件</th><th>功能</th></tr>
+                <tr><td>Idd64</td><td>OrayIddDriver.sys</td><td>间接显示驱动 (IDD)，创建虚拟显示器，用于无头/扩展屏场景</td></tr>
+                <tr><td>Mirror64</td><td>OrayMir.sys + OrayMir.dll</td><td>镜像显示驱动，高效屏幕捕获（比 GDI 快 5-10 倍）</td></tr>
+                <tr><td>Vhid64</td><td>orayvhid.sys + orayvhidkmdf.sys</td><td>虚拟 HID，支持游戏手柄 (col05)、数位笔 (col04) 远程映射</td></tr>
+                <tr><td>VGC64</td><td>OrayVGC.sys</td><td>虚拟游戏控制器，XInput/DirectInput 重定向</td></tr>
+                <tr><td>OrayUSBMon/Stub/VHCI</td><td>—</td><td>USB 设备重定向（U 盘、加密狗、打印机）</td></tr>
+                <tr><td>Print64</td><td>—</td><td>打印机重定向</td></tr>
+            </table>
+
+            <h3>3.7 系统服务与守护证据</h3>
+            <div class="evidence">
+                AweSunService / AweSunServiceDeamon / AweSunHostServiceDeamon / AweSunHostCustomService<br>
+                SunloginService / SunloginServiceDeamon / SunloginCustomService<br>
+                OpenServiceW / QueryServiceConfigW / TerminateProcess / TerminateThread<br>
+                APPMUTEX_SERVICE / [rpcservice] / SERVICE_LISTEN_PORT
+            </div>
+
+            <h3>3.8 剪贴板协议证据</h3>
+            <div class="evidence">
+                ID_CB_QUERY_VERSION_REQ / ID_CB_REQUEST_DATA / ID_CB_REQUEST_DATA_ORAY<br>
+                ID_CB_SEND_DATA / ID_CB_SEND_TYPE_ORAY / ID_CB_SIGNAL_DRAWCLIPBOARD_ORAY<br>
+                ID_CB_TRANSFER_DATATYPE_ORAY / ID_CB_REQUEST_SYNC / ID_CB_REQUEST_SYNCEND<br>
+                enable clipboard file / enable clipboard text / enable_drag_file_recv / enable_drag_file_send<br>
+                clipboard_agent_server created with port %d / enable auxchannelmode:%d / enable p2p:%d
+            </div>
+        </section>
+
+        <section>
+            <h2>四、实现机制详解</h2>
+
+            <h3>4.1 屏幕捕获管线</h3>
+            <div class="arch-diagram">┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│  捕获源       │────▶│  帧处理       │────▶│  编码器       │────▶│  网络发送     │
+│  DwmCapture  │     │  差分检测     │     │  IVEncoder   │     │  TCP/UDP/P2P │
+│  Mirror Drv  │     │  缩放/裁剪    │     │  (H.264/HEVC)│     │  UDT 可靠UDP │
+│  GDI BitBlt  │     │  光标合成     │     │  自定义硬编   │     │  中继服务器   │
+└──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘</div>
+            <p style="color:var(--text-2); font-size:0.9rem;">
+                AweSun 采用多模式捕获：优先使用镜像驱动（Mirror64）进行内核级捕获；在无驱动环境下回退到 DWM 捕获或 GDI。
+                编码层抽象为 IVEncoder/IVDecoder，支持硬件加速（NVENC/QSV/AMF）与软件编码 fallback。
+                配置中声明 hevc=1、av1=1，表明支持 H.265 和 AV1 硬解。
+            </p>
+
+            <h3>4.2 输入注入管线</h3>
+            <div class="arch-diagram">主控端鼠标/键盘事件
+        │
+        ▼ JSON/Binary 封装
+┌───────────────┐
+│  WebSocket/TCP │───▶ 被控端接收线程
+└───────────────┘         │
+                          ▼
+              ┌─────────────────────┐
+              │  OpenInputDesktop() │───▶ 获取当前输入桌面 (处理 UAC/锁屏)
+              │  SetThreadDesktop() │
+              └─────────────────────┘
+                          │
+                          ▼
+              ┌─────────────────────┐
+              │   SendInput()       │───▶ 注入 mouse_event / keybd_event
+              │   (Win32 API)       │
+              └─────────────────────┘</div>
+
+            <h3>4.3 P2P 打洞与中继</h3>
+            <div class="arch-diagram">主控端                    中继服务器 (slapi.oray.net)                    被控端
+   │                              │                                    │
+   │  1. 请求连接 device_id        │                                    │
+   │─────────────────────────────▶│                                    │
+   │                              │  2. 查询被控端在线状态/NAT 类型       │
+   │                              │────────────────────────────────────▶│
+   │                              │                                    │
+   │  3. 交换双方公网/内网地址      │                                    │
+   │◀─────────────────────────────│◀────────────────────────────────────│
+   │                              │                                    │
+   │  4. UDP 打洞 (STUN/UPnP)      │                                    │
+   │───────────────────────────────────────────────────────────────────▶│
+   │                              │                                    │
+   │  5. P2P 成功 → 直连传输       │  失败 → 走 TCP 中继 (force_tcp)      │
+   │◀═══════════════════════════════════════════════════════════════════▶│</div>
+
+            <h3>4.4 剪贴板同步协议</h3>
+            <p style="color:var(--text-2); font-size:0.9rem;">
+                基于自定义二进制协议 _ORAY_MSG_HEAD，消息类型包括 ID_CB_SEND_TYPE_ORAY（类型通告）、
+                ID_CB_REQUEST_DATA_ORAY（数据请求）、ID_CB_SEND_DATA_ORAY（数据响应）。
+                支持文本、位图、HTML、RTF、文件列表；文件传输支持拖拽和剪贴板双通道，可分别开关。
+            </p>
+        </section>
+
+        <section>
+            <h2>五、复刻版设计：MiniSun</h2>
+            <div class="warning-box">
+                <strong>法律声明：</strong> 本项目仅用于技术学习与研究，不得用于商业用途或侵犯原厂商合法权益。复刻版不包含任何原始代码，仅基于公开架构思路重新实现。
+            </div>
+
+            <h3>5.1 复刻范围（个人版 MVP）</h3>
+            <table>
+                <tr><th>功能</th><th>AweSun 实现</th><th>MiniSun 复刻方案</th><th>状态</th></tr>
+                <tr><td>屏幕捕获</td><td>Mirror 驱动 + DWM + GDI</td><td>GDI BitBlt (PowerShell System.Drawing)</td><td>✅</td></tr>
+                <tr><td>视频编码</td><td>H.264/HEVC/AV1 硬编</td><td>JPEG 帧序列 (简单可靠)</td><td>✅</td></tr>
+                <tr><td>传输协议</td><td>P2P + UDT + TCP 中继</td><td>WebSocket over TCP</td><td>✅</td></tr>
+                <tr><td>输入注入</td><td>SendInput + 桌面切换</td><td>SendInput (Add-Type P/Invoke)</td><td>✅</td></tr>
+                <tr><td>主控端 UI</td><td>Flutter Desktop</td><td>纯 HTML5 + Canvas + WebSocket</td><td>✅</td></tr>
+                <tr><td>剪贴板同步</td><td>全格式 + 文件拖拽</td><td>文本剪贴板 (简化)</td><td>⚠️ 简化</td></tr>
+                <tr><td>文件传输</td><td>独立通道 + 拖拽</td><td>—</td><td>❌ 未实现</td></tr>
+                <tr><td>虚拟显示器</td><td>Idd64 驱动</td><td>—</td><td>❌ 未实现</td></tr>
+                <tr><td>USB 重定向</td><td>OrayUSB 驱动</td><td>—</td><td>❌ 未实现</td></tr>
+                <tr><td>服务驻留</td><td>Windows Service + 守护</td><td>PowerShell 前台进程</td><td>⚠️ 简化</td></tr>
+            </table>
+
+            <h3>5.2 MiniSun 架构</h3>
+            <div class="arch-diagram">被控端 (agent.ps1)                          主控端 (controller.html)
+┌─────────────────────────┐                    ┌─────────────────────────┐
+│  PowerShell + .NET      │                    │  浏览器 (HTML5/JS)      │
+│  ├─ ScreenCapture       │◄──WebSocket───────►│  ├─ Canvas Renderer    │
+│  │   (CopyFromScreen)   │   Binary JPEG     │  │   (Image decoding)    │
+│  ├─ JpegEncoder         │                    │  ├─ Mouse/Keyboard      │
+│  ├─ WebSocket Server    │◄──JSON Control────►│  │   Event Capturer      │
+│  └─ InputInjector       │                    │  └─ WebSocket Client   │
+│      (SendInput)        │                    │                         │
+└─────────────────────────┘                    └─────────────────────────┘</div>
+
+            <h3>5.3 关键技术决策</h3>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">为什么用 PowerShell</div>
+                    <div style="font-size:0.9rem; color:var(--text-2); margin-top:8px;">
+                        目标机器仅有 .NET Runtime，无 Python/Node/SDK。PowerShell 是 Windows 原生组件，可直接调用 .NET Framework 全部类库，无需安装任何依赖。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">为什么用 JPEG 而非 H.264</div>
+                    <div style="font-size:0.9rem; color:var(--text-2); margin-top:8px;">
+                        PowerShell 无法直接调用硬件编码器。JPEG 编码可通过 System.Drawing.Imaging 完成，虽带宽占用高，但实现简单、延迟低、兼容性好，适合 MVP 验证。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">为什么用 WebSocket</div>
+                    <div style="font-size:0.9rem; color:var(--text-2); margin-top:8px;">
+                        浏览器原生支持，跨平台无需插件；支持二进制帧传输 JPEG；JSON 控制消息易于调试；天然支持 NAT 穿透（配合内网穿透工具）。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>六、AweSun 可借鉴的设计模式</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">插件化架构</div>
+                    <div style="font-size:0.9rem; color:var(--text-2); margin-top:8px;">
+                        oray::plugin::* 命名空间下每个功能都是独立插件，通过 router/handler 模式解耦。MiniSun 虽未完全插件化，但保留了 agent 与 controller 的清晰分层。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">多通道传输</div>
+                    <div style="font-size:0.9rem; color:var(--text-2); margin-top:8px;">
+                        主通道走 TCP 保证可靠性，P2P 通道走 UDP 降低延迟，辅助通道处理剪贴板/文件。MiniSun 使用单一 WebSocket，但消息分类型设计保留了扩展性。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">输入桌面切换</div>
+                    <div style="font-size:0.9rem; color:var(--text-2); margin-top:8px;">
+                        OpenInputDesktop + SetThreadDesktop 是处理 Windows UAC/锁屏远程输入的关键。MiniSun 的 agent.ps1 同样实现了这一机制。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">驱动级增强</div>
+                    <div style="font-size:0.9rem; color:var(--text-2); margin-top:8px;">
+                        虚拟显示器、镜像捕获、虚拟 HID 都是驱动级方案，性能远超用户态 API。这是商业远控软件的技术壁垒，个人版难以复刻，但可通过 Windows.Graphics.Capture (Win10+) 接近。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            <p>分析工具：REA (Reverse Engineer Anything) + Ghidra 12.1.4 | 分析时间：2026-10-22</p>
+            <p style="margin-top:8px;">目标：C:\Program Files\Oray\AweSun\AweSun.exe (16.6.0.32198) | agent\AweSun.exe (SHA256: d904009b...)</p>
+            <p style="margin-top:8px; color:var(--warning);">本报告仅供学习研究，请勿用于非法用途</p>
+        </div>
+    </div>
+</body>
+</html>
