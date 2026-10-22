@@ -1,0 +1,13 @@
+# AI 消除工具依赖清单
+# 注意：torch 必须用官方 cu128 源安装（PyPI 的 Windows 版是 CPU 版）：
+#   pip install torch --index-url https://download.pytorch.org/whl/cu128
+# 其余依赖：
+#   pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+transformers      # GroundingDINO + SAM 文字描述定位（免编译）
+opencv-python     # 图像读写与掩码处理
+pillow            # 图片处理
+numpy             # 数值计算
+iopaint           # LaMa 背景修复模型封装
+PySide6           # 图形界面
+accelerate        # transformers 模型加载加速

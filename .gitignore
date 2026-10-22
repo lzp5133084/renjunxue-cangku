@@ -1,0 +1,17 @@
+# 便携运行时与模型不进版本库（体积大）
+runtime/
+models/
+
+# 输入输出素材不进版本库
+input/*
+output/*
+!input/.gitkeep
+!output/.gitkeep
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 系统杂项
+Thumbs.db
+.DS_Store
