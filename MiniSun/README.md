@@ -46,6 +46,23 @@ powershell -ExecutionPolicy Bypass -File agent.ps1 -Port 8080 -Fps 10 -Quality 6
 - 全屏模式（隐藏工具栏沉浸式控制）
 - 实时显示分辨率、帧率、码率、延迟
 
+### 3. 剪贴板同步
+
+连接后点工具栏「📋 剪贴板」：
+- **⬇ 获取远端剪贴板**：拉取被控端当前剪贴板文本到输入框
+- **⧉ 复制到本机**：把输入框内容复制到主控端剪贴板
+- **⬆ 发送到远端**：把输入框文本写入被控端剪贴板（远端即可直接 Ctrl+V 粘贴）
+
+### 4. 文件传输
+
+连接后点工具栏「📁 文件」打开远端文件面板：
+- **浏览**：输入远端路径（默认 C:\），点「浏览」或回车；点目录进入，点「..（上一级）」返回
+- **下载**：点任意文件自动下载到本机浏览器默认下载目录（分片 base64 传输）
+- **上传**：点「⬆ 上传到此目录」选择一个或多个文件，传到当前浏览的远端目录
+
+> 传输限制：单文件 ≤ 500MB；传输期间画面帧率会短暂下降属正常现象。
+> 提示：本工具无鉴权机制，请仅在可信局域网内使用。
+
 ## 常见问题
 
 **Q: 连接失败？**
@@ -70,7 +87,8 @@ powershell -ExecutionPolicy Bypass -File agent.ps1 -Port 8080 -Fps 10 -Quality 6
 | 屏幕捕获 | 镜像驱动 + DWM，60 FPS | GDI，8–15 FPS |
 | 编码 | H.264/HEVC/AV1 硬件编码 | JPEG 软编码 |
 | 传输 | P2P UDP 打洞 + UDT | 单 WebSocket TCP |
-| 文件传输 | 拖拽 + 剪贴板双通道 | 未实现 |
+| 剪贴板 | 全格式（文本/位图/HTML/RTF） | ✅ 文本同步（简化） |
+| 文件传输 | 拖拽 + 剪贴板双通道 | ✅ 文件面板（浏览/上传/下载） |
 | 虚拟显示器 | Idd64 驱动 | 未实现 |
 | 服务驻留 | Windows 服务 + 守护进程 | 前台进程 |
 
@@ -92,6 +110,9 @@ powershell -ExecutionPolicy Bypass -File agent.ps1 -Port 8080 -Fps 10 -Quality 6
 |------|------|
 | 2026-10-22 | 初始版本：agent.ps1 + controller.html + README |
 | 2026-10-22 | 修复 WebSocket 帧头发送：PowerShell `-shr` 对 `[int]` 右移超过 32 位时移位量取模 32，导致 8 字节长度字段计算错误。改用 `[long]` 类型修复。 |
+| 2026-10-22 | 新增文本剪贴板同步（clip_get / clip_set），agent 端 Get-Clipboard / Set-Clipboard 实现。 |
+| 2026-10-22 | 新增文件传输：远端目录浏览（file_list）、分片下载（file_get → file_begin/chunk/end）、分片上传（file_put_begin/chunk/end），主控端新增「📁 文件」侧面板。 |
+| 2026-10-22 | server.ps1 改为 $PSScriptRoot 相对路径（修复写死旧路径问题），补充 MIME 表与启动横幅。 |
 
 ## 参考开源项目
 
@@ -110,7 +131,10 @@ powershell -ExecutionPolicy Bypass -File agent.ps1 -Port 8080 -Fps 10 -Quality 6
 
 ```
 MiniSun/
-├── agent.ps1        # 被控端（约 200 行）
-├── controller.html  # 主控端（单文件 Web App）
+├── agent.ps1        # 被控端（屏幕捕获/推流/输入注入/剪贴板/文件传输）
+├── controller.html  # 主控端（单文件 Web App：桌面控制+剪贴板+文件面板）
+├── server.ps1       # 主控端静态服务器（http://localhost:8081/ 打开更稳定）
+├── test-minisun.ps1 # 自动化回归测试（WebSocket 客户端，7 项断言）
+├── 开发对话记录.txt  # 需求沟通与开发过程留档
 └── README.md        # 本说明
 ```
