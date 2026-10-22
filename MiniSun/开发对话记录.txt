@@ -1,0 +1,84 @@
+════════════════════════════════════════════════════════════
+MiniSun（迷你向日葵）开发对话记录 · 第二阶段
+════════════════════════════════════════════════════════════
+日期：2026-10-22
+作者：军哥懂保（微信：xunijiayuan）
+前置：AweSun 16.6 逆向分析报告（同仓库 AweSun_逆向分析报告.html）
+────────────────────────────────────────────────────────────────
+
+【用户】
+查看github继续昨天的任务，查看反编译那个，另外把昨天未完成的
+任务完成了，你先查看gitee和github的项目与ecojia.cn里项目的
+情况和关系。
+
+【AI开发团队 · 一、三平台关系盘点】
+- GitHub（lzp5133084）＝源仓库：20 个工具（T01–T20 登记于
+  ecojia 仓库 ecosystem.json）+ AweSun 逆向分析报告 + MiniSun
+- Gitee（ren-junxue）＝镜像备份：多数仓库 10-22 凌晨同步过，
+  但 renjunxue-cangku 仍为旧版宗亲网内容，缺 AweSun 报告与
+  MiniSun（本次已补齐）
+- ecojia.cn＝门户站（Flask + ecosystem.json 单一数据源），
+  部署腾讯云 118.24.173.246；tools.ecojia.cn 托管静态工具
+  实测 https://ecojia.cn / ziliao.ecojia.cn /
+  tools.ecojia.cn/video-frame-extractor/ / api/tools 全部 200 在线
+- 生态工具清单 T01–T20 与两平台仓库对应关系：已核对一致
+
+【AI开发团队 · 二、昨日任务恢复与完成情况】
+昨日已完成：AweSun 16.6 逆向（Ghidra 静态分析，确认 AweSun =
+向日葵 SunloginClient 11.0 海外版）、MiniSun MVP（屏幕推流 +
+鼠标键盘控制）、WebSocket 8 字节长度帧 bug 修复。
+昨日未完成（本次补齐）：
+  1. 文本剪贴板同步
+  2. 文件传输（浏览/上传/下载）
+  3. server.ps1 写死旧路径
+  4. Gitee 侧 renjunxue-cangku 未同步新内容
+
+【本次新增功能】
+一、剪贴板同步（主控端「📋 剪贴板」面板）
+  - agent 端：clip_get → Get-Clipboard -Raw；clip_set →
+    Set-Clipboard；回复 clip_text / clip_ok
+  - controller 端：获取远端 / 复制到本机 / 发送到远端 三键
+二、文件传输（主控端「📁 文件」侧面板）
+  - 目录浏览 file_list（目录排序在前，支持上一级、手动输路径）
+  - 下载 file_get → file_begin/chunk/end（256KB 分片 base64）
+  - 上传 file_put_begin/chunk/end（192KB 分片，落盘当前目录）
+  - 单文件上限 500MB；传输期间推流帧率短暂下降属正常
+三、体验与修复
+  - server.ps1 改 $PSScriptRoot 相对路径 + MIME 表 + 启动横幅
+  - 面板改为从工具栏下方开始，不再遮挡顶部按钮
+  - 文件列表改事件委托绑定（修复点击目录无反应）
+  - toast 提示加 pointer-events:none（透明态不再拦截点击）
+  - agent 支持「新连接优先」：检测到新主控端排队自动让位，
+    解决旧标签页占线导致新连接卡"加载中"的问题
+
+【调试过程中踩的坑（记录供以后参考）】
+1. PowerShell 5.1 解析无 BOM 的 UTF-8 脚本会按 GBK 乱码 →
+   含中文的 .ps1 必须带 BOM
+2. 集合类型与 $null 比较必须写 $null -ne $list（$list -ne $null
+   会对元素做过滤，空 List 求值为 false，导致 AddRange 被跳过、
+   上传落盘 0 字节）
+3. agent 单连接阻塞 accept：旧 WebSocket 会话不断开时新连接
+   永远排队 → 推流循环加 listener.Pending() 检查让位
+
+【本次测试结果】
+自动化测试（ClientWebSocket 客户端，test-minisun.ps1）：7/7 通过
+  连接 / screen 元数据(2560×1440) / clip_get / clip_set 写入
+  与本机读回一致 / file_list(C:\ 23项) / file_get 下载与源文件
+  字节一致 / file_put 上传落盘内容一致
+浏览器实测（browser 自动化，4 轮）：
+  连接与远程画面 / 剪贴板面板与获取远端 / 文件面板打开与 C:\
+  列表 / 点击文件夹跳转 / 上一级返回 / 面板不遮挡工具栏 全部通过
+
+【当前限制（如实说明）】
+- 剪贴板仅同步纯文本（AweSun 支持位图/HTML/RTF/文件）
+- 文件传输为手动浏览式，非拖拽
+- 无鉴权与加密（ws://），仅限可信局域网使用
+- 虚拟显示器、USB 重定向、服务驻留仍未实现（需驱动/服务，
+  属驱动级增强，个人版 MVP 暂不做）
+
+【下一步规划（待军哥确认优先级）】
+1. 剪贴板支持图片/文件引用
+2. 拖拽上传文件到画布即传
+3. 简单连接口令（agent 启动时生成，controller 首次输入）
+4. 压缩传输（PNG 差分帧或 Windows.Graphics.Capture 提帧率）
+════════════════════════════════════════════════════════════
