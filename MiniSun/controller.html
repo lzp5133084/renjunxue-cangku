@@ -195,6 +195,47 @@
         .dot-red { background: var(--danger); }
         .status-val { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
 
+        /* 文件管理侧面板 */
+        .file-panel {
+            position: fixed;
+            top: 63px; right: -420px;
+            width: 400px; height: calc(100vh - 63px);
+            background: var(--surface-solid);
+            border-left: 1px solid var(--border);
+            box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .file-panel.open { right: 0; }
+        .file-panel-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+        .file-path-bar { display: flex; gap: 8px; padding: 12px 18px; border-bottom: 1px solid var(--border); }
+        .file-path-bar input {
+            flex: 1; padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-size: 13px; outline: none;
+        }
+        .file-path-bar input:focus { border-color: var(--accent); }
+        .file-list { flex: 1; overflow-y: auto; padding: 8px; }
+        .file-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 8px;
+            cursor: pointer; font-size: 13.5px;
+            transition: background 0.15s;
+        }
+        .file-item:hover { background: rgba(255,255,255,0.06); }
+        .file-item .fi-icon { width: 20px; text-align: center; flex-shrink: 0; }
+        .file-item .fi-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-item .fi-meta { color: var(--text-2); font-size: 11.5px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+        .file-empty { color: var(--text-2); font-size: 13px; text-align: center; padding: 40px 20px; }
+        .file-err { color: #f87171; font-size: 13px; text-align: center; padding: 24px 20px; }
+
         /* 全屏模式 */
         .fullscreen .toolbar, .fullscreen .statusbar { display: none; }
         .fullscreen .main { padding: 0; }
@@ -209,6 +250,8 @@
             <span style="font-size:11px; color:var(--text-2); font-weight:400; margin-left:4px;">个人远控</span>
         </div>
         <div class="toolbar-actions">
+            <button class="btn" id="btnClipboard" disabled>📋 剪贴板</button>
+            <button class="btn" id="btnFiles" disabled>📁 文件</button>
             <button class="btn btn-primary" id="btnConnect">⚡ 连接设备</button>
             <button class="btn btn-danger" id="btnDisconnect" disabled>断开</button>
             <button class="btn" id="btnFullscreen" disabled>⛶ 全屏</button>
@@ -254,6 +297,45 @@
         </div>
     </div>
 
+    <!-- 剪贴板同步面板 -->
+    <div class="modal-mask" id="clipModal">
+        <div class="modal" style="width:480px;">
+            <h3>📋 剪贴板同步</h3>
+            <div class="sub">在主控端与被控端之间同步文本剪贴板</div>
+            <div class="form-item">
+                <label>剪贴板内容</label>
+                <textarea id="clipText" rows="7" style="width:100%; padding:11px 14px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:10px; color:var(--text); font-size:13px; outline:none; resize:vertical; font-family:inherit;" placeholder="点击「获取远端」拉取被控端剪贴板，或在此粘贴文本后「发送到远端」"></textarea>
+            </div>
+            <div class="modal-actions" style="flex-wrap:wrap;">
+                <button class="btn" id="btnClipGet">⬇ 获取远端剪贴板</button>
+                <button class="btn" id="btnClipCopy">⧉ 复制到本机</button>
+                <button class="btn btn-primary" id="btnClipSend">⬆ 发送到远端</button>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="hideClipModal()" style="flex:1; justify-content:center;">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件管理侧面板 -->
+    <div class="file-panel" id="filePanel">
+        <div class="file-panel-head">
+            <div style="font-weight:600; font-size:14.5px;">📁 远端文件</div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn" id="btnFileUpload" style="padding:5px 12px; font-size:12.5px;">⬆ 上传到此目录</button>
+                <button class="btn" id="btnFileClose" style="padding:5px 12px; font-size:12.5px;">✕</button>
+            </div>
+        </div>
+        <div class="file-path-bar">
+            <input type="text" id="filePathInput" placeholder="远端路径，如 C:\Users" value="C:\">
+            <button class="btn btn-primary" id="btnFileGo" style="padding:8px 16px;">浏览</button>
+        </div>
+        <div class="file-list" id="fileList">
+            <div class="file-empty">输入路径后点「浏览」查看远端文件</div>
+        </div>
+        <input type="file" id="fileInput" multiple style="display:none;">
+    </div>
+
     <script>
         const canvas = document.getElementById('screen');
         const ctx = canvas.getContext('2d');
@@ -262,6 +344,9 @@
         let screenW = 0, screenH = 0;
         let frameCount = 0, byteCount = 0, lastStatTime = Date.now();
         let lastFrameTime = Date.now();
+        let currentDir = 'C:\\';
+        let dlCtx = null;
+        let uploading = false;
 
         const $ = id => document.getElementById(id);
 
@@ -290,18 +375,13 @@
                 $('btnConnect').disabled = true;
                 $('btnDisconnect').disabled = false;
                 $('btnFullscreen').disabled = false;
+                $('btnClipboard').disabled = false;
+                $('btnFiles').disabled = false;
                 frameCount = 0; byteCount = 0; lastStatTime = Date.now();
             };
             ws.onmessage = (e) => {
                 if (typeof e.data === 'string') {
-                    try {
-                        const msg = JSON.parse(e.data);
-                        if (msg.type === 'screen') {
-                            screenW = msg.width; screenH = msg.height;
-                            canvas.width = screenW; canvas.height = screenH;
-                            $('statRes').textContent = `${screenW} × ${screenH}`;
-                        }
-                    } catch {}
+                    try { handleMsg(JSON.parse(e.data)); } catch {}
                 } else {
                     byteCount += e.data.byteLength;
                     frameCount++;
@@ -320,6 +400,58 @@
             ws.onerror = () => { onClosed(); };
         }
 
+        function handleMsg(msg) {
+            switch (msg.type) {
+                case 'screen':
+                    screenW = msg.width; screenH = msg.height;
+                    canvas.width = screenW; canvas.height = screenH;
+                    $('statRes').textContent = `${screenW} × ${screenH}`;
+                    break;
+                case 'clip_text':
+                    $('clipText').value = msg.text || '';
+                    $('btnClipGet').textContent = '⬇ 获取远端剪贴板';
+                    break;
+                case 'clip_ok':
+                    toast(msg.ok ? '已写入远端剪贴板' : '写入远端剪贴板失败：' + (msg.err || ''));
+                    break;
+                case 'file_list':
+                    currentDir = msg.path || currentDir;
+                    $('filePathInput').value = currentDir;
+                    renderFileList(msg.items || []);
+                    break;
+                case 'file_begin':
+                    dlCtx = { name: msg.name, total: msg.total, parts: new Array(msg.total), got: 0 };
+                    break;
+                case 'file_chunk':
+                    if (dlCtx) { dlCtx.parts[msg.idx] = msg.data; dlCtx.got++; }
+                    break;
+                case 'file_end':
+                    if (dlCtx) finishDownload();
+                    break;
+                case 'file_done':
+                    toast('已上传到远端：' + msg.path);
+                    if ($('filePanel').classList.contains('open')) browseDir(currentDir);
+                    break;
+                case 'file_err':
+                    toast('文件操作失败：' + (msg.err || ''));
+                    break;
+            }
+        }
+
+        function toast(text) {
+            const t = document.getElementById('toast') || (() => {
+                const el = document.createElement('div');
+                el.id = 'toast';
+                el.style.cssText = 'position:fixed; top:70px; left:50%; transform:translateX(-50%); background:rgba(17,24,39,0.92); border:1px solid var(--border); color:var(--text); padding:10px 20px; border-radius:10px; font-size:13px; z-index:300; box-shadow:0 10px 30px rgba(0,0,0,0.4); backdrop-filter:blur(10px); transition:opacity 0.3s; opacity:0; pointer-events:none;';
+                document.body.appendChild(el);
+                return el;
+            })();
+            t.textContent = text;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2600);
+        }
+
         function doDisconnect() { if (ws) ws.close(); }
 
         function onClosed() {
@@ -331,6 +463,10 @@
             $('btnConnect').disabled = false;
             $('btnDisconnect').disabled = true;
             $('btnFullscreen').disabled = true;
+            $('btnClipboard').disabled = true;
+            $('btnFiles').disabled = true;
+            $('filePanel').classList.remove('open');
+            hideClipModal();
             document.body.classList.remove('fullscreen');
             $('statRes').textContent = '—'; $('statFps').textContent = '—';
             $('statBps').textContent = '—'; $('statPing').textContent = '—';
@@ -402,6 +538,154 @@
             canvas.classList.toggle('fs', isFs);
             if (isFs && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
             else if (document.exitFullscreen) document.exitFullscreen();
+        }
+
+        // ===== 剪贴板同步 =====
+        function showClipModal() { $('clipModal').classList.add('show'); }
+        function hideClipModal() { $('clipModal').classList.remove('show'); }
+        $('btnClipboard').onclick = showClipModal;
+        $('btnClipGet').onclick = () => {
+            $('btnClipGet').textContent = '⏳ 获取中...';
+            send({ type: 'clip_get' });
+            setTimeout(() => { $('btnClipGet').textContent = '⬇ 获取远端剪贴板'; }, 3000);
+        };
+        $('btnClipSend').onclick = () => {
+            const t = $('clipText').value;
+            if (!t) { toast('请先输入要发送的文本'); return; }
+            send({ type: 'clip_set', text: t });
+        };
+        $('btnClipCopy').onclick = async () => {
+            const t = $('clipText').value;
+            if (!t) { toast('没有可复制的内容'); return; }
+            try { await navigator.clipboard.writeText(t); toast('已复制到本机剪贴板'); }
+            catch { $('clipText').select(); document.execCommand('copy'); toast('已复制到本机剪贴板'); }
+        };
+
+        // ===== 文件管理 =====
+        function showFilePanel() {
+            $('filePanel').classList.add('open');
+            if ($('fileList').dataset.loaded !== '1') browseDir(currentDir);
+        }
+        $('btnFiles').onclick = showFilePanel;
+        $('btnFileClose').onclick = () => $('filePanel').classList.remove('open');
+        $('btnFileGo').onclick = () => browseDir($('filePathInput').value.trim() || 'C:\\');
+        $('filePathInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnFileGo').click(); });
+
+        function browseDir(path) {
+            if (!connected) return;
+            $('fileList').innerHTML = '<div class="file-empty">加载中...</div>';
+            send({ type: 'file_list', path });
+        }
+
+        function fmtSize(n) {
+            if (n < 1024) return n + ' B';
+            if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+            if (n < 1073741824) return (n / 1048576).toFixed(1) + ' MB';
+            return (n / 1073741824).toFixed(2) + ' GB';
+        }
+
+        function renderFileList(items) {
+            $('fileList').dataset.loaded = '1';
+            const box = $('fileList');
+            box.innerHTML = '';
+            // 上一级目录
+            if (currentDir && !/^[A-Za-z]:\\?$/i.test(currentDir)) {
+                const up = document.createElement('div');
+                up.className = 'file-item';
+                up.dataset.dir = '1';
+                up.dataset.path = '__UP__';
+                up.innerHTML = `<span class="fi-icon">⬆️</span><span class="fi-name">..（上一级）</span>`;
+                box.appendChild(up);
+            }
+            const dirs = items.filter(x => x.isDir).sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+            const files = items.filter(x => !x.isDir).sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+            for (const it of [...dirs, ...files]) {
+                const row = document.createElement('div');
+                row.className = 'file-item';
+                row.dataset.dir = it.isDir ? '1' : '0';
+                row.dataset.path = currentDir.replace(/\\+$/, '') + '\\' + it.name;
+                row.dataset.size = it.size || '0';
+                row.innerHTML = `<span class="fi-icon">${it.isDir ? '📁' : '📄'}</span>` +
+                    `<span class="fi-name" title="${it.name}">${it.name}</span>` +
+                    `<span class="fi-meta">${it.isDir ? '目录' : fmtSize(it.size) + ' · ' + it.mtime}</span>`;
+                box.appendChild(row);
+            }
+            if (!dirs.length && !files.length) {
+                box.innerHTML = '<div class="file-empty">此目录为空</div>';
+            }
+        }
+
+        // 事件委托：文件列表点击（目录进入 / 文件下载）
+        $('fileList').addEventListener('click', e => {
+            const row = e.target.closest('.file-item');
+            if (!row) return;
+            if (row.dataset.path === '__UP__') {
+                let p = currentDir.replace(/\\+$/, '');
+                const i = p.lastIndexOf('\\');
+                browseDir(i >= 2 ? p.substring(0, i + 1) : 'C:\\');
+                return;
+            }
+            if (row.dataset.dir === '1') browseDir(row.dataset.path);
+            else requestDownload(row.dataset.path, parseInt(row.dataset.size || '0', 10));
+        });
+
+        // 下载：远端 → 本机
+        function requestDownload(path, size) {
+            if (size > 524288000) { toast('文件超过 500MB，暂不支持'); return; }
+            toast('开始下载：' + path.split('\\').pop());
+            dlCtx = null;
+            send({ type: 'file_get', path });
+        }
+
+        function finishDownload() {
+            const c = dlCtx; dlCtx = null;
+            try {
+                const bin = atob(c.parts.join(''));
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                const blob = new Blob([bytes]);
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = c.name;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+                toast('下载完成：' + c.name + '（' + fmtSize(bytes.length) + '）');
+            } catch (err) {
+                toast('下载组装失败：' + err.message);
+            }
+        }
+
+        // 上传：本机 → 远端
+        $('btnFileUpload').onclick = () => $('fileInput').click();
+        $('fileInput').onchange = async () => {
+            const files = [...$('fileInput').files];
+            $('fileInput').value = '';
+            for (const f of files) await uploadOne(f);
+        };
+
+        async function uploadOne(file) {
+            if (uploading) { toast('有文件正在上传，请稍候'); return; }
+            if (file.size > 524288000) { toast('文件超过 500MB，暂不支持：' + file.name); return; }
+            uploading = true;
+            try {
+                toast('上传中：' + file.name);
+                const buf = new Uint8Array(await file.arrayBuffer());
+                const CHUNK = 196608; // 原始字节/片
+                const total = Math.max(1, Math.ceil(buf.length / CHUNK));
+                send({ type: 'file_put_begin', name: file.name, size: file.size, total });
+                for (let i = 0; i < total; i++) {
+                    const slice = buf.subarray(i * CHUNK, Math.min((i + 1) * CHUNK, buf.length));
+                    let bin = '';
+                    for (let j = 0; j < slice.length; j += 8192) bin += String.fromCharCode.apply(null, slice.subarray(j, j + 8192));
+                    send({ type: 'file_put_chunk', idx: i, data: btoa(bin) });
+                    if (i % 4 === 3) await new Promise(r => setTimeout(r, 0)); // 让出主线程刷新推流
+                }
+                send({ type: 'file_put_end', dir: currentDir });
+            } catch (err) {
+                toast('上传失败：' + err.message);
+            } finally {
+                uploading = false;
+            }
         }
     </script>
 </body>
