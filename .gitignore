@@ -15,3 +15,8 @@ __pycache__/
 # 系统杂项
 Thumbs.db
 .DS_Store
+
+# 远程仓库原有条目
+_tools/
+.trae-html-share-packages/
+*.log
