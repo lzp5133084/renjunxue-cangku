@@ -46,6 +46,46 @@ powershell -ExecutionPolicy Bypass -File agent.ps1 -Port 8080 -Fps 10 -Quality 6
 - 全屏模式（隐藏工具栏沉浸式控制）
 - 实时显示分辨率、帧率、码率、延迟
 
+### 2.1 手机远控（✅ 已实现）
+
+手机浏览器直接打开即可，无需装 App。**前置条件：手机和被控电脑在同一个 WiFi**。
+
+**步骤**：
+
+1. 被控电脑运行两个进程：
+   ```powershell
+   # 被控端（WebSocket，监听 0.0.0.0:8080，手机可连）
+   powershell -ExecutionPolicy Bypass -File agent.ps1 -Port 8080 -Fps 5 -Quality 40
+   # 主控端静态服务器（TcpListener 实现，绕开 HTTP.sys 注册限制）
+   powershell -ExecutionPolicy Bypass -File server.ps1 -Port 8081
+   ```
+
+2. 手机浏览器打开 `http://<电脑局域网IP>:8081/controller.html`
+   - 电脑局域网 IP 查询：`Get-NetIPAddress -AddressFamily IPv4 | Where-Object InterfaceAlias -notmatch Loopback`
+   - 例如 IP = `192.168.16.73`，手机访问 `http://192.168.16.73:8081/`
+
+3. 点「⚡ 连接设备」，IP 填电脑 IP，端口 8080，点连接
+
+**触屏操作映射**：
+
+| 手势 | 电脑操作 |
+|------|----------|
+| 单指点击 | 鼠标左键 |
+| 单指滑动 | 鼠标拖动 |
+| 长按 0.45s | 鼠标右键 |
+| 双指捏合 | 滚轮（张开=滚上，合拢=滚下） |
+| 底部操作条 | Ctrl/Alt/Shift 修饰键、Esc、Enter、右键、滚轮↑↓ |
+
+**故障排查**：
+
+| 现象 | 排查 |
+|------|------|
+| 手机打不开页面（超时） | 在电脑上测 `curl http://127.0.0.1:8081/` 确认服务在线；Windows Defender 防火墙服务可能未启动或规则未放行（见下方"注意"） |
+| 能打开页面但连接失败 | 确认 agent 在 LISTENING：`netstat -ano | findstr ":8080"`；手机和电脑必须同一 WiFi |
+| 画面空白 / 卡顿 | 降低码率：`agent.ps1 -Fps 3 -Quality 30` |
+
+**注意**：如果 Windows Defender 防火墙开启（MpsSvc 服务 Running），需要放行 8080/8081 入站规则。当前机器防火墙未启动，端口直接通。
+
 ### 3. 剪贴板同步
 
 连接后点工具栏「📋 剪贴板」：
