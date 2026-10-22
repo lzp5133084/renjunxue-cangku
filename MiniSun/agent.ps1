@@ -208,6 +208,11 @@ while ($true) {
         $frameInterval = [int](1000 / $Fps)
 
         while ($running -and $client.Connected) {
+            # 新连接优先：有新的主控端排队时，结束当前会话让位
+            if ($listener.Pending()) {
+                Write-Host "[$(Get-Date -Format 'HH:mm:ss')] 检测到新连接排队，断开当前会话" -ForegroundColor Yellow
+                break
+            }
             $sw = [System.Diagnostics.Stopwatch]::StartNew()
 
             while ($stream.DataAvailable) {
@@ -223,6 +228,102 @@ while ($true) {
                             "wheel"     { [InputInjector]::MouseWheel($msg.delta) }
                             "keydown"   { [InputInjector]::KeyEvent($msg.key, $true) }
                             "keyup"     { [InputInjector]::KeyEvent($msg.key, $false) }
+
+                            # ===== 剪贴板同步 =====
+                            "clip_get" {
+                                $text = ""
+                                try { $text = Get-Clipboard -Raw -ErrorAction Stop } catch { $text = "" }
+                                if ($null -eq $text) { $text = "" }
+                                $resp = @{ type = "clip_text"; text = $text } | ConvertTo-Json -Compress
+                                Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($resp)) -Opcode 1
+                            }
+                            "clip_set" {
+                                try {
+                                    Set-Clipboard -Value ([string]$msg.text) -ErrorAction Stop
+                                    $resp = @{ type = "clip_ok"; ok = $true } | ConvertTo-Json -Compress
+                                } catch {
+                                    $resp = @{ type = "clip_ok"; ok = $false; err = "$_" } | ConvertTo-Json -Compress
+                                }
+                                Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($resp)) -Opcode 1
+                            }
+
+                            # ===== 文件浏览 =====
+                            "file_list" {
+                                try {
+                                    $p = [string]$msg.path
+                                    if ([string]::IsNullOrWhiteSpace($p)) { $p = "C:\" }
+                                    $items = @()
+                                    if (Test-Path $p) {
+                                        $dir = Get-Item $p
+                                        if ($dir.PSIsContainer) {
+                                            $items = Get-ChildItem -LiteralPath $p -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                                                @{ name = $_.Name; isDir = $_.PSIsContainer; size = if ($_.PSIsContainer) { 0 } else { $_.Length }; mtime = $_.LastWriteTime.ToString("yyyy-MM-dd HH:mm") }
+                                            }
+                                        }
+                                    }
+                                    $resp = @{ type = "file_list"; path = $p; items = $items } | ConvertTo-Json -Compress -Depth 4
+                                } catch {
+                                    $resp = @{ type = "file_err"; err = "$_" } | ConvertTo-Json -Compress
+                                }
+                                Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($resp)) -Opcode 1
+                            }
+
+                            # ===== 文件下载（远端 → 主控端，分片 base64）=====
+                            "file_get" {
+                                try {
+                                    $fp = [string]$msg.path
+                                    if (-not (Test-Path -LiteralPath $fp) -or (Get-Item -LiteralPath $fp).PSIsContainer) { throw "文件不存在或是目录: $fp" }
+                                    $bytes = [IO.File]::ReadAllBytes($fp)
+                                    $b64 = [Convert]::ToBase64String($bytes)
+                                    $chunk = 262144
+                                    $total = [Math]::Max(1, [Math]::Ceiling($b64.Length / $chunk))
+                                    $name = [IO.Path]::FileName -f $fp
+                                    $hdr = @{ type = "file_begin"; name = $name; size = $bytes.Length; total = $total } | ConvertTo-Json -Compress
+                                    Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($hdr)) -Opcode 1
+                                    for ($i = 0; $i -lt $total; $i++) {
+                                        $start = $i * $chunk
+                                        $len = [Math]::Min($chunk, $b64.Length - $start)
+                                        $part = $b64.Substring($start, $len)
+                                        $m = @{ type = "file_chunk"; idx = $i; data = $part } | ConvertTo-Json -Compress
+                                        Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($m)) -Opcode 1
+                                    }
+                                    $end = @{ type = "file_end"; name = $name } | ConvertTo-Json -Compress
+                                    Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($end)) -Opcode 1
+                                    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] 文件已发送: $name ($($bytes.Length) 字节)" -ForegroundColor Cyan
+                                } catch {
+                                    $resp = @{ type = "file_err"; err = "$_" } | ConvertTo-Json -Compress
+                                    Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($resp)) -Opcode 1
+                                }
+                            }
+
+                            # ===== 文件上传（主控端 → 远端，分片 base64）=====
+                            "file_put_begin" {
+                                $script:uploadBuf = New-Object 'System.Collections.Generic.List[byte]'
+                                $script:uploadName = [IO.Path]::GetFileName([string]$msg.name)
+                            }
+                            "file_put_chunk" {
+                                if ($null -ne $script:uploadBuf) {
+                                    $script:uploadBuf.AddRange([Convert]::FromBase64String([string]$msg.data))
+                                }
+                            }
+                            "file_put_end" {
+                                try {
+                                    if ($null -eq $script:uploadBuf) { throw "没有进行中的上传任务" }
+                                    $dest = [string]$msg.dir
+                                    if ([string]::IsNullOrWhiteSpace($dest)) { $dest = (Get-Location).Path }
+                                    if (-not (Test-Path -LiteralPath $dest)) { New-Item -ItemType Directory -Force -Path $dest | Out-Null }
+                                    $target = Join-Path $dest $script:uploadName
+                                    [IO.File]::WriteAllBytes($target, $script:uploadBuf.ToArray())
+                                    $resp = @{ type = "file_done"; path = $target; size = $script:uploadBuf.Count } | ConvertTo-Json -Compress
+                                    Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($resp)) -Opcode 1
+                                    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] 文件已接收: $target ($($script:uploadBuf.Count) 字节)" -ForegroundColor Cyan
+                                } catch {
+                                    $resp = @{ type = "file_err"; err = "$_" } | ConvertTo-Json -Compress
+                                    Send-WebSocketFrame -Stream $stream -Payload ([System.Text.Encoding]::UTF8.GetBytes($resp)) -Opcode 1
+                                } finally {
+                                    $script:uploadBuf = $null
+                                }
+                            }
                         }
                     } catch { }
                 }
