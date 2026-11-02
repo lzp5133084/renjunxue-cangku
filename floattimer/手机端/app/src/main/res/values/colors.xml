@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_dark">#0d0d1a</color>
+    <color name="bg_card">#1a1a2e</color>
+    <color name="indigo">#6366f1</color>
+    <color name="indigo_deep">#312e81</color>
+    <color name="pink">#ec4899</color>
+    <color name="text_primary">#f1f1f6</color>
+    <color name="text_secondary">#9d9db8</color>
+    <color name="ic_launcher_background">#1e1b4b</color>
+</resources>

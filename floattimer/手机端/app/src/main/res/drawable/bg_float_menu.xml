@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 悬浮球菜单卡片背景：深色玻璃质感 + 靛紫描边 + 大圆角 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#F2101024" />
+    <corners android:radius="18dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#664F46E5" />
+</shape>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 悬浮球长按菜单：全屏透明容器 + 居中深色卡片，点击卡片外区域关闭 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/menuRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CC000010">
+
+    <LinearLayout
+        android:id="@+id/menuCard"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_float_menu"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp"
+            android:text="⏱ 悬浮球菜单"
+            android:textColor="#fbbf24"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="4dp"
+            android:background="#33A5B4FC" />
+
+        <TextView
+            android:id="@+id/menuOpen"
+            style="@style/FloatMenuItem"
+            android:text="🖥 打开窗口界面" />
+
+        <TextView
+            android:id="@+id/menuStartPause"
+            style="@style/FloatMenuItem"
+            android:text="▶ 开始计时" />
+
+        <TextView
+            android:id="@+id/menuRepeat"
+            style="@style/FloatMenuItem"
+            android:text="🔁 重复计时" />
+
+        <TextView
+            android:id="@+id/menuShare"
+            style="@style/FloatMenuItem"
+            android:text="🎁 推广有惊喜" />
+
+        <TextView
+            android:id="@+id/menuHide"
+            style="@style/FloatMenuItem"
+            android:text="🏠 隐藏界面" />
+
+        <TextView
+            android:id="@+id/menuExit"
+            style="@style/FloatMenuItem"
+            android:text="✕ 退出程序"
+            android:textColor="#f87171" />
+    </LinearLayout>
+</FrameLayout>

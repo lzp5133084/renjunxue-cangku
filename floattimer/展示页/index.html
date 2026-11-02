@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>悬浮计时器 · 产品展示</title>
+<style>
+/* ========================================
+   悬浮计时器 · 产品展示页
+   PPT式全屏翻页 + 多轮图展示
+   作者：军哥懂保 | 微信：xunijiayuan
+   ======================================== */
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:#0d0d1a;
+  --bg2:#12122a;
+  --glass:rgba(20,20,40,.72);
+  --border:rgba(99,102,241,.28);
+  --txt:#f0efff;
+  --muted:#9a9ac0;
+  --p1:#6366f1;
+  --p2:#ec4899;
+  --green:#10b981;
+  --grad:linear-gradient(135deg,#6366f1,#ec4899);
+}
+
+html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--txt);
+  font-family:"微软雅黑","PingFang SC","Segoe UI",sans-serif; }
+
+/* ===== PPT 翻页容器 ===== */
+.deck { height:100vh; transition:transform .7s cubic-bezier(.65,.05,.36,1); }
+.slide { height:100vh; width:100vw; position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center; }
+
+/* ===== 翻页指示点 ===== */
+.dots { position:fixed; right:26px; top:50%; transform:translateY(-50%);
+  z-index:99; display:flex; flex-direction:column; gap:14px; }
+.dots button { width:12px; height:12px; border-radius:50%; border:2px solid var(--muted);
+  background:transparent; cursor:pointer; transition:all .3s; padding:0; }
+.dots button.cur { background:var(--grad); border-color:transparent; height:34px; border-radius:7px; }
+
+/* ===== 封面页 ===== */
+.slide-cover { text-align:center; }
+.slide-cover .hero-bg { position:absolute; inset:0;
+  background:url("https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sleek%20futuristic%20desktop%20workspace%20at%20night%2C%20glowing%20holographic%20purple%20circular%20timer%20widget%20floating%20above%20desk%20beside%20laptop%2C%20dark%20navy%20ambient%20lighting%2C%20neon%20purple%20and%20pink%20gradient%20glow%2C%20cyberpunk%20minimal%20aesthetic%2C%20photorealistic%20render&image_size=landscape_16_9") center/cover;
+  filter:brightness(.45) saturate(1.15); }
+.slide-cover .inner { position:relative; z-index:2; padding:0 24px; }
+.cover-tag { display:inline-block; font-size:13px; letter-spacing:5px; color:#e8b978;
+  border:1px solid rgba(232,185,120,.5); padding:6px 18px; border-radius:20px; margin-bottom:28px;
+  animation:fadeUp .8s .2s both; }
+.cover-title { font-size:clamp(44px,8vw,88px); font-weight:800; letter-spacing:6px;
+  background:linear-gradient(120deg,#fff 30%,#a78bfa 60%,#ec4899);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation:fadeUp .8s .4s both; }
+.cover-sub { margin-top:20px; font-size:clamp(15px,2.2vw,20px); color:var(--muted); letter-spacing:2px;
+  animation:fadeUp .8s .6s both; }
+.cover-feats { margin-top:44px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+  animation:fadeUp .8s .8s both; }
+.chip { padding:10px 22px; border-radius:24px; font-size:14px; letter-spacing:1px;
+  background:var(--glass); border:1px solid var(--border); backdrop-filter:blur(10px); }
+.scroll-hint { position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  color:var(--muted); font-size:12px; letter-spacing:3px; z-index:2; animation:bounce 2s infinite; }
+@keyframes fadeUp { from{opacity:0; transform:translateY(28px);} to{opacity:1; transform:none;} }
+@keyframes bounce { 0%,100%{transform:translate(-50%,0);} 50%{transform:translate(-50%,10px);} }
+
+/* ===== 通用内容页 ===== */
+.slide-inner { width:min(1160px,92vw); position:relative; z-index:2; }
+.slide-head { text-align:center; margin-bottom:38px; }
+.slide-kicker { font-size:13px; letter-spacing:5px; color:#a78bfa; margin-bottom:12px; }
+.slide-title { font-size:clamp(28px,4.5vw,44px); font-weight:800; letter-spacing:2px; }
+.slide-title em { font-style:normal; background:var(--grad);
+  -webkit-background-clip:text; background-clip:text; color:transparent; }
+.slide-desc { margin-top:12px; color:var(--muted); font-size:15px; }
+
+.bg-glow { position:absolute; border-radius:50%; filter:blur(120px); opacity:.32; pointer-events:none; }
+.g1 { width:520px; height:520px; background:#6366f1; top:-160px; left:-120px; }
+.g2 { width:460px; height:460px; background:#ec4899; bottom:-160px; right:-100px; }
+
+/* ===== 功能卡片页 ===== */
+.feat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:22px; }
+.feat-card { background:var(--glass); border:1px solid var(--border); border-radius:22px;
+  padding:34px 28px; backdrop-filter:blur(16px); transition:all .35s; position:relative; overflow:hidden; }
+.feat-card::before { content:""; position:absolute; inset:0 0 auto; height:3px; background:var(--grad);
+  opacity:0; transition:opacity .35s; }
+.feat-card:hover { transform:translateY(-8px); border-color:rgba(139,124,246,.6);
+  box-shadow:0 24px 60px rgba(99,102,241,.22); }
+.feat-card:hover::before { opacity:1; }
+.feat-ico { width:58px; height:58px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+  font-size:28px; background:var(--grad); margin-bottom:20px; box-shadow:0 8px 24px rgba(99,102,241,.4); }
+.feat-name { font-size:20px; font-weight:700; margin-bottom:10px; }
+.feat-txt { font-size:14px; color:var(--muted); line-height:1.9; }
+.feat-txt b { color:var(--txt); }
+
+/* ===== 轮播组件（步骤/场景共用） ===== */
+.carousel { position:relative; border-radius:26px; overflow:hidden;
+  border:1px solid var(--border); box-shadow:0 30px 80px rgba(0,0,0,.5);
+  background:var(--bg2); }
+.car-track { display:flex; transition:transform .6s cubic-bezier(.65,.05,.36,1); }
+.car-item { flex:0 0 100%; position:relative; }
+.car-item img { width:100%; height:clamp(300px,48vh,460px); object-fit:cover; display:block; }
+.car-cap { position:absolute; left:0; right:0; bottom:0; padding:44px 34px 24px;
+  background:linear-gradient(transparent,rgba(6,8,20,.94) 60%); }
+.car-cap .step-no { font-size:12px; letter-spacing:3px; color:#e8b978; margin-bottom:6px; }
+.car-cap .step-t { font-size:21px; font-weight:700; margin-bottom:6px; }
+.car-cap .step-d { font-size:14px; color:#c9c9e6; line-height:1.8; max-width:640px; }
+.car-btn { position:absolute; top:50%; transform:translateY(-50%); z-index:5;
+  width:46px; height:46px; border-radius:50%; border:1px solid var(--border);
+  background:rgba(13,13,26,.7); color:var(--txt); font-size:19px; cursor:pointer;
+  backdrop-filter:blur(8px); transition:all .25s; display:flex; align-items:center; justify-content:center; }
+.car-btn:hover { background:var(--grad); border-color:transparent; }
+.car-btn.prev { left:16px; } .car-btn.next { right:16px; }
+.car-dots { position:absolute; bottom:14px; right:22px; display:flex; gap:8px; z-index:5; }
+.car-dots i { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.35);
+  cursor:pointer; transition:all .3s; }
+.car-dots i.cur { width:24px; border-radius:4px; background:#fff; }
+
+/* ===== 使用引导页 ===== */
+.cta-card { background:var(--glass); border:1px solid var(--border); border-radius:26px;
+  padding:clamp(28px,5vw,52px); backdrop-filter:blur(16px);
+  display:grid; grid-template-columns:1.2fr .8fr; gap:40px; align-items:center; }
+.cta-left h3 { font-size:clamp(22px,3vw,30px); font-weight:800; margin-bottom:18px; letter-spacing:1px; }
+.cta-steps { list-style:none; }
+.cta-steps li { padding:12px 0 12px 44px; position:relative; color:#d7d7f0; font-size:15px;
+  border-bottom:1px dashed rgba(99,102,241,.2); }
+.cta-steps li:last-child { border-bottom:none; }
+.cta-steps li::before { content:attr(data-n); position:absolute; left:0; top:10px;
+  width:28px; height:28px; border-radius:50%; background:var(--grad);
+  font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.cta-right { text-align:center; }
+.qr-box { width:150px; height:150px; margin:0 auto 16px; border-radius:18px;
+  background:linear-gradient(135deg,rgba(99,102,241,.25),rgba(236,72,153,.25));
+  border:1px solid var(--border); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:6px; font-size:38px; }
+.qr-box span { font-size:11px; color:var(--muted); letter-spacing:1px; }
+.author-line { font-size:14px; color:var(--muted); line-height:2; }
+.author-line b { color:#e8b978; font-size:16px; }
+
+/* ===== 为什么选择悬浮计时器 ===== */
+.why-box { margin-top:22px; padding:16px 20px; border-radius:16px;
+  background:linear-gradient(135deg,rgba(99,102,241,.14),rgba(236,72,153,.14));
+  border:1px solid var(--border); font-size:14px; color:#d7d7f0; line-height:1.9; }
+.why-box b { display:block; margin-bottom:4px; font-size:15px;
+  background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+/* ===== 页脚信息条 ===== */
+.footbar { position:fixed; left:0; right:0; bottom:0; z-index:98;
+  display:flex; justify-content:space-between; padding:10px 22px;
+  font-size:11px; color:rgba(154,154,192,.75); letter-spacing:1px;
+  background:linear-gradient(transparent,rgba(13,13,26,.85)); pointer-events:none; }
+
+/* ===== 手机端 ===== */
+@media (max-width:760px) {
+  .cta-card { grid-template-columns:1fr; gap:16px; padding:22px 20px; }
+  .dots { right:12px; gap:10px; }
+  .car-item img { height:38vh; }
+  .car-cap { padding:30px 20px 40px; }
+  .car-btn { width:38px; height:38px; }
+  .slide-head { margin-bottom:20px; }
+  .slide-desc { font-size:13px; }
+  .feat-card { padding:20px 18px; }
+  .feat-ico { width:44px; height:44px; font-size:22px; margin-bottom:12px; }
+  .feat-name { font-size:17px; margin-bottom:6px; }
+  .feat-txt { font-size:13px; line-height:1.7; }
+  .why-box { margin-top:12px; padding:12px 16px; font-size:13px; }
+  .qr-box { width:118px; height:118px; font-size:30px; margin-bottom:10px; }
+  .cta-steps li { font-size:13px; padding:9px 0 9px 40px; }
+  .author-line { line-height:1.8; }
+}
+
+/* ===== 广告位 ===== */
+.ad-stage { position:relative; max-width:760px; margin:30px auto 0; border-radius:18px; overflow:hidden;
+  border:1px solid var(--border); background:rgba(0,0,0,.4); box-shadow:0 20px 60px rgba(99,102,241,.25); }
+.ad-tag { position:absolute; top:14px; left:14px; z-index:3; padding:3px 10px; border-radius:8px;
+  background:linear-gradient(135deg,#f59e0b,#ef4444); color:#fff; font-size:12px; font-weight:700; }
+.ad-video { width:100%; height:auto; max-height:60vh; display:block; background:#000; }
+.ad-cap { text-align:center; color:var(--muted); font-size:13px; padding:12px 16px; background:rgba(20,20,40,.6); }
+</style>
+</head>
+<body>
+
+<!-- 翻页指示点 -->
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ========== 第1屏 · 封面 ========== -->
+  <section class="slide slide-cover">
+    <div class="hero-bg"></div>
+    <div class="inner">
+      <div class="cover-tag">PRODUCT SHOWCASE · 2027</div>
+      <h1 class="cover-title">悬浮计时器</h1>
+      <p class="cover-sub">一颗小球悬浮屏上 · 时间余光可见，操作互不打扰<br>正计时 · 倒计时 · 番茄钟 · 三端通用</p>
+      <div class="cover-feats">
+        <span class="chip">⏱ 毫秒级计时</span>
+        <span class="chip">🟣 可拖动悬浮球</span>
+        <span class="chip">🍅 番茄工作法</span>
+        <span class="chip">🔔 系统托盘常驻</span>
+      </div>
+    </div>
+    <div class="scroll-hint">▼ 向下滚动 · 了解它</div>
+  </section>
+
+  <!-- ========== 第2屏 · 三大核心 ========== -->
+  <section class="slide">
+    <div class="bg-glow g1"></div><div class="bg-glow g2"></div>
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="slide-kicker">CORE FEATURES</div>
+        <h2 class="slide-title">三种模式，<em>一个悬浮球</em>就够了</h2>
+        <p class="slide-desc">悬浮于任何程序之上，不打断你的工作流——文档、会议、游戏画面照常操作，时间余光一扫即见</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-ico">⏱</div>
+          <div class="feat-name">正计时 / 秒表</div>
+          <div class="feat-txt">一键开跑，<b>毫秒级精度</b>。支持计次打点，自动记录每段间隔，适合运动训练、演讲排练、任务耗时统计。</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ico">⏳</div>
+          <div class="feat-name">倒计时</div>
+          <div class="feat-txt">时分秒自由设定，内置 <b>1/5/10/25分钟、1小时</b> 快捷档位。进度环实时可见，结束声音+通知双提醒。</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ico">🍅</div>
+          <div class="feat-name">番茄钟</div>
+          <div class="feat-txt">工作25分钟 → 休息5分钟，<b>4轮自动进入长休息</b>。阶段自动切换，参数全部可自定义。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 第3屏 · 操作步骤（多轮图） ========== -->
+  <section class="slide">
+    <div class="bg-glow g2"></div><div class="bg-glow g1"></div>
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="slide-kicker">HOW IT WORKS</div>
+        <h2 class="slide-title">四步上手，<em>10秒学会</em></h2>
+        <p class="slide-desc">左右切换查看完整操作流程</p>
+      </div>
+      <div class="carousel" data-auto="1">
+        <div class="car-track">
+          <div class="car-item">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=close-up%20of%20elegant%20dark%20glassmorphism%20timer%20app%20interface%20on%20computer%20screen%2C%20three%20glowing%20purple%20gradient%20mode%20buttons%2C%20large%20digital%20time%20display%2C%20futuristic%20UI%20design%2C%20software%20screenshot%20style&image_size=landscape_16_9" alt="第一步">
+            <div class="car-cap">
+              <div class="step-no">STEP 01</div>
+              <div class="step-t">选择模式</div>
+              <div class="step-d">打开主面板，顶部一键切换：正计时 / 倒计时 / 番茄钟。毛玻璃面板支持拖动摆放、一键收起。</div>
+            </div>
+          </div>
+          <div class="car-item">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand%20adjusting%20countdown%20timer%20settings%20on%20futuristic%20dark%20app%20panel%2C%20glowing%20number%20input%20fields%20with%20hours%20minutes%20seconds%2C%20purple%20neon%20accents%2C%20modern%20software%20interface%2C%20photorealistic&image_size=landscape_16_9" alt="第二步">
+            <div class="car-cap">
+              <div class="step-no">STEP 02</div>
+              <div class="step-t">设定时长</div>
+              <div class="step-d">时/分/秒自由输入，或点快捷按钮（1分钟～1小时）。番茄钟的工作、短休、长休时长也能自定义。</div>
+            </div>
+          </div>
+          <div class="car-item">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=small%20glowing%20circular%20floating%20ball%20widget%20dragged%20across%20computer%20screen%20edge%2C%20purple%20gradient%20progress%20ring%2C%20dark%20desktop%20wallpaper%20background%2C%20subtle%20motion%20trail%2C%20futuristic%20desktop%20gadget&image_size=landscape_16_9" alt="第三步">
+            <div class="car-cap">
+              <div class="step-no">STEP 03</div>
+              <div class="step-t">悬浮球随身走</div>
+              <div class="step-d">主面板收起后缩成一颗悬浮球：按住拖到任意位置，松手自动吸附屏幕边缘，双击展开面板，右键唤出快捷菜单。</div>
+            </div>
+          </div>
+          <div class="car-item">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=pomodoro%20focus%20timer%20running%20on%20screen%20with%20green%20glowing%20progress%20ring%2C%20desk%20with%20coffee%20cup%20and%20notebook%2C%20warm%20productive%20atmosphere%2C%20dark%20modern%20interface%2C%20photorealistic&image_size=landscape_16_9" alt="第四步">
+            <div class="car-cap">
+              <div class="step-no">STEP 04</div>
+              <div class="step-t">开始专注</div>
+              <div class="step-d">点击「开始」，悬浮球亮起绿色光环。最小化后系统托盘图标实时显示剩余分钟数，结束自动声音提醒。</div>
+            </div>
+          </div>
+        </div>
+        <button class="car-btn prev" aria-label="上一张">‹</button>
+        <button class="car-btn next" aria-label="下一张">›</button>
+        <div class="car-dots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 第4屏 · 应用环境（多轮图） ========== -->
+  <section class="slide">
+    <div class="bg-glow g1"></div><div class="bg-glow g2"></div>
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="slide-kicker">USE SCENARIOS</div>
+        <h2 class="slide-title">悬浮在最上层，<em>操作互不打扰</em></h2>
+        <p class="slide-desc">办公 · 会议 · 游戏 · 厨房——它钉在屏幕最上层，你只管做手头的事</p>
+      </div>
+      <div class="carousel" data-auto="1">
+        <div class="car-track">
+          <div class="car-item">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20editing%20presentation%20slides%20on%20laptop%20at%20modern%20office%20desk%2C%20small%20glowing%20purple%20circular%20timer%20ball%20pinned%20on%20top%20right%20corner%20of%20screen%20above%20the%20slides%2C%20focused%20work%20atmosphere%2C%20soft%20natural%20window%20light%2C%20photorealistic&image_size=landscape_16_9" alt="办公场景">
+            <div class="car-cap">
+              <div class="step-no">场景 01</div>
+              <div class="step-t">💼 办公改方案</div>
+              <div class="step-d">改方案正到关键处，悬浮球钉在PPT右上角，抬头即见剩余时间。不切窗口、不抢焦点，思路一秒都不打断。</div>
+            </div>
+          </div>
+          <div class="car-item">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=online%20video%20meeting%20on%20laptop%20screen%20with%20screen%20sharing%2C%20small%20translucent%20glowing%20timer%20ball%20floating%20on%20top%20of%20the%20shared%20window%20visible%20only%20to%20presenter%2C%20modern%20home%20office%20with%20warm%20lighting%2C%20photorealistic&image_size=landscape_16_9" alt="会议场景">
+            <div class="car-cap">
+              <div class="step-no">场景 02</div>
+              <div class="step-t">🎓 网课 / 会议</div>
+              <div class="step-d">共享屏幕讲方案，悬浮时间只有你自己看得见。发言节奏心里有数，该收尾时从容收尾，不再超时被打断。</div>
+            </div>
+          </div>
+          <div class="car-item">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=fullscreen%20video%20game%20on%20gaming%20monitor%20with%20small%20semi-transparent%20glowing%20purple%20timer%20ball%20floating%20on%20top%20corner%20of%20the%20game%20screen%2C%20neon%20rgb%20gaming%20room%2C%20live%20streaming%20setup%2C%20photorealistic&image_size=landscape_16_9" alt="游戏场景">
+            <div class="car-cap">
+              <div class="step-no">场景 03</div>
+              <div class="step-t">🎮 游戏 / 直播</div>
+              <div class="step-d">全屏游戏激战正酣，悬浮球半透明挂在画面一角。煮面、休息提醒一个不漏——切出游戏看时间？不存在的。</div>
+            </div>
+          </div>
+          <div class="car-item">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=tablet%20on%20marble%20kitchen%20counter%20showing%20recipe%20page%20with%20small%20floating%20countdown%20timer%20ball%20hovering%20above%20the%20recipe%20on%20screen%2C%20steaming%20pot%20and%20fresh%20ingredients%20nearby%2C%20warm%20cozy%20lighting%2C%20photorealistic%20lifestyle%20photography&image_size=landscape_16_9" alt="厨房场景">
+            <div class="car-cap">
+              <div class="step-no">场景 04</div>
+              <div class="step-t">🍳 厨房烹饪</div>
+              <div class="step-d">照着平板上的菜谱一步步操作，悬浮倒计时浮在菜谱页面上方。手上有油也不慌，不用碰屏幕切应用。</div>
+            </div>
+          </div>
+        </div>
+        <button class="car-btn prev" aria-label="上一张">‹</button>
+        <button class="car-btn next" aria-label="下一张">›</button>
+        <div class="car-dots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 第5屏 · 立即使用 ========== -->
+  <section class="slide">
+    <div class="bg-glow g2"></div><div class="bg-glow g1"></div>
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="slide-kicker">GET STARTED</div>
+        <h2 class="slide-title">现在就开始，<em>让每一秒都算数</em></h2>
+      </div>
+      <div class="cta-card">
+        <div class="cta-left">
+          <h3>三种方式，随你挑</h3>
+          <ul class="cta-steps">
+            <li data-n="1">电脑端：进入「电脑端」文件夹，运行 main.py，悬浮球即刻出现在桌面右下角</li>
+            <li data-n="2">网页端：浏览器打开「网页端/index.html」，手机电脑通吃，免安装</li>
+            <li data-n="3">后台管理：运行 admin_db.py，管理员账户 18180309010 统一管理</li>
+          </ul>
+          <div class="why-box">
+            <b>💡 为什么选择悬浮计时器？</b>
+            普通计时器要切窗口才能看时间，来回一切换思路就断了；悬浮计时器让时间一直在你视野里——余光一扫就知道还剩多久，手上的操作一刻不停。
+          </div>
+        </div>
+        <div class="cta-right">
+          <div class="qr-box">⏱<span>双击悬浮球试试</span></div>
+          <div class="author-line">
+            作者：<b>军哥懂保</b><br>
+            微信：<b>xunijiayuan</b><br>
+            版本：v1.0 · 2027科技版
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 广告位（配置化，三端统一读取 ad.json） ========== -->
+  <section class="slide slide-ad">
+    <div class="bg-glow g1"></div><div class="bg-glow g2"></div>
+    <div class="slide-inner">
+      <div class="slide-head">
+        <div class="slide-kicker">SPONSOR</div>
+        <h2 class="slide-title">广告位<em>招租</em></h2>
+        <p class="slide-desc">精准触达专注计时人群 · 联系微信 xunijiayuan</p>
+      </div>
+      <div class="ad-stage">
+        <span class="ad-tag">广告</span>
+        <video class="ad-video" id="showcaseAdVideo" playsinline controls preload="metadata"
+               poster="https://ecojia.cn/timer/ads/ad_placeholder.jpg">
+          <source src="https://ecojia.cn/timer/ads/ad_placeholder.mp4" type="video/mp4">
+        </video>
+        <p class="ad-cap" id="showcaseAdCap">广告位招租 · 联系微信 xunijiayuan 替换</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- 页脚信息条 -->
+<div class="footbar">
+  <span id="pageInfo">悬浮计时器 · 产品展示页</span>
+  <span id="fileInfo">加载中…</span>
+</div>
+
+<script>
+/* ========== PPT 翻页 ========== */
+const deck = document.getElementById('deck');
+const slides = document.querySelectorAll('.slide');
+const dotsBox = document.getElementById('dots');
+let cur = 0, lock = false;
+
+slides.forEach((_, i) => {
+  const b = document.createElement('button');
+  b.addEventListener('click', () => goTo(i));
+  dotsBox.appendChild(b);
+});
+const dots = dotsBox.querySelectorAll('button');
+
+function goTo(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  deck.style.transform = `translateY(-${cur * 100}vh)`;
+  dots.forEach((d, j) => d.classList.toggle('cur', j === cur));
+}
+goTo(0);
+
+/* 滚轮翻页 */
+window.addEventListener('wheel', e => {
+  if (lock) return;
+  lock = true;
+  goTo(cur + (e.deltaY > 0 ? 1 : -1));
+  setTimeout(() => lock = false, 800);
+}, { passive: true });
+
+/* 键盘翻页 */
+window.addEventListener('keydown', e => {
+  if (['ArrowDown','PageDown',' '].includes(e.key)) goTo(cur + 1);
+  if (['ArrowUp','PageUp'].includes(e.key)) goTo(cur - 1);
+});
+
+/* 触摸滑动翻页 */
+let touchY = null;
+window.addEventListener('touchstart', e => touchY = e.touches[0].clientY, { passive: true });
+window.addEventListener('touchend', e => {
+  if (touchY === null) return;
+  const dy = touchY - e.changedTouches[0].clientY;
+  if (Math.abs(dy) > 60) goTo(cur + (dy > 0 ? 1 : -1));
+  touchY = null;
+}, { passive: true });
+
+/* ========== 轮播组件 ========== */
+document.querySelectorAll('.carousel').forEach(car => {
+  const track = car.querySelector('.car-track');
+  const items = Array.from(car.querySelectorAll('.car-item'));
+  const dotBox = car.querySelector('.car-dots');
+  let idx = 0, timer = null, dots2;
+
+  items.forEach((_, i) => {
+    const d = document.createElement('i');
+    d.addEventListener('click', () => { show(i); restart(); });
+    dotBox.appendChild(d);
+  });
+  dots2 = dotBox.querySelectorAll('i');
+  show(0);
+
+  function show(i) {
+    idx = (i + items.length) % items.length;
+    track.style.transform = `translateX(-${idx * 100}%)`;
+    dots2.forEach((d, j) => d.classList.toggle('cur', j === idx));
+  }
+  car.querySelector('.prev').addEventListener('click', () => { show(idx - 1); restart(); });
+  car.querySelector('.next').addEventListener('click', () => { show(idx + 1); restart(); });
+
+  function restart() {
+    if (timer) clearInterval(timer);
+    if (car.dataset.auto) timer = setInterval(() => show(idx + 1), 5000);
+  }
+  restart();
+  car.addEventListener('mouseenter', () => timer && clearInterval(timer));
+  car.addEventListener('mouseleave', restart);
+});
+
+/* ========== 页脚文件信息 ========== */
+fetch(location.href, { method: 'HEAD' }).then(r => {
+  const size = r.headers.get('content-length');
+  const lm = r.headers.get('last-modified');
+  let txt = '';
+  if (size) txt += `本页 ${(size/1024).toFixed(1)} KB`;
+  if (lm) txt += ` · 更新于 ${new Date(lm).toLocaleString('zh-CN', {hour12:false})}`;
+  document.getElementById('fileInfo').textContent = txt || '军哥懂保 · xunijiayuan';
+}).catch(() => {
+  document.getElementById('fileInfo').textContent = '军哥懂保 · xunijiayuan';
+});
+</script>
+</body>
+</html>
