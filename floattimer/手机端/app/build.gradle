@@ -3,6 +3,15 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// 正式签名配置：证书与密码保存在本地 keystore.properties（不随源码公开）
+// 文件缺失时自动退化为 debug 签名，保证任何人拉取源码都能正常编译
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+def hasReleaseKey = keystorePropertiesFile.exists()
+if (hasReleaseKey) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace 'com.junge.floattimer'
     compileSdk 34
@@ -13,8 +22,19 @@ android {
         // 兼容安卓 5.0 起的老设备（手表 / 电视盒子 / 低配手机），与旗舰产品「鼠标画笔」一致
         minSdk 21
         targetSdk 34
-        versionCode 8
-        versionName "1.0.7"
+        versionCode 9
+        versionName "1.0.8"
+    }
+
+    signingConfigs {
+        if (hasReleaseKey) {
+            release {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
     }
 
     buildFeatures {
@@ -23,6 +43,9 @@ android {
 
     buildTypes {
         release {
+            if (hasReleaseKey) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
         }
         debug {
